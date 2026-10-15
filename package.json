@@ -1,0 +1,35 @@
+{
+  "name": "polymath-wes",
+  "private": true,
+  "description": "Polymath Wes AI — WhatsApp-native ECD centre copilot by Dala Integrated Systems",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "pnpm --filter @wes/db generate",
+    "db:migrate": "pnpm --filter @wes/db migrate",
+    "db:seed": "pnpm --filter @wes/db seed",
+    "storybook": "pnpm --filter @wes/ui storybook"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9",
+    "@types/node": "^24",
+    "@vitest/coverage-v8": "^3",
+    "eslint": "^9",
+    "eslint-plugin-react-hooks": "^5",
+    "globals": "^16",
+    "prettier": "^3",
+    "turbo": "^2",
+    "typescript": "~5.9",
+    "typescript-eslint": "^8",
+    "vitest": "^3"
+  }
+}
