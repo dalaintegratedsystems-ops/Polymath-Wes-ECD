@@ -1,0 +1,90 @@
+/* GENERATED from src/tokens.ts — run `pnpm --filter @wes/ui tokens`. Do not edit by hand. */
+:root {
+  color-scheme: light;
+  --wes-canvas: #FCF7F0;
+  --wes-surface: #FFFFFF;
+  --wes-surface-sunk: #F6ECDD;
+  --wes-line: #EDDCC4;
+  --wes-ink: #22180F;
+  --wes-ink-muted: #5A4A3C;
+  --wes-primary: #B04E24;
+  --wes-primary-hover: #933F1C;
+  --wes-on-primary: #FFFFFF;
+  --wes-brand: #E9A93F;
+  --wes-on-brand: #22180F;
+  --wes-brand-soft: #FCEBCB;
+  --wes-brand-strong: #8C520A;
+  --wes-success: #2B6A4C;
+  --wes-success-soft: #E2F0E6;
+  --wes-on-success: #FFFFFF;
+  --wes-accent: #B83A63;
+  --wes-accent-soft: #FBE3EA;
+  --wes-on-accent: #FFFFFF;
+  --wes-danger: #AE2A1F;
+  --wes-on-danger: #FFFFFF;
+  --wes-focus: #1D5FD1;
+  --wes-font: var(--font-nunito, 'Nunito'), ui-rounded, 'Segoe UI', Roboto, system-ui, sans-serif;
+  --wes-radius-sm: 10px;
+  --wes-radius-md: 16px;
+  --wes-radius-lg: 22px;
+  --wes-radius-xl: 28px;
+  --wes-radius-pill: 999px;
+  --wes-shadow-card: 0 1px 2px rgb(60 35 15 / 0.06), 0 4px 16px rgb(60 35 15 / 0.06);
+  --wes-shadow-raised: 0 2px 4px rgb(60 35 15 / 0.08), 0 12px 32px rgb(60 35 15 / 0.12);
+  --wes-touch: 48px;
+  --wes-touch-lg: 56px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --wes-canvas: #15100C;
+    --wes-surface: #1F1812;
+    --wes-surface-sunk: #2A2019;
+    --wes-line: #3B2E24;
+    --wes-ink: #F8EFE4;
+    --wes-ink-muted: #D8C6B2;
+    --wes-primary: #E58A5F;
+    --wes-primary-hover: #EEA07A;
+    --wes-on-primary: #15100C;
+    --wes-brand: #F5C66E;
+    --wes-on-brand: #15100C;
+    --wes-brand-soft: #3A2A12;
+    --wes-brand-strong: #F5C66E;
+    --wes-success: #7FC9A0;
+    --wes-success-soft: #17321F;
+    --wes-on-success: #15100C;
+    --wes-accent: #F28CAD;
+    --wes-accent-soft: #3A1824;
+    --wes-on-accent: #15100C;
+    --wes-danger: #FF9B8F;
+    --wes-on-danger: #15100C;
+    --wes-focus: #8DB6FF;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --wes-canvas: #15100C;
+  --wes-surface: #1F1812;
+  --wes-surface-sunk: #2A2019;
+  --wes-line: #3B2E24;
+  --wes-ink: #F8EFE4;
+  --wes-ink-muted: #D8C6B2;
+  --wes-primary: #E58A5F;
+  --wes-primary-hover: #EEA07A;
+  --wes-on-primary: #15100C;
+  --wes-brand: #F5C66E;
+  --wes-on-brand: #15100C;
+  --wes-brand-soft: #3A2A12;
+  --wes-brand-strong: #F5C66E;
+  --wes-success: #7FC9A0;
+  --wes-success-soft: #17321F;
+  --wes-on-success: #15100C;
+  --wes-accent: #F28CAD;
+  --wes-accent-soft: #3A1824;
+  --wes-on-accent: #15100C;
+  --wes-danger: #FF9B8F;
+  --wes-on-danger: #15100C;
+  --wes-focus: #8DB6FF;
+}

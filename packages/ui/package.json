@@ -1,0 +1,36 @@
+{
+  "name": "@wes/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens.css",
+    "./theme.css": "./src/theme.css",
+    "./tokens": "./src/tokens.ts"
+  },
+  "scripts": {
+    "tokens": "tsx scripts/write-tokens.ts",
+    "storybook": "storybook dev -p 6006 --no-open",
+    "build": "storybook build --quiet",
+    "lint": "eslint src test",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^9",
+    "@storybook/react-vite": "^9",
+    "@tailwindcss/vite": "^4",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "react": "^19",
+    "react-dom": "^19",
+    "storybook": "^9",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "vite": "^7"
+  }
+}

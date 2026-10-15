@@ -1,0 +1,73 @@
+/*
+ * Tailwind v4 theme bridge. Import after `@import "tailwindcss";` and tokens.css.
+ * Utilities read semantic tokens, so light/dark switch without `dark:` variants:
+ *   bg-canvas bg-surface bg-sunk text-ink text-ink-muted bg-primary text-on-primary ...
+ */
+@theme inline {
+  --color-canvas: var(--wes-canvas);
+  --color-surface: var(--wes-surface);
+  --color-sunk: var(--wes-surface-sunk);
+  --color-line: var(--wes-line);
+  --color-ink: var(--wes-ink);
+  --color-ink-muted: var(--wes-ink-muted);
+  --color-primary: var(--wes-primary);
+  --color-primary-hover: var(--wes-primary-hover);
+  --color-on-primary: var(--wes-on-primary);
+  --color-brand: var(--wes-brand);
+  --color-on-brand: var(--wes-on-brand);
+  --color-brand-soft: var(--wes-brand-soft);
+  --color-brand-strong: var(--wes-brand-strong);
+  --color-success: var(--wes-success);
+  --color-success-soft: var(--wes-success-soft);
+  --color-on-success: var(--wes-on-success);
+  --color-accent: var(--wes-accent);
+  --color-accent-soft: var(--wes-accent-soft);
+  --color-on-accent: var(--wes-on-accent);
+  --color-danger: var(--wes-danger);
+  --color-on-danger: var(--wes-on-danger);
+  --color-focus: var(--wes-focus);
+
+  --font-sans: var(--wes-font);
+
+  --radius-sm: var(--wes-radius-sm);
+  --radius-md: var(--wes-radius-md);
+  --radius-lg: var(--wes-radius-lg);
+  --radius-xl: var(--wes-radius-xl);
+
+  --shadow-card: var(--wes-shadow-card);
+  --shadow-raised: var(--wes-shadow-raised);
+
+  --spacing-touch: var(--wes-touch);
+  --spacing-touch-lg: var(--wes-touch-lg);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    background: var(--wes-canvas);
+    color: var(--wes-ink);
+    font-family: var(--wes-font);
+    font-size: 1rem;
+    line-height: 1.55;
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  :focus-visible {
+    outline: 3px solid var(--wes-focus);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
