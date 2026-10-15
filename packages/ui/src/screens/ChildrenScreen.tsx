@@ -64,11 +64,19 @@ export function ChildrenScreen({
                 </p>
               </div>
               <div className="mt-3">
-                <ProgressBar value={hereCount} max={childrenList.length} label="Children marked present" />
+                <ProgressBar
+                  value={hereCount}
+                  max={childrenList.length}
+                  label="Children marked present"
+                />
               </div>
             </Card>
 
-            <div role="radiogroup" aria-label="Filter by group" className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
+            <div
+              role="radiogroup"
+              aria-label="Filter by group"
+              className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]"
+            >
               {['All', ...groups].map((g) => (
                 <button
                   key={g}
@@ -90,7 +98,10 @@ export function ChildrenScreen({
               {shown.map((c) => {
                 const isHere = present[c.id] === true;
                 return (
-                  <li key={c.id} className="flex min-h-16 items-center gap-3 border-b border-line px-3 py-2 last:border-b-0">
+                  <li
+                    key={c.id}
+                    className="flex min-h-16 items-center gap-3 border-b border-line px-3 py-2 last:border-b-0"
+                  >
                     <Avatar name={c.firstName} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-extrabold text-ink">{c.firstName}</p>
@@ -105,7 +116,9 @@ export function ChildrenScreen({
                       onClick={() => setPresent((p) => ({ ...p, [c.id]: !isHere }))}
                       className={cx(
                         'inline-flex min-h-touch min-w-24 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-extrabold transition-colors',
-                        isHere ? 'bg-success text-on-success' : 'border-2 border-line text-ink-muted',
+                        isHere
+                          ? 'bg-success text-on-success'
+                          : 'border-2 border-line text-ink-muted',
                       )}
                     >
                       {isHere && <CheckIcon size={18} />}
@@ -121,7 +134,8 @@ export function ChildrenScreen({
               <div>
                 <p className="font-extrabold text-ink">Adding a child?</p>
                 <p className="text-sm text-ink-muted">
-                  We ask a parent or caregiver for consent first. We only keep a first name, birth month and group.
+                  We ask a parent or caregiver for consent first. We only keep a first name, birth
+                  month and group.
                 </p>
               </div>
             </Card>

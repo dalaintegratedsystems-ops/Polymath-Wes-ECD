@@ -22,7 +22,11 @@ export interface TestDb {
   /** Run SQL as the owner (bypasses RLS). For setup and assertions. */
   query: Query;
   /** Run `fn` inside a transaction as `wes_app` with the given request context. */
-  asRole<T>(ctx: RequestContext, fn: (q: Query) => Promise<T>, dbRole?: 'wes_app' | 'wes_worker'): Promise<T>;
+  asRole<T>(
+    ctx: RequestContext,
+    fn: (q: Query) => Promise<T>,
+    dbRole?: 'wes_app' | 'wes_worker',
+  ): Promise<T>;
   close(): Promise<void>;
 }
 
@@ -82,7 +86,9 @@ async function createPostgresTestDb(adminUrl: string): Promise<TestDb> {
       client.begin(async (tx) => {
         await tx.unsafe(`SET LOCAL ROLE ${dbRole}`);
         await tx.unsafe(CONTEXT_SQL, ctxParams(ctx));
-        return fn(async (sql, params) => (await tx.unsafe(sql, params as never[])) as unknown as Row[]);
+        return fn(
+          async (sql, params) => (await tx.unsafe(sql, params as never[])) as unknown as Row[],
+        );
       }) as Promise<never>,
     close: async () => {
       await client.end();

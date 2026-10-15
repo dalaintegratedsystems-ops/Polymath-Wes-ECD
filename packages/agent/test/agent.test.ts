@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
-import { loadAgentConfig, runPipeline, TOOL_NAMES, type AgentReply, type PipelineStages } from '../src';
+import {
+  loadAgentConfig,
+  runPipeline,
+  TOOL_NAMES,
+  type AgentReply,
+  type PipelineStages,
+} from '../src';
 
 describe('agent config', () => {
   it('defaults to the configured model family', () => {
@@ -23,7 +29,12 @@ describe('pipeline ordering', () => {
     citations: [],
     attachments: [],
     escalated: false,
-    postCheck: { schemaValid: true, citationsPresent: 'not_required', bannedContent: [], readingLevelOk: true },
+    postCheck: {
+      schemaValid: true,
+      citationsPresent: 'not_required',
+      bannedContent: [],
+      readingLevelOk: true,
+    },
   };
 
   const stages = (risk: 'normal' | 'child_protection'): PipelineStages => ({
@@ -36,7 +47,13 @@ describe('pipeline ordering', () => {
     persist: vi.fn(async () => {}),
   });
 
-  const msg = { centreId: 'c', userId: 'u', conversationId: 'v', channel: 'web' as const, text: 'hi' };
+  const msg = {
+    centreId: 'c',
+    userId: 'u',
+    conversationId: 'v',
+    channel: 'web' as const,
+    text: 'hi',
+  };
 
   it('never calls generation for child-protection disclosures', async () => {
     const s = stages('child_protection');

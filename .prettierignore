@@ -7,3 +7,4 @@ storybook-static
 .turbo
 packages/db/migrations/meta
 CLAUDE.md
+packages/ui/src/tokens.css

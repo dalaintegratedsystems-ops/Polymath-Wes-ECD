@@ -148,11 +148,41 @@ export async function seed(
     ]);
 
     await tx.insert(s.groups).values([
-      { id: G.siyakhulaBabies, centreId: C.siyakhula, name: 'Babies', ageBandMinMonths: 0, ageBandMaxMonths: 18 },
-      { id: G.siyakhulaToddlers, centreId: C.siyakhula, name: 'Toddlers', ageBandMinMonths: 18, ageBandMaxMonths: 36 },
-      { id: G.siyakhulaPreGradeR, centreId: C.siyakhula, name: 'Pre-Grade R', ageBandMinMonths: 36, ageBandMaxMonths: 60 },
-      { id: G.ikhayaToddlers, centreId: C.ikhaya, name: 'Toddlers', ageBandMinMonths: 18, ageBandMaxMonths: 36 },
-      { id: G.ikhayaPreGradeR, centreId: C.ikhaya, name: 'Pre-Grade R', ageBandMinMonths: 36, ageBandMaxMonths: 60 },
+      {
+        id: G.siyakhulaBabies,
+        centreId: C.siyakhula,
+        name: 'Babies',
+        ageBandMinMonths: 0,
+        ageBandMaxMonths: 18,
+      },
+      {
+        id: G.siyakhulaToddlers,
+        centreId: C.siyakhula,
+        name: 'Toddlers',
+        ageBandMinMonths: 18,
+        ageBandMaxMonths: 36,
+      },
+      {
+        id: G.siyakhulaPreGradeR,
+        centreId: C.siyakhula,
+        name: 'Pre-Grade R',
+        ageBandMinMonths: 36,
+        ageBandMaxMonths: 60,
+      },
+      {
+        id: G.ikhayaToddlers,
+        centreId: C.ikhaya,
+        name: 'Toddlers',
+        ageBandMinMonths: 18,
+        ageBandMaxMonths: 36,
+      },
+      {
+        id: G.ikhayaPreGradeR,
+        centreId: C.ikhaya,
+        name: 'Pre-Grade R',
+        ageBandMinMonths: 36,
+        ageBandMaxMonths: 60,
+      },
     ]);
 
     // Guardian #1 is Ayanda (the parent user) for the first two Siyakhula children.
@@ -170,7 +200,10 @@ export async function seed(
     });
     // Ayanda has one guardian row (shared phone) — de-duplicate on the blind index.
     const uniqueGuardians = guardians.filter(
-      (g, i) => guardians.findIndex((o) => o.phoneBlindIndex === g.phoneBlindIndex && o.centreId === g.centreId) === i,
+      (g, i) =>
+        guardians.findIndex(
+          (o) => o.phoneBlindIndex === g.phoneBlindIndex && o.centreId === g.centreId,
+        ) === i,
     );
     await tx.insert(s.guardians).values(uniqueGuardians);
 

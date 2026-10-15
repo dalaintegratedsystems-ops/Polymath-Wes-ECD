@@ -21,10 +21,16 @@ export interface AgentConfig {
   whatsappMaxChars: number;
 }
 
-export function loadAgentConfig(env: Record<string, string | undefined> = process.env): AgentConfig {
+export function loadAgentConfig(
+  env: Record<string, string | undefined> = process.env,
+): AgentConfig {
   const c = AgentConfigSchema.parse(env);
   return {
-    models: { router: c.WES_MODEL_ROUTER, main: c.WES_MODEL_MAIN, escalation: c.WES_MODEL_ESCALATION },
+    models: {
+      router: c.WES_MODEL_ROUTER,
+      main: c.WES_MODEL_MAIN,
+      escalation: c.WES_MODEL_ESCALATION,
+    },
     maxToolCallsPerTurn: c.WES_MAX_TOOL_CALLS,
     monthlyTokenBudgetPerCentre: c.WES_MONTHLY_TOKEN_BUDGET_PER_CENTRE,
     whatsappMaxChars: c.WES_WHATSAPP_MAX_CHARS,

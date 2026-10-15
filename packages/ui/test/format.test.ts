@@ -31,6 +31,8 @@ describe('format', () => {
   it('scores the registration journey, counting the current step as half', () => {
     expect(registrationPercent(demoSteps)).toBe(42);
     expect(registrationPercent([])).toBe(0);
-    expect(registrationPercent(demoSteps.map((s) => ({ ...s, status: 'done' as const })))).toBe(100);
+    expect(registrationPercent(demoSteps.map((s) => ({ ...s, status: 'done' as const })))).toBe(
+      100,
+    );
   });
 });

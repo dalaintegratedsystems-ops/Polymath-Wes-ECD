@@ -71,7 +71,10 @@ export function WesScreen({
           Wes can make mistakes — check important answers. Wes never diagnoses children.
         </p>
         {messages.map((m) => (
-          <div key={m.id} className={cx('flex', m.role === 'user' ? 'justify-end' : 'justify-start')}>
+          <div
+            key={m.id}
+            className={cx('flex', m.role === 'user' ? 'justify-end' : 'justify-start')}
+          >
             <div
               className={cx(
                 'max-w-[85%] rounded-lg px-4 py-3',

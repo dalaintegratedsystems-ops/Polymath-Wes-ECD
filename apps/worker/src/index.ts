@@ -26,7 +26,9 @@ const workers = queues.map(
 );
 
 for (const w of workers) {
-  w.on('failed', (job, err) => console.error(JSON.stringify({ level: 'error', job: job?.name, err: err.message })));
+  w.on('failed', (job, err) =>
+    console.error(JSON.stringify({ level: 'error', job: job?.name, err: err.message })),
+  );
 }
 log('worker started', { queues });
 

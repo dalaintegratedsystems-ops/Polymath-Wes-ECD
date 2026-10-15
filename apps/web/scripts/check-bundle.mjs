@@ -14,7 +14,9 @@ if (!existsSync(join(next, 'build-manifest.json'))) {
 
 const build = JSON.parse(readFileSync(join(next, 'build-manifest.json'), 'utf8'));
 const appManifestPath = join(next, 'app-build-manifest.json');
-const app = existsSync(appManifestPath) ? JSON.parse(readFileSync(appManifestPath, 'utf8')) : { pages: {} };
+const app = existsSync(appManifestPath)
+  ? JSON.parse(readFileSync(appManifestPath, 'utf8'))
+  : { pages: {} };
 
 const sizeCache = new Map();
 const gz = (file) => {
@@ -22,9 +24,9 @@ const gz = (file) => {
   return sizeCache.get(file);
 };
 
-const shared = [...new Set([...(build.rootMainFiles ?? []), ...(build.polyfillFiles ?? [])])].filter((f) =>
-  f.endsWith('.js'),
-);
+const shared = [
+  ...new Set([...(build.rootMainFiles ?? []), ...(build.polyfillFiles ?? [])]),
+].filter((f) => f.endsWith('.js'));
 // Polyfills load only on legacy browsers (nomodule); exclude them from the modern budget.
 const modernShared = shared.filter((f) => !(build.polyfillFiles ?? []).includes(f));
 

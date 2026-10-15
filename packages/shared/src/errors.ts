@@ -22,9 +22,7 @@ export const ErrorEnvelopeSchema = z
       code: z.enum(ERROR_CODES),
       message: z.string(),
       requestId: z.string(),
-      details: z
-        .array(z.object({ path: z.string(), message: z.string() }))
-        .optional(),
+      details: z.array(z.object({ path: z.string(), message: z.string() })).optional(),
     }),
   })
   .meta({ id: 'ErrorEnvelope' });

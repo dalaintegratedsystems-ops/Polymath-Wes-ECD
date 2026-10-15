@@ -16,9 +16,13 @@ export function splitForWhatsApp(text: string, max = WHATSAPP_MAX_CHARS): string
     current = '';
   };
 
-  const units = text.split(/(\n\n+)/).flatMap((p) =>
-    p.length <= max ? [p] : p.split(/(?<=[.!?])\s+/).flatMap((s) => (s.length <= max ? [s] : s.split(/\s+/))),
-  );
+  const units = text
+    .split(/(\n\n+)/)
+    .flatMap((p) =>
+      p.length <= max
+        ? [p]
+        : p.split(/(?<=[.!?])\s+/).flatMap((s) => (s.length <= max ? [s] : s.split(/\s+/))),
+    );
 
   for (const unit of units) {
     const sep = current && !/^\n/.test(unit) && !current.endsWith('\n') ? ' ' : '';

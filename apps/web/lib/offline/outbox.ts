@@ -13,7 +13,12 @@ export async function enqueue(
   db: WesOfflineDb,
   write: Pick<OutboxItem, 'method' | 'path' | 'body'>,
 ): Promise<OutboxItem> {
-  const item: OutboxItem = { ...write, idempotencyKey: newKey(), createdAt: Date.now(), attempts: 0 };
+  const item: OutboxItem = {
+    ...write,
+    idempotencyKey: newKey(),
+    createdAt: Date.now(),
+    attempts: 0,
+  };
   item.id = await db.outbox.add(item);
   return item;
 }
@@ -32,7 +37,10 @@ export interface FlushResult {
 export async function flush(db: WesOfflineDb, send: Sender): Promise<FlushResult> {
   let sent = 0;
   let conflicts = 0;
-  const items = await db.outbox.orderBy('createdAt').filter((i) => !i.conflict).toArray();
+  const items = await db.outbox
+    .orderBy('createdAt')
+    .filter((i) => !i.conflict)
+    .toArray();
 
   for (const item of items) {
     let res: { status: number; body?: unknown };
@@ -52,7 +60,10 @@ export async function flush(db: WesOfflineDb, send: Sender): Promise<FlushResult
     } else if (res.status >= 500 || res.status === 429) {
       const attempts = item.attempts + 1;
       if (attempts >= MAX_ATTEMPTS) {
-        await db.outbox.update(item.id!, { attempts, conflict: { status: res.status, serverBody: res.body } });
+        await db.outbox.update(item.id!, {
+          attempts,
+          conflict: { status: res.status, serverBody: res.body },
+        });
         conflicts += 1;
       } else {
         await db.outbox.update(item.id!, { attempts, lastError: `HTTP ${res.status}` });

@@ -4,7 +4,12 @@ import { cx } from './primitives';
 
 export type NavKey = 'home' | 'plan' | 'children' | 'registration' | 'wes';
 
-export const NAV_ITEMS: { key: NavKey; label: string; href: string; Icon: ComponentType<SVGProps<SVGSVGElement> & { size?: number }> }[] = [
+export const NAV_ITEMS: {
+  key: NavKey;
+  label: string;
+  href: string;
+  Icon: ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
+}[] = [
   { key: 'home', label: 'Home', href: '/', Icon: HomeIcon },
   { key: 'plan', label: 'Plan', href: '/plan', Icon: PlanIcon },
   { key: 'children', label: 'Children', href: '/children', Icon: ChildrenIcon },
@@ -26,7 +31,13 @@ export const defaultRenderLink: RenderLink = ({ href, className, children, ...re
 );
 
 /** Bottom navigation: five destinations, icon + label, 56px tall, thumb-reachable. */
-export function BottomNav({ active, renderLink = defaultRenderLink }: { active: NavKey; renderLink?: RenderLink }) {
+export function BottomNav({
+  active,
+  renderLink = defaultRenderLink,
+}: {
+  active: NavKey;
+  renderLink?: RenderLink;
+}) {
   return (
     <nav
       aria-label="Main"

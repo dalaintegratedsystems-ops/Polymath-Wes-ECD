@@ -57,14 +57,18 @@ describe('centre isolation', () => {
 
   it('hides another centre’s child even when asked by id', async () => {
     const ikhayaChild = SEED_IDS.child(12);
-    const rows = await t.asRole(ctx.nomsa, (q) => q('select id from children where id = $1', [ikhayaChild]));
+    const rows = await t.asRole(ctx.nomsa, (q) =>
+      q('select id from children where id = $1', [ikhayaChild]),
+    );
     expect(rows).toEqual([]);
   });
 
   it('blocks writing a child into another centre', async () => {
     await expect(
       t.asRole(ctx.nomsa, (q) =>
-        q(`insert into children (centre_id, first_name, birth_month) values ($1, 'X', '2024-01')`, [C.ikhaya]),
+        q(`insert into children (centre_id, first_name, birth_month) values ($1, 'X', '2024-01')`, [
+          C.ikhaya,
+        ]),
       ),
     ).rejects.toThrow(/row-level security/);
   });
@@ -78,7 +82,9 @@ describe('centre isolation', () => {
 
 describe('role rules', () => {
   it('shows a parent only their own children and their attendance', async () => {
-    const rows = await t.asRole(ctx.ayanda, (q) => q('select first_name from children order by first_name'));
+    const rows = await t.asRole(ctx.ayanda, (q) =>
+      q('select first_name from children order by first_name'),
+    );
     expect(rows.map((r) => r.first_name)).toEqual(['Amahle', 'Lwazi']);
     expect(await count(ctx.ayanda, 'select count(*) n from attendance_records')).toBe(10);
   });
@@ -86,7 +92,9 @@ describe('role rules', () => {
   it('stops parents from creating child records', async () => {
     await expect(
       t.asRole(ctx.ayanda, (q) =>
-        q(`insert into children (centre_id, first_name, birth_month) values ($1, 'X', '2024-01')`, [C.siyakhula]),
+        q(`insert into children (centre_id, first_name, birth_month) values ($1, 'X', '2024-01')`, [
+          C.siyakhula,
+        ]),
       ),
     ).rejects.toThrow(/row-level security/);
   });
@@ -123,24 +131,29 @@ describe('role rules', () => {
 describe('audit log and catalogues', () => {
   it('lets the app append to the audit log but never read it', async () => {
     await t.asRole(ctx.nomsa, (q) =>
-      q(`insert into audit_log (action, resource_type, centre_id) values ('read', 'child', $1)`, [C.siyakhula]),
+      q(`insert into audit_log (action, resource_type, centre_id) values ('read', 'child', $1)`, [
+        C.siyakhula,
+      ]),
     );
-    await expect(t.asRole(ctx.nomsa, (q) => q('select * from audit_log'))).rejects.toThrow(/permission denied/);
+    await expect(t.asRole(ctx.nomsa, (q) => q('select * from audit_log'))).rejects.toThrow(
+      /permission denied/,
+    );
   });
 
   it('keeps the knowledge base read-only for the API', async () => {
     expect(await count(ctx.nomsa, 'select count(*) n from knowledge_sources')).toBe(1);
-    await expect(
-      t.asRole(ctx.nomsa, (q) => q(`delete from knowledge_sources`)),
-    ).rejects.toThrow(/permission denied/);
+    await expect(t.asRole(ctx.nomsa, (q) => q(`delete from knowledge_sources`))).rejects.toThrow(
+      /permission denied/,
+    );
   });
 });
 
 describe('seed', () => {
   it('stores guardian phones encrypted, findable by blind index', async () => {
-    const [row] = await t.query('select phone_ciphertext from guardians where phone_blind_index = $1', [
-      crypto.blindIndex('+27600000005'),
-    ]);
+    const [row] = await t.query(
+      'select phone_ciphertext from guardians where phone_blind_index = $1',
+      [crypto.blindIndex('+27600000005')],
+    );
     expect(String(row?.phone_ciphertext)).not.toContain('27600000005');
     expect(crypto.decrypt(String(row?.phone_ciphertext))).toBe('+27600000005');
   });

@@ -21,7 +21,11 @@ describe('splitForWhatsApp', () => {
 });
 
 describe('menus', () => {
-  const options = [{ label: 'Registration help' }, { label: 'Weekly plan' }, { label: 'Printables' }];
+  const options = [
+    { label: 'Registration help' },
+    { label: 'Weekly plan' },
+    { label: 'Printables' },
+  ];
 
   it('numbers options', () => {
     expect(formatNumberedMenu('What do you need?', options)).toContain('2. Weekly plan');

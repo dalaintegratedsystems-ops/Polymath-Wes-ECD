@@ -41,7 +41,9 @@ export async function buildApp(options: BuildOptions = {}): Promise<FastifyInsta
           },
     genReqId: (req) => {
       const incoming = req.headers['x-request-id'];
-      return typeof incoming === 'string' && /^[\w-]{8,64}$/.test(incoming) ? incoming : randomUUID();
+      return typeof incoming === 'string' && /^[\w-]{8,64}$/.test(incoming)
+        ? incoming
+        : randomUUID();
     },
     bodyLimit: 1_000_000,
   });

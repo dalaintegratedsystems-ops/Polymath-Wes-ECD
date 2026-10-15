@@ -25,7 +25,9 @@ describe('field crypto', () => {
   });
 
   it('rejects keys of the wrong length', () => {
-    expect(() => createFieldCrypto(Buffer.from('short').toString('base64'), 'x')).toThrow(/32 bytes/);
+    expect(() => createFieldCrypto(Buffer.from('short').toString('base64'), 'x')).toThrow(
+      /32 bytes/,
+    );
     expect(() => createFieldCrypto('', '')).toThrow(/not set/);
   });
 });

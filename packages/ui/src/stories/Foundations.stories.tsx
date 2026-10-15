@@ -19,8 +19,14 @@ export const Colours: Story = {
         <div className="grid grid-cols-1 gap-2">
           {(Object.keys(themes.light) as (keyof typeof themes.light)[]).map((k) => (
             <div key={k} className="flex items-center gap-3 text-sm">
-              <span className="size-9 rounded-md border border-line" style={{ background: themes.light[k] }} />
-              <span className="size-9 rounded-md border border-line" style={{ background: themes.dark[k] }} />
+              <span
+                className="size-9 rounded-md border border-line"
+                style={{ background: themes.light[k] }}
+              />
+              <span
+                className="size-9 rounded-md border border-line"
+                style={{ background: themes.dark[k] }}
+              />
               <code className="font-bold">{k}</code>
             </div>
           ))}
@@ -39,8 +45,8 @@ export const Colours: Story = {
         </div>
       </section>
       <p className="text-sm text-ink-muted">
-        Body ink on canvas: {contrastRatio(themes.light.ink, themes.light.canvas).toFixed(1)}:1 (light),{' '}
-        {contrastRatio(themes.dark.ink, themes.dark.canvas).toFixed(1)}:1 (dark).
+        Body ink on canvas: {contrastRatio(themes.light.ink, themes.light.canvas).toFixed(1)}:1
+        (light), {contrastRatio(themes.dark.ink, themes.dark.canvas).toFixed(1)}:1 (dark).
       </p>
     </div>
   ),

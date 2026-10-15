@@ -45,7 +45,15 @@ export class WebAdapter implements ChannelAdapter {
   }
   parseInbound(payload: unknown): NormalisedInbound[] {
     const p = payload as { id: string; phone: string; text: string };
-    return [{ channel: 'web', providerMessageId: p.id, fromPhoneE164: p.phone, text: p.text, receivedAt: new Date() }];
+    return [
+      {
+        channel: 'web',
+        providerMessageId: p.id,
+        fromPhoneE164: p.phone,
+        text: p.text,
+        receivedAt: new Date(),
+      },
+    ];
   }
   async send(): Promise<SendResult> {
     return { providerMessageIds: [] }; // Delivered via the SSE stream.

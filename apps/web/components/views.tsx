@@ -16,7 +16,12 @@ import {
 } from '@wes/ui';
 import { nextRenderLink } from '@/lib/render-link';
 
-export function ChildrenView(props: { childrenList: ChildRow[]; groups: string[]; todayIso: string; demo?: boolean }) {
+export function ChildrenView(props: {
+  childrenList: ChildRow[];
+  groups: string[];
+  todayIso: string;
+  demo?: boolean;
+}) {
   return <ChildrenScreen {...props} today={new Date(props.todayIso)} renderLink={nextRenderLink} />;
 }
 
@@ -28,6 +33,10 @@ export function RegistrationView(props: { steps: JourneyStep[]; demo?: boolean }
   return <RegistrationScreen {...props} renderLink={nextRenderLink} />;
 }
 
-export function WesView(props: { messages: ChatMessage[]; suggestions: string[]; initialDraft?: string }) {
+export function WesView(props: {
+  messages: ChatMessage[];
+  suggestions: string[];
+  initialDraft?: string;
+}) {
   return <WesScreen {...props} renderLink={nextRenderLink} />;
 }

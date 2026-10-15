@@ -73,11 +73,19 @@ export interface PipelineStages {
   /** 1b. Re-insert redacted values for the user only. */
   restore(reply: AgentReply, redaction: Redaction): AgentReply;
   /** 7. Persist AgentRun, tool calls, latency and cost. */
-  persist(run: { msg: InboundMessage; c: Classification; reply: AgentReply; latencyMs: number }): Promise<void>;
+  persist(run: {
+    msg: InboundMessage;
+    c: Classification;
+    reply: AgentReply;
+    latencyMs: number;
+  }): Promise<void>;
 }
 
 /** Orchestration is fixed here so the safety ordering can never be skipped by a stage. */
-export async function runPipeline(stages: PipelineStages, msg: InboundMessage): Promise<AgentReply> {
+export async function runPipeline(
+  stages: PipelineStages,
+  msg: InboundMessage,
+): Promise<AgentReply> {
   const started = Date.now();
   const redaction = await stages.redact(msg);
   const c = await stages.classify(redaction, msg);

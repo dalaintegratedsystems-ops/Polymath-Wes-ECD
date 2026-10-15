@@ -29,8 +29,21 @@ export function ProgressRing({
       className="relative inline-grid shrink-0 place-items-center"
       style={{ width: size, height: size }}
     >
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90" aria-hidden="true">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" strokeWidth={stroke} className="stroke-line" />
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className="-rotate-90"
+        aria-hidden="true"
+      >
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          strokeWidth={stroke}
+          className="stroke-line"
+        />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -66,7 +79,10 @@ export function ProgressBar({ value, max, label }: { value: number; max: number;
       aria-valuemax={max}
       className="h-2.5 w-full overflow-hidden rounded-full bg-line"
     >
-      <div className="h-full rounded-full bg-success transition-[width] duration-700" style={{ width: `${pct}%` }} />
+      <div
+        className="h-full rounded-full bg-success transition-[width] duration-700"
+        style={{ width: `${pct}%` }}
+      />
     </div>
   );
 }
@@ -81,7 +97,13 @@ export interface JourneyStep {
 }
 
 /** The registration journey: a vertical path with clear done / now / next states. */
-export function JourneySteps({ steps, renderAction }: { steps: JourneyStep[]; renderAction?: (s: JourneyStep) => ReactNode }) {
+export function JourneySteps({
+  steps,
+  renderAction,
+}: {
+  steps: JourneyStep[];
+  renderAction?: (s: JourneyStep) => ReactNode;
+}) {
   return (
     <ol className="relative flex flex-col">
       {steps.map((s, i) => {
@@ -108,14 +130,25 @@ export function JourneySteps({ steps, renderAction }: { steps: JourneyStep[]; re
               {s.status === 'done' ? <CheckIcon size={20} /> : i + 1}
             </span>
             <div className="min-w-0 flex-1 pt-1.5">
-              <p className={cx('font-extrabold leading-snug', s.status === 'todo' ? 'text-ink-muted' : 'text-ink')}>
+              <p
+                className={cx(
+                  'font-extrabold leading-snug',
+                  s.status === 'todo' ? 'text-ink-muted' : 'text-ink',
+                )}
+              >
                 {s.title}
                 <span className="sr-only">
-                  {s.status === 'done' ? ' (done)' : s.status === 'current' ? ' (in progress)' : ' (to do)'}
+                  {s.status === 'done'
+                    ? ' (done)'
+                    : s.status === 'current'
+                      ? ' (in progress)'
+                      : ' (to do)'}
                 </span>
               </p>
               {s.detail && <p className="mt-0.5 text-sm text-ink-muted">{s.detail}</p>}
-              {s.status === 'current' && renderAction && <div className="mt-3">{renderAction(s)}</div>}
+              {s.status === 'current' && renderAction && (
+                <div className="mt-3">{renderAction(s)}</div>
+              )}
             </div>
           </li>
         );

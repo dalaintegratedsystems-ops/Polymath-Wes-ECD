@@ -19,9 +19,7 @@ export function normaliseSaPhone(input: string): string | null {
 }
 
 /** Birth month only — we never store a full date of birth. */
-export const BirthMonthSchema = z
-  .string()
-  .regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Use YYYY-MM');
+export const BirthMonthSchema = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Use YYYY-MM');
 
 export const MonthSchema = BirthMonthSchema;
 
@@ -29,15 +27,5 @@ export const LOCALES = ['en', 'af', 'xh', 'zu'] as const;
 export const LocaleSchema = z.enum(LOCALES);
 export type Locale = z.infer<typeof LocaleSchema>;
 
-export const PROVINCES = [
-  'EC',
-  'FS',
-  'GP',
-  'KZN',
-  'LP',
-  'MP',
-  'NC',
-  'NW',
-  'WC',
-] as const;
+export const PROVINCES = ['EC', 'FS', 'GP', 'KZN', 'LP', 'MP', 'NC', 'NW', 'WC'] as const;
 export const ProvinceSchema = z.enum(PROVINCES);

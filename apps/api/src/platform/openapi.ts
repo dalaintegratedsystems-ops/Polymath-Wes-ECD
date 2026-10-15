@@ -63,7 +63,10 @@ export function buildOpenApi(routes: readonly RouteSpec[], version: string) {
     const responses: Record<string, unknown> = {};
     for (const [status, r] of Object.entries(spec.responses)) {
       responses[status] = r.schema
-        ? { description: r.description, content: { 'application/json': { schema: toSchema(r.schema, 'output') } } }
+        ? {
+            description: r.description,
+            content: { 'application/json': { schema: toSchema(r.schema, 'output') } },
+          }
         : { description: r.description };
     }
     responses.default = {

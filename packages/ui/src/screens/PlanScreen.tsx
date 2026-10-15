@@ -39,14 +39,18 @@ export function PlanScreen({
 
   return (
     <AppShell active="plan" renderLink={renderLink}>
-      <PageHeader title="Weekly plan" subtitle={plan ? plan.weekLabel : 'Plan learning for the week ahead.'} />
+      <PageHeader
+        title="Weekly plan"
+        subtitle={plan ? plan.weekLabel : 'Plan learning for the week ahead.'}
+      />
       <main className="space-y-4 px-4">
         {!plan ? (
           <Card className="py-8 text-center">
             <SproutBook className="mx-auto w-40" />
             <h2 className="mt-3 text-xl font-black text-ink">No plan for this week yet</h2>
             <p className="mx-auto mt-1 max-w-72 text-ink-muted">
-              Wes can draft a theme plan for your age groups, linked to the NCF. You can change anything.
+              Wes can draft a theme plan for your age groups, linked to the NCF. You can change
+              anything.
             </p>
             {renderLink({
               href: '/wes?q=Plan%20next%20week',
@@ -62,7 +66,9 @@ export function PlanScreen({
         ) : (
           <>
             <Card tone="brand" className="relative overflow-hidden">
-              <p className="text-xs font-extrabold tracking-wide text-brand-strong uppercase">Theme</p>
+              <p className="text-xs font-extrabold tracking-wide text-brand-strong uppercase">
+                Theme
+              </p>
               <h2 className="text-2xl font-black text-ink">{plan.theme}</h2>
               <p className="mt-2 flex items-center gap-1.5 text-sm text-ink-muted">
                 <BookIcon size={16} className="shrink-0" />
@@ -80,7 +86,9 @@ export function PlanScreen({
                   onClick={() => setDay(d.key)}
                   className={cx(
                     'min-h-touch rounded-md text-sm font-extrabold transition-colors',
-                    d.key === day ? 'bg-primary text-on-primary shadow-card' : 'bg-surface text-ink-muted shadow-card',
+                    d.key === day
+                      ? 'bg-primary text-on-primary shadow-card'
+                      : 'bg-surface text-ink-muted shadow-card',
                   )}
                 >
                   {d.short}
@@ -110,12 +118,17 @@ export function PlanScreen({
                           <p className="mt-2 flex items-start gap-1.5 text-sm text-ink-muted">
                             <LeafIcon size={16} className="mt-0.5 shrink-0 text-success" />
                             <span>
-                              <span className="font-extrabold text-success">Free materials:</span> {a.materials.join(', ')}
+                              <span className="font-extrabold text-success">Free materials:</span>{' '}
+                              {a.materials.join(', ')}
                             </span>
                           </p>
                         )}
                         {a.printable && (
-                          <Button variant="secondary" className="mt-3" icon={<PrinterIcon size={18} />}>
+                          <Button
+                            variant="secondary"
+                            className="mt-3"
+                            icon={<PrinterIcon size={18} />}
+                          >
                             Print {a.printable}
                           </Button>
                         )}

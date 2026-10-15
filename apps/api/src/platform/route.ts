@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
-import { z } from 'zod';
+import type { z } from 'zod';
 import { AppError } from '@wes/shared';
 
 /**

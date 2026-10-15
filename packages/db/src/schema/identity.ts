@@ -129,5 +129,8 @@ export const refreshTokens = pgTable(
     revokedAt: timestamp('revoked_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [uniqueIndex('refresh_token_hash_uq').on(t.tokenHash), index('refresh_family_idx').on(t.familyId)],
+  (t) => [
+    uniqueIndex('refresh_token_hash_uq').on(t.tokenHash),
+    index('refresh_family_idx').on(t.familyId),
+  ],
 );

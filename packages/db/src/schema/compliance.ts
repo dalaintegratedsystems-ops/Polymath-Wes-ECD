@@ -1,4 +1,14 @@
-import { date, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import {
+  date,
+  index,
+  integer,
+  jsonb,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from 'drizzle-orm/pg-core';
 import { id, timestamps } from './_columns';
 import { centres, users } from './identity';
 
@@ -49,7 +59,10 @@ export const complianceDocuments = pgTable(
     }),
     ...timestamps(),
   },
-  (t) => [index('compliance_docs_centre_idx').on(t.centreId), index('compliance_docs_expiry_idx').on(t.expiresOn)],
+  (t) => [
+    index('compliance_docs_centre_idx').on(t.centreId),
+    index('compliance_docs_expiry_idx').on(t.expiresOn),
+  ],
 );
 
 /** A self-audit run: answers in, prioritised gap list out. */

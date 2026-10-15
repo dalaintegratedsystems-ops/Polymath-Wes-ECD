@@ -39,7 +39,11 @@ export function Button({
   icon?: ReactNode;
 }) {
   return (
-    <button type="button" className={cx(buttonClass({ variant, size, block }), className)} {...rest}>
+    <button
+      type="button"
+      className={cx(buttonClass({ variant, size, block }), className)}
+      {...rest}
+    >
       {icon}
       <span>{children}</span>
     </button>
@@ -67,7 +71,15 @@ export function Card({
 
 export type ChipTone = 'neutral' | 'success' | 'accent' | 'brand';
 
-export function Chip({ tone = 'neutral', children, icon }: { tone?: ChipTone; children: ReactNode; icon?: ReactNode }) {
+export function Chip({
+  tone = 'neutral',
+  children,
+  icon,
+}: {
+  tone?: ChipTone;
+  children: ReactNode;
+  icon?: ReactNode;
+}) {
   return (
     <span
       className={cx(
@@ -93,12 +105,16 @@ const AVATAR_TONES = [
 
 /** Initial-letter avatar. No photos of children by default (POPIA). */
 export function Avatar({ name, size = 44 }: { name: string; size?: number }) {
-  const tone = AVATAR_TONES[[...name].reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_TONES.length];
+  const tone =
+    AVATAR_TONES[[...name].reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_TONES.length];
   return (
     <span
       aria-hidden="true"
       style={{ width: size, height: size }}
-      className={cx('inline-flex shrink-0 items-center justify-center rounded-full text-lg font-black', tone)}
+      className={cx(
+        'inline-flex shrink-0 items-center justify-center rounded-full text-lg font-black',
+        tone,
+      )}
     >
       {[...name][0]?.toUpperCase()}
     </span>

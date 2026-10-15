@@ -151,7 +151,15 @@ export const UI_PAIRS: [keyof Semantic, keyof Semantic][] = [
 export const typography = {
   fontFamily: "var(--font-nunito, 'Nunito'), ui-rounded, 'Segoe UI', Roboto, system-ui, sans-serif",
   /** 16px minimum body text (CLAUDE.md §6). */
-  size: { xs: '0.8125rem', sm: '0.9375rem', base: '1rem', lg: '1.125rem', xl: '1.375rem', '2xl': '1.75rem', '3xl': '2.125rem' },
+  size: {
+    xs: '0.8125rem',
+    sm: '0.9375rem',
+    base: '1rem',
+    lg: '1.125rem',
+    xl: '1.375rem',
+    '2xl': '1.75rem',
+    '3xl': '2.125rem',
+  },
   lineHeight: { tight: '1.2', snug: '1.35', normal: '1.55' },
   weight: { regular: '500', bold: '750', black: '850' },
 } as const;

@@ -12,7 +12,11 @@ afterEach(async () => {
   await db.delete();
 });
 
-const write = (n: number) => ({ method: 'POST' as const, path: '/v1/centres/c/attendance', body: { n } });
+const write = (n: number) => ({
+  method: 'POST' as const,
+  path: '/v1/centres/c/attendance',
+  body: { n },
+});
 
 describe('offline outbox', () => {
   it('replays writes in order with a stable idempotency key', async () => {

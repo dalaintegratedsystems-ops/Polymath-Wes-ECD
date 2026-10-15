@@ -35,9 +35,21 @@ const preview: Preview = {
     a11y: { test: 'error' },
     viewport: {
       options: {
-        phone360: { name: 'Mid-range Android (360×780)', styles: { width: '360px', height: '780px' }, type: 'mobile' },
-        phone412: { name: 'Large Android (412×915)', styles: { width: '412px', height: '915px' }, type: 'mobile' },
-        tablet: { name: 'Tablet (768×1024)', styles: { width: '768px', height: '1024px' }, type: 'tablet' },
+        phone360: {
+          name: 'Mid-range Android (360×780)',
+          styles: { width: '360px', height: '780px' },
+          type: 'mobile',
+        },
+        phone412: {
+          name: 'Large Android (412×915)',
+          styles: { width: '412px', height: '915px' },
+          type: 'mobile',
+        },
+        tablet: {
+          name: 'Tablet (768×1024)',
+          styles: { width: '768px', height: '1024px' },
+          type: 'tablet',
+        },
       },
     },
   },

@@ -37,15 +37,23 @@ export function registerIdempotency(app: FastifyInstance, store: IdempotencyStor
     if (!request.routeOptions.config.idempotent) return;
     const key = request.headers['idempotency-key'];
     if (typeof key !== 'string' || !KEY_PATTERN.test(key)) {
-      throw new AppError('bad_request', 'Send an Idempotency-Key header (8–128 letters, digits, - or _).');
+      throw new AppError(
+        'bad_request',
+        'Send an Idempotency-Key header (8–128 letters, digits, - or _).',
+      );
     }
     // Until auth lands (M1) the scope is the route; afterwards it is the user id.
     const scope = `${request.method} ${request.routeOptions.url}`;
-    const requestHash = createHash('sha256').update(JSON.stringify(request.body ?? null)).digest('hex');
+    const requestHash = createHash('sha256')
+      .update(JSON.stringify(request.body ?? null))
+      .digest('hex');
     const existing = await store.get(scope, key);
     if (existing) {
       if (existing.requestHash !== requestHash) {
-        throw new AppError('idempotency_conflict', 'This Idempotency-Key was already used for a different request.');
+        throw new AppError(
+          'idempotency_conflict',
+          'This Idempotency-Key was already used for a different request.',
+        );
       }
       reply.header('idempotent-replay', 'true');
       return reply.status(existing.status).send(existing.body);
@@ -57,7 +65,11 @@ export function registerIdempotency(app: FastifyInstance, store: IdempotencyStor
     const ctx = request.idempotency;
     if (ctx && reply.statusCode < 500) {
       const body = typeof payload === 'string' ? JSON.parse(payload) : payload;
-      await store.put(ctx.scope, ctx.key, { requestHash: ctx.requestHash, status: reply.statusCode, body });
+      await store.put(ctx.scope, ctx.key, {
+        requestHash: ctx.requestHash,
+        status: reply.statusCode,
+        body,
+      });
     }
     return payload;
   });

@@ -91,7 +91,8 @@ export function HomeScreen({
           <div className="mt-3 grid grid-cols-2 gap-3">
             {renderLink({
               href: '/children',
-              className: 'block rounded-lg bg-surface p-4 shadow-card active:scale-[0.99] transition-transform',
+              className:
+                'block rounded-lg bg-surface p-4 shadow-card active:scale-[0.99] transition-transform',
               children: (
                 <>
                   <span className="grid size-10 place-items-center rounded-full bg-success-soft text-success">
@@ -101,9 +102,15 @@ export function HomeScreen({
                     {att.present}
                     <span className="text-base font-extrabold text-ink-muted">/{att.total}</span>
                   </p>
-                  <p className="mt-1 text-sm font-bold text-ink-muted">{allHere ? 'Everyone is here' : 'children here'}</p>
+                  <p className="mt-1 text-sm font-bold text-ink-muted">
+                    {allHere ? 'Everyone is here' : 'children here'}
+                  </p>
                   <div className="mt-3">
-                    <ProgressBar value={att.present} max={att.total} label="Children present today" />
+                    <ProgressBar
+                      value={att.present}
+                      max={att.total}
+                      label="Children present today"
+                    />
                   </div>
                   <p className="mt-3 text-sm font-extrabold text-primary">Take register</p>
                 </>
@@ -111,13 +118,16 @@ export function HomeScreen({
             })}
             {renderLink({
               href: '/plan',
-              className: 'block rounded-lg bg-surface p-4 shadow-card active:scale-[0.99] transition-transform',
+              className:
+                'block rounded-lg bg-surface p-4 shadow-card active:scale-[0.99] transition-transform',
               children: (
                 <>
                   <span className="grid size-10 place-items-center rounded-full bg-accent-soft text-accent">
                     <PlanIcon size={22} />
                   </span>
-                  <p className="mt-3 text-xs font-extrabold tracking-wide text-ink-muted uppercase">This week</p>
+                  <p className="mt-3 text-xs font-extrabold tracking-wide text-ink-muted uppercase">
+                    This week
+                  </p>
                   <p className="text-lg leading-tight font-black text-ink">{plan.theme}</p>
                   <p className="mt-1 text-sm text-ink-muted">{plan.today}</p>
                   <p className="mt-3 text-sm font-extrabold text-primary">Open plan</p>

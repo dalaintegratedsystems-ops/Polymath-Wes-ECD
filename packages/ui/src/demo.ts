@@ -14,19 +14,57 @@ export const demoHome: HomeData = {
   centreName: 'Siyakhula Educare',
   dateLabel: 'Thursday 15 October',
   hour: 8,
-  registration: { percent: 58, stepsLeft: 3, nextStep: 'Finish your child-protection policy draft.' },
+  registration: {
+    percent: 58,
+    stepsLeft: 3,
+    nextStep: 'Finish your child-protection policy draft.',
+  },
   attendance: { present: 9, total: 11 },
-  plan: { theme: 'Water play', today: 'Floating and sinking', eldas: ['Exploring maths', 'Knowledge of the world'] },
-  suggestions: ['Make number flashcards', 'Plan next week', 'Which documents do I need?', 'Ideas for a rainy day'],
+  plan: {
+    theme: 'Water play',
+    today: 'Floating and sinking',
+    eldas: ['Exploring maths', 'Knowledge of the world'],
+  },
+  suggestions: [
+    'Make number flashcards',
+    'Plan next week',
+    'Which documents do I need?',
+    'Ideas for a rainy day',
+  ],
   demo: true,
 };
 
 export const demoSteps: JourneyStep[] = [
-  { id: 'audit', title: 'Check where you stand', detail: 'Self-audit done — 4 gaps found', status: 'done' },
-  { id: 'centre', title: 'Centre details', detail: 'Address, ages and number of children', status: 'done' },
-  { id: 'policies', title: 'Write your policies', detail: '2 of 4 drafted with Wes', status: 'current' },
-  { id: 'documents', title: 'Photograph your documents', detail: 'Wes reminds you before anything expires', status: 'todo' },
-  { id: 'pack', title: 'Review your application pack', detail: 'One PDF with everything together', status: 'todo' },
+  {
+    id: 'audit',
+    title: 'Check where you stand',
+    detail: 'Self-audit done — 4 gaps found',
+    status: 'done',
+  },
+  {
+    id: 'centre',
+    title: 'Centre details',
+    detail: 'Address, ages and number of children',
+    status: 'done',
+  },
+  {
+    id: 'policies',
+    title: 'Write your policies',
+    detail: '2 of 4 drafted with Wes',
+    status: 'current',
+  },
+  {
+    id: 'documents',
+    title: 'Photograph your documents',
+    detail: 'Wes reminds you before anything expires',
+    status: 'todo',
+  },
+  {
+    id: 'pack',
+    title: 'Review your application pack',
+    detail: 'One PDF with everything together',
+    status: 'todo',
+  },
   { id: 'submit', title: 'Submit to your district office', status: 'todo' },
 ];
 
@@ -63,38 +101,88 @@ export const demoPlan: WeekPlan = {
       key: 'mon',
       short: 'Mon',
       activities: [
-        { id: 'm1', time: '08:30', title: 'Morning ring: where do we find water?', eldas: ['Communication'], materials: [] },
-        { id: 'm2', time: '10:00', title: 'Pouring and measuring', eldas: ['Exploring maths'], materials: ['plastic bottles', 'yoghurt tubs', 'a basin'] },
+        {
+          id: 'm1',
+          time: '08:30',
+          title: 'Morning ring: where do we find water?',
+          eldas: ['Communication'],
+          materials: [],
+        },
+        {
+          id: 'm2',
+          time: '10:00',
+          title: 'Pouring and measuring',
+          eldas: ['Exploring maths'],
+          materials: ['plastic bottles', 'yoghurt tubs', 'a basin'],
+        },
       ],
     },
     {
       key: 'tue',
       short: 'Tue',
       activities: [
-        { id: 't1', time: '09:00', title: 'Rain song and actions', eldas: ['Creativity', 'Well-being'], materials: [] },
-        { id: 't2', time: '10:30', title: 'Paint with water on the wall', eldas: ['Creativity'], materials: ['old paintbrushes', 'a bucket'] },
+        {
+          id: 't1',
+          time: '09:00',
+          title: 'Rain song and actions',
+          eldas: ['Creativity', 'Well-being'],
+          materials: [],
+        },
+        {
+          id: 't2',
+          time: '10:30',
+          title: 'Paint with water on the wall',
+          eldas: ['Creativity'],
+          materials: ['old paintbrushes', 'a bucket'],
+        },
       ],
     },
     {
       key: 'wed',
       short: 'Wed',
       activities: [
-        { id: 'w1', time: '09:30', title: 'Who uses water? Story time', eldas: ['Identity and belonging'], materials: [] },
+        {
+          id: 'w1',
+          time: '09:30',
+          title: 'Who uses water? Story time',
+          eldas: ['Identity and belonging'],
+          materials: [],
+        },
       ],
     },
     {
       key: 'thu',
       short: 'Thu',
       activities: [
-        { id: 'h1', time: '08:30', title: 'Floating and sinking', eldas: ['Knowledge of the world', 'Exploring maths'], materials: ['bottle caps', 'stones', 'corks', 'a basin of water'], printable: 'sorting sheet' },
-        { id: 'h2', time: '10:30', title: 'Count the raindrops', eldas: ['Exploring maths'], materials: ['chalk'], printable: 'number cards' },
+        {
+          id: 'h1',
+          time: '08:30',
+          title: 'Floating and sinking',
+          eldas: ['Knowledge of the world', 'Exploring maths'],
+          materials: ['bottle caps', 'stones', 'corks', 'a basin of water'],
+          printable: 'sorting sheet',
+        },
+        {
+          id: 'h2',
+          time: '10:30',
+          title: 'Count the raindrops',
+          eldas: ['Exploring maths'],
+          materials: ['chalk'],
+          printable: 'number cards',
+        },
       ],
     },
     {
       key: 'fri',
       short: 'Fri',
       activities: [
-        { id: 'f1', time: '09:00', title: 'Water-wise: washing hands song', eldas: ['Well-being'], materials: ['soap', 'a jug'] },
+        {
+          id: 'f1',
+          time: '09:00',
+          title: 'Water-wise: washing hands song',
+          eldas: ['Well-being'],
+          materials: ['soap', 'a jug'],
+        },
       ],
     },
   ],
@@ -110,4 +198,8 @@ export const demoChat: ChatMessage[] = [
   },
 ];
 
-export const demoSuggestions = ['Make number flashcards', 'Plan next week', 'Ideas for a rainy day'];
+export const demoSuggestions = [
+  'Make number flashcards',
+  'Plan next week',
+  'Ideas for a rainy day',
+];

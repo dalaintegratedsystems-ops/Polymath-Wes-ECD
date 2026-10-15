@@ -43,7 +43,15 @@ export function OfflineBanner() {
 }
 
 /** Simple page header for inner screens. */
-export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
+export function PageHeader({
+  title,
+  subtitle,
+  action,
+}: {
+  title: string;
+  subtitle?: string;
+  action?: ReactNode;
+}) {
   return (
     <header className="flex items-start justify-between gap-3 px-4 pt-[calc(env(safe-area-inset-top)+1.25rem)] pb-4">
       <div>

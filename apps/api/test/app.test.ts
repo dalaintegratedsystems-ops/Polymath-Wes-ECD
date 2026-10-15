@@ -106,7 +106,11 @@ describe('error envelope', () => {
 
 describe('idempotency', () => {
   it('requires a key on idempotent writes', async () => {
-    const res = await app.inject({ method: 'POST', url: '/v1/_test/echo', payload: { name: 'Nomsa' } });
+    const res = await app.inject({
+      method: 'POST',
+      url: '/v1/_test/echo',
+      payload: { name: 'Nomsa' },
+    });
     expect(res.statusCode).toBe(400);
   });
 
@@ -129,7 +133,12 @@ describe('idempotency', () => {
   it('rejects the same key with a different body', async () => {
     const headers = { 'idempotency-key': 'retry-key-0002' };
     await app.inject({ method: 'POST', url: '/v1/_test/echo', headers, payload: { name: 'A' } });
-    const res = await app.inject({ method: 'POST', url: '/v1/_test/echo', headers, payload: { name: 'B' } });
+    const res = await app.inject({
+      method: 'POST',
+      url: '/v1/_test/echo',
+      headers,
+      payload: { name: 'B' },
+    });
     expect(res.statusCode).toBe(409);
     expect(res.json().error.code).toBe('idempotency_conflict');
   });

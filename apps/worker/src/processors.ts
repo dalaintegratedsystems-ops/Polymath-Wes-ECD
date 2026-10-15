@@ -4,7 +4,10 @@ export interface ProcessorContext {
   log: (msg: string, extra?: Record<string, unknown>) => void;
 }
 
-type Processor<N extends JobName> = (payload: JobPayload<N>, ctx: ProcessorContext) => Promise<void>;
+type Processor<N extends JobName> = (
+  payload: JobPayload<N>,
+  ctx: ProcessorContext,
+) => Promise<void>;
 
 /**
  * Processor per job. Milestone 0 ships no-op processors that only log; each is filled in

@@ -1,4 +1,14 @@
-import { boolean, index, integer, jsonb, pgTable, text, uniqueIndex, uuid, vector } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  uniqueIndex,
+  uuid,
+  vector,
+} from 'drizzle-orm/pg-core';
 import { id, timestamps } from './_columns';
 
 /** Embedding width must match EMBEDDING_DIMENSIONS (voyage-multilingual-2 → 1024). ADR-0006. */
