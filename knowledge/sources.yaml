@@ -1,0 +1,11 @@
+# Curated knowledge corpus. See knowledge/README.md.
+corpus_version: 0.0.0-placeholder
+
+sources:
+  - slug: placeholder-ncf
+    title: PLACEHOLDER — National Curriculum Framework (birth to four)
+    publisher: 'TODO(content): Department of Basic Education'
+    kind: placeholder
+    path: placeholder/ncf-placeholder.md
+    url: null
+    licence: 'TODO(content)'

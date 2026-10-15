@@ -18,9 +18,7 @@
       "get": {
         "operationId": "getHealth",
         "summary": "Liveness probe",
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "security": [],
         "responses": {
           "200": {
@@ -38,10 +36,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "status",
-                    "version"
-                  ],
+                  "required": ["status", "version"],
                   "additionalProperties": false
                 }
               }
@@ -64,9 +59,7 @@
       "get": {
         "operationId": "getMeta",
         "summary": "Client bootstrap: API version, locales and feature flags",
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "security": [],
         "responses": {
           "200": {
@@ -95,11 +88,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "version",
-                    "locales",
-                    "features"
-                  ],
+                  "required": ["version", "locales", "features"],
                   "additionalProperties": false
                 }
               }
@@ -122,9 +111,7 @@
       "get": {
         "operationId": "phase2_voiceNotes",
         "summary": "Reserved for voiceNotes (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -151,9 +138,7 @@
       "get": {
         "operationId": "phase2_behaviourCoach",
         "summary": "Reserved for behaviourCoach (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -180,9 +165,7 @@
       "get": {
         "operationId": "phase2_parentConnect",
         "summary": "Reserved for parentConnect (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -209,9 +192,7 @@
       "get": {
         "operationId": "phase2_academy",
         "summary": "Reserved for academy (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -238,9 +219,7 @@
       "get": {
         "operationId": "phase2_billing",
         "summary": "Reserved for billing (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -267,9 +246,7 @@
       "get": {
         "operationId": "phase2_funderDashboard",
         "summary": "Reserved for funderDashboard (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -296,9 +273,7 @@
       "get": {
         "operationId": "phase2_partnerApi",
         "summary": "Reserved for partnerApi (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -371,25 +346,16 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "path",
-                    "message"
-                  ],
+                  "required": ["path", "message"],
                   "additionalProperties": false
                 }
               }
             },
-            "required": [
-              "code",
-              "message",
-              "requestId"
-            ],
+            "required": ["code", "message", "requestId"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       }
     }

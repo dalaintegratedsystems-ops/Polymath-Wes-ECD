@@ -19,3 +19,6 @@ apps/web/public/swe-worker-*.js
 playwright-report/
 test-results/
 .vercel
+# Machine-specific preview config
+.claude/launch.json
+.claude/settings.local.json
