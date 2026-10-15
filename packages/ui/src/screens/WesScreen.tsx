@@ -21,15 +21,17 @@ export function WesScreen({
   messages: initial,
   suggestions,
   onSend,
+  initialDraft = '',
   renderLink = defaultRenderLink,
 }: {
   messages: ChatMessage[];
   suggestions: string[];
   onSend?: (text: string) => void;
+  initialDraft?: string;
   renderLink?: RenderLink;
 }) {
   const [messages, setMessages] = useState(initial);
-  const [draft, setDraft] = useState('');
+  const [draft, setDraft] = useState(initialDraft);
 
   const send = (text: string) => {
     const t = text.trim();
