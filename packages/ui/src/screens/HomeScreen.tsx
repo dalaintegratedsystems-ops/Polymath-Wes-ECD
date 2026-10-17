@@ -12,8 +12,12 @@ export interface HomeData {
   dateLabel: string;
   hour: number;
   registration: { percent: number; stepsLeft: number; nextStep: string };
-  attendance: { present: number; total: number };
-  plan: { theme: string; today: string; eldas: string[] };
+  /** Today's attendance once the register is taken (Milestone 5). */
+  attendance?: { present: number; total: number };
+  /** Children in the register; shown when there is no attendance yet. */
+  childrenCount?: number;
+  /** This week's plan, once one exists (Milestone 4). */
+  plan?: { theme: string; today: string; eldas: string[] };
   suggestions: string[];
   demo?: boolean;
 }
@@ -30,7 +34,8 @@ export function HomeScreen({
   renderLink?: RenderLink;
 }) {
   const { registration: reg, attendance: att, plan } = data;
-  const allHere = att.present === att.total;
+  const allHere = att ? att.present === att.total : false;
+  const count = data.childrenCount ?? 0;
 
   return (
     <AppShell active="home" offline={offline} renderLink={renderLink}>
@@ -98,21 +103,39 @@ export function HomeScreen({
                   <span className="grid size-10 place-items-center rounded-full bg-success-soft text-success">
                     <ChildrenIcon size={22} />
                   </span>
-                  <p className="mt-3 text-[1.75rem] leading-none font-black tabular-nums text-ink">
-                    {att.present}
-                    <span className="text-base font-extrabold text-ink-muted">/{att.total}</span>
-                  </p>
-                  <p className="mt-1 text-sm font-bold text-ink-muted">
-                    {allHere ? 'Everyone is here' : 'children here'}
-                  </p>
-                  <div className="mt-3">
-                    <ProgressBar
-                      value={att.present}
-                      max={att.total}
-                      label="Children present today"
-                    />
-                  </div>
-                  <p className="mt-3 text-sm font-extrabold text-primary">Take register</p>
+                  {att ? (
+                    <>
+                      <p className="mt-3 text-[1.75rem] leading-none font-black tabular-nums text-ink">
+                        {att.present}
+                        <span className="text-base font-extrabold text-ink-muted">
+                          /{att.total}
+                        </span>
+                      </p>
+                      <p className="mt-1 text-sm font-bold text-ink-muted">
+                        {allHere ? 'Everyone is here' : 'children here'}
+                      </p>
+                      <div className="mt-3">
+                        <ProgressBar
+                          value={att.present}
+                          max={att.total}
+                          label="Children present today"
+                        />
+                      </div>
+                      <p className="mt-3 text-sm font-extrabold text-primary">Take register</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="mt-3 text-[1.75rem] leading-none font-black tabular-nums text-ink">
+                        {count}
+                      </p>
+                      <p className="mt-1 text-sm font-bold text-ink-muted">
+                        {count === 1 ? 'child in your register' : 'children in your register'}
+                      </p>
+                      <p className="mt-3 text-sm font-extrabold text-primary">
+                        {count === 0 ? 'Add a child' : 'See children'}
+                      </p>
+                    </>
+                  )}
                 </>
               ),
             })}
@@ -128,9 +151,15 @@ export function HomeScreen({
                   <p className="mt-3 text-xs font-extrabold tracking-wide text-ink-muted uppercase">
                     This week
                   </p>
-                  <p className="text-lg leading-tight font-black text-ink">{plan.theme}</p>
-                  <p className="mt-1 text-sm text-ink-muted">{plan.today}</p>
-                  <p className="mt-3 text-sm font-extrabold text-primary">Open plan</p>
+                  <p className="text-lg leading-tight font-black text-ink">
+                    {plan ? plan.theme : 'No plan yet'}
+                  </p>
+                  <p className="mt-1 text-sm text-ink-muted">
+                    {plan ? plan.today : 'Wes can draft one for you'}
+                  </p>
+                  <p className="mt-3 text-sm font-extrabold text-primary">
+                    {plan ? 'Open plan' : 'Make a plan'}
+                  </p>
                 </>
               ),
             })}

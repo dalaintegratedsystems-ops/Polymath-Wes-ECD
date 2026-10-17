@@ -13,3 +13,7 @@ export * from './screens/PlanScreen';
 export * from './screens/WesScreen';
 export * from './screens/OfflineScreen';
 export * as demo from './demo';
+export * from './forms';
+export * from './screens/onboarding/AuthScreens';
+export * from './screens/onboarding/SetupScreen';
+export * from './screens/onboarding/ChildConsentScreens';

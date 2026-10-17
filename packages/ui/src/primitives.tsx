@@ -45,7 +45,7 @@ export function Button({
       {...rest}
     >
       {icon}
-      <span>{children}</span>
+      <span className="inline-flex items-center gap-2">{children}</span>
     </button>
   );
 }
