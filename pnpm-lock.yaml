@@ -59,6 +59,9 @@ importers:
       '@fastify/rate-limit':
         specifier: ^11.2.1
         version: 11.2.1
+      '@wes/agent':
+        specifier: workspace:^
+        version: link:../../packages/agent
       '@wes/db':
         specifier: workspace:^
         version: link:../../packages/db

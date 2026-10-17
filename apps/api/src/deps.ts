@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { createDatabase, createEmbeddedDatabase, createFieldCrypto, schema, seed } from '@wes/db';
 import type { Config } from './config';
+import { createAgentServices } from './platform/agent';
 import { createConsoleOtpSender, createFileOtpSender, type AppDeps } from './platform/deps';
 
 /**
@@ -14,7 +15,10 @@ export async function createDeps(config: Config, log: (msg: string) => void) {
   const otpSender = config.OTP_OUTBOX_FILE
     ? createFileOtpSender(config.OTP_OUTBOX_FILE, consoleSender)
     : consoleSender;
-  const base = { crypto, otpSender, now: () => new Date() };
+  const now = () => new Date();
+  const agent = createAgentServices(process.env, now);
+  log(`Wes is running in ${agent.config.mode} mode (embeddings: ${agent.embedder.name}).`);
+  const base = { crypto, otpSender, agent, now };
 
   if (config.DATABASE_URL) {
     const { db, close } = createDatabase(config.DATABASE_URL);

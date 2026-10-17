@@ -11,6 +11,7 @@ import { registerIdempotency, type IdempotencyStore } from './platform/idempoten
 import { createPostgresIdempotencyStore } from './platform/idempotency-pg';
 import { registerRouteRegistry } from './platform/route';
 import { createTokenService } from './platform/tokens';
+import { assistantRoutes } from './modules/assistant/routes';
 import { authRoutes } from './modules/auth/routes';
 import { centreRoutes } from './modules/centres/routes';
 import { childrenRoutes } from './modules/children/routes';
@@ -86,6 +87,7 @@ export async function buildApp(options: BuildOptions): Promise<FastifyInstance> 
   await app.register(authRoutes, { deps, config, tokens });
   await app.register(centreRoutes, { deps });
   await app.register(childrenRoutes, { deps, config });
+  await app.register(assistantRoutes, { deps });
   await app.register(phase2Routes);
   if (options.register) await options.register(app);
 

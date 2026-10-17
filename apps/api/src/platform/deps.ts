@@ -1,4 +1,5 @@
 import type { Database, FieldCrypto } from '@wes/db';
+import type { AgentServices } from './agent';
 
 /** Something that can deliver a one-time PIN to a phone (WhatsApp template, SMS, console). */
 export interface OtpSender {
@@ -11,6 +12,7 @@ export interface AppDeps {
   db: Database;
   crypto: FieldCrypto;
   otpSender: OtpSender;
+  agent: AgentServices;
   now: () => Date;
 }
 

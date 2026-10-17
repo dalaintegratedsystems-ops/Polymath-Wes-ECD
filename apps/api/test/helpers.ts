@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { createFieldCrypto, seed } from '@wes/db';
 import { createTestDb, type TestDb } from '@wes/db/testing';
 import { buildApp, type BuildOptions } from '../src/app';
+import { createAgentServices } from '../src/platform/agent';
 import { createMemoryOtpSender } from '../src/platform/deps';
 
 export const TEST_CONFIG = {
@@ -33,7 +34,13 @@ export async function createHarness(
   const app = await buildApp({
     logger: false,
     config: TEST_CONFIG,
-    deps: { db: db.appDb, crypto, otpSender: otp, now: () => clock.now },
+    deps: {
+      db: db.appDb,
+      crypto,
+      otpSender: otp,
+      agent: createAgentServices({ NODE_ENV: 'test' }, () => clock.now),
+      now: () => clock.now,
+    },
     register: options.register,
   });
   return {

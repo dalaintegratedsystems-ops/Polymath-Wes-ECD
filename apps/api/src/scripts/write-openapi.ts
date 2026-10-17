@@ -2,6 +2,7 @@
 import { writeFile } from 'node:fs/promises';
 import { createEmbeddedDatabase, createFieldCrypto } from '@wes/db';
 import { buildApp } from '../app';
+import { createAgentServices } from '../platform/agent';
 import { createMemoryOtpSender } from '../platform/deps';
 
 const embedded = await createEmbeddedDatabase();
@@ -14,6 +15,7 @@ const app = await buildApp({
       Buffer.alloc(32, 2).toString('base64'),
     ),
     otpSender: createMemoryOtpSender(),
+    agent: createAgentServices({}),
     now: () => new Date(),
   },
 });
