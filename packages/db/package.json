@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@wes/shared": "workspace:^",
-    "drizzle-orm": "^0.44",
+    "drizzle-orm": "^0.45",
     "postgres": "^3",
     "@electric-sql/pglite": "^0.5.10",
     "@electric-sql/pglite-pgvector": "^0.0.11"
