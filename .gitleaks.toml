@@ -1,0 +1,25 @@
+# Secret scanning: gitleaks' default rules, plus an allowlist for values that are deliberately
+# fake and labelled dev-only or test-only. Real secrets live only in Key Vault or local .env.
+title = "polymath-wes"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fake development and test keys"
+paths = [
+  '''\.env\.example$''',
+  '''(^|/)vitest\.config\.ts$''',
+  '''(^|/)playwright\.config\.ts$''',
+  '''(^|/)test/.*\.test\.ts$''',
+  '''(^|/)e2e/.*\.ts$''',
+  '''docker/postgres/init\.sql$''',
+  '''infra/azuredeploy\.json$''',
+]
+regexes = [
+  # Base64 of "dev-only-…", "test-only-…" and "e2e-only-…" placeholder keys.
+  '''ZGV2LW9ubHkt[A-Za-z0-9+/=]+''',
+  '''dGVzdC1vbmx5LW[A-Za-z0-9+/=]+''',
+  '''ZTJlLW9ubHkt[A-Za-z0-9+/=]+''',
+  '''dev-only-[a-z0-9-]+''',
+]
