@@ -38,7 +38,9 @@ export const childIntakes = pgTable('child_intakes', {
   birthMonth: text('birth_month').notNull(),
   groupId: uuid('group_id').references(() => groups.id, { onDelete: 'set null' }),
   guardianId: uuid('guardian_id').notNull(),
-  childId: uuid('child_id'),
+  guardianRelationship: text('guardian_relationship').notNull().default('guardian'),
+  /** Pre-assigned id the child will have once consent is given. */
+  childId: uuid('child_id').notNull(),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
   ...timestamps(),
 });

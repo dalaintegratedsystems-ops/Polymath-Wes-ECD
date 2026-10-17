@@ -54,7 +54,10 @@ async function createPgliteTestDb(): Promise<TestDb> {
   const db = drizzle(pg, { schema });
   await migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
 
-  const appDb = assumeRoleOnEachTransaction(drizzle(pg, { schema }), 'wes_app') as unknown as Database;
+  const appDb = assumeRoleOnEachTransaction(
+    drizzle(pg, { schema }),
+    'wes_app',
+  ) as unknown as Database;
   return {
     db: db as unknown as Database,
     appDb,
@@ -84,7 +87,10 @@ async function createPostgresTestDb(adminUrl: string): Promise<TestDb> {
   const db = drizzle(client, { schema });
   await migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
 
-  const appDb = assumeRoleOnEachTransaction(drizzle(client, { schema }), 'wes_app') as unknown as Database;
+  const appDb = assumeRoleOnEachTransaction(
+    drizzle(client, { schema }),
+    'wes_app',
+  ) as unknown as Database;
   return {
     db: db as unknown as Database,
     appDb,

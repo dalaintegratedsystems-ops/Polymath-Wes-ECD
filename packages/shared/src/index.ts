@@ -5,4 +5,5 @@ export * from './schemas/common';
 export * from './schemas/centre';
 export * from './schemas/child';
 export * from './schemas/consent';
+export * from './schemas/auth';
 export * from './i18n';

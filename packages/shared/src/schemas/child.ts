@@ -29,3 +29,15 @@ export const ChildIntakeCreateSchema = z
     }),
   })
   .meta({ id: 'ChildIntakeCreate' });
+
+/** A row in the child register: an active child, or an intake still waiting for consent. */
+export const ChildListItemSchema = z
+  .object({
+    id: UuidSchema,
+    firstName: z.string(),
+    birthMonth: BirthMonthSchema,
+    groupId: UuidSchema.nullable(),
+    status: z.enum(['active', 'awaiting_consent']),
+  })
+  .meta({ id: 'ChildListItem' });
+export type ChildListItem = z.infer<typeof ChildListItemSchema>;

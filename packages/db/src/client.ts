@@ -16,7 +16,10 @@ export type Transaction = Parameters<Parameters<Database['transaction']>[0]>[0];
  */
 const ASSUME_ROLE = Symbol.for('wes.assumeRole');
 
-export function assumeRoleOnEachTransaction<T extends object>(db: T, role: 'wes_app' | 'wes_worker'): T {
+export function assumeRoleOnEachTransaction<T extends object>(
+  db: T,
+  role: 'wes_app' | 'wes_worker',
+): T {
   Object.defineProperty(db, ASSUME_ROLE, { value: role, enumerable: false });
   return db;
 }

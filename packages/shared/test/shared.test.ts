@@ -37,31 +37,30 @@ describe('normaliseSaPhone', () => {
 });
 
 describe('consent', () => {
-  const guardianId = '6f1c2f1e-9a5b-4c8e-8f3e-1a2b3c4d5e6f';
-
   it('requires consent to keep a child record', () => {
     const r = ConsentCreateSchema.safeParse({
-      guardianId,
       purposes: ['photos'],
       method: 'guardian_otp',
+      code: '123456',
     });
+    expect(r.success).toBe(false);
+  });
+
+  it('requires the guardian PIN for OTP consent', () => {
+    const r = ConsentCreateSchema.safeParse({ purposes: ['child_record'], method: 'guardian_otp' });
     expect(r.success).toBe(false);
   });
 
   it('requires evidence for paper consent', () => {
-    const r = ConsentCreateSchema.safeParse({
-      guardianId,
-      purposes: ['child_record'],
-      method: 'paper_photo',
-    });
+    const r = ConsentCreateSchema.safeParse({ purposes: ['child_record'], method: 'paper_photo' });
     expect(r.success).toBe(false);
   });
 
-  it('accepts OTP consent without evidence', () => {
+  it('accepts OTP consent with a PIN', () => {
     const r = ConsentCreateSchema.safeParse({
-      guardianId,
       purposes: ['child_record', 'parent_messages'],
       method: 'guardian_otp',
+      code: '123456',
     });
     expect(r.success).toBe(true);
   });

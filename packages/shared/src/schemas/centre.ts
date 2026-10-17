@@ -29,3 +29,24 @@ export type Centre = z.infer<typeof CentreSchema>;
 export const CentreUpdateSchema = CentreSchema.omit({ id: true }).partial().meta({
   id: 'CentreUpdate',
 });
+
+/** Onboarding: the signed-in user creates their centre and becomes its principal. */
+export const CentreCreateSchema = CentreSchema.omit({
+  id: true,
+  registrationStatus: true,
+  defaultLocale: true,
+})
+  .extend({ addressLine: z.string().max(200).default('') })
+  .refine((c) => c.agesServedMinMonths <= c.agesServedMaxMonths, {
+    message: 'The youngest age must be less than the oldest age',
+    path: ['agesServedMaxMonths'],
+  })
+  .meta({ id: 'CentreCreate' });
+
+export const StaffMemberSchema = z
+  .object({
+    userId: z.uuid(),
+    displayName: z.string(),
+    role: z.enum(['principal', 'practitioner']),
+  })
+  .meta({ id: 'StaffMember' });
