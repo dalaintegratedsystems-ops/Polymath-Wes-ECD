@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { latestPin, signIn } from './helpers';
+import { fillField, latestPin, signIn } from './helpers';
 
 test.describe('a new principal', () => {
   test('signs up, sets up a centre, and adds a child with a parent’s consent', async ({ page }) => {
@@ -7,14 +7,14 @@ test.describe('a new principal', () => {
 
     // Centre setup, step 1: about you.
     await expect(page).toHaveURL(/\/setup$/);
-    await page.getByLabel('Your first name').fill('Thembi');
+    await fillField(page.getByLabel('Your first name'), 'Thembi');
     await page.getByRole('radio', { name: 'isiXhosa' }).click();
     await page.getByRole('button', { name: 'Next' }).click();
 
     // Step 2: the centre.
-    await page.getByLabel('Centre name').fill('Khanyisa Day Care');
-    await page.getByLabel('Suburb or area').fill('Langa');
-    await page.getByLabel('Town or city').fill('Cape Town');
+    await fillField(page.getByLabel('Centre name'), 'Khanyisa Day Care');
+    await fillField(page.getByLabel('Suburb or area'), 'Langa');
+    await fillField(page.getByLabel('Town or city'), 'Cape Town');
     await page.getByLabel('Province').selectOption('WC');
     await page.getByRole('button', { name: 'Next' }).click();
 
@@ -32,11 +32,11 @@ test.describe('a new principal', () => {
     // Add a child: it waits for consent before joining the register.
     await page.getByRole('link', { name: 'Children', exact: true }).click();
     await page.getByRole('link', { name: 'Add your first child' }).click();
-    await page.getByLabel('First name').fill('Mbali');
+    await fillField(page.getByLabel('First name'), 'Mbali');
     await page.getByLabel('Month').selectOption('03');
     await page.getByLabel('Year').selectOption('2024');
-    await page.getByLabel('Their name').fill('Nandi');
-    await page.getByLabel('Their cellphone number').fill('083 555 0101');
+    await fillField(page.getByLabel('Their name'), 'Nandi');
+    await fillField(page.getByLabel('Their cellphone number'), '083 555 0101');
     await page.getByRole('button', { name: 'Next: ask for consent' }).click();
 
     // Consent: the parent receives a PIN and reads it back.
@@ -75,7 +75,7 @@ test.describe('a returning principal', () => {
 
   test('is told clearly when the PIN is wrong', async ({ page }) => {
     await page.goto('/welcome');
-    await page.getByLabel('Your cellphone number').fill('060 000 0002');
+    await fillField(page.getByLabel('Your cellphone number'), '060 000 0002');
     await page.getByRole('button', { name: 'Send me a PIN' }).click();
     const real = await latestPin('+27600000002', 'sign_in');
     await page.getByLabel('6-digit PIN').fill(real === '000000' ? '111111' : '000000');
