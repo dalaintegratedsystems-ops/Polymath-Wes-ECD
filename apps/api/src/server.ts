@@ -1,12 +1,15 @@
 import { buildApp } from './app';
 import { loadConfig } from './config';
+import { createDeps } from './deps';
 
 const config = loadConfig();
-const app = await buildApp();
+const { deps, close } = await createDeps(config, (msg) => console.info(msg));
+const app = await buildApp({ deps });
 
 const shutdown = async (signal: string) => {
   app.log.info({ signal }, 'shutting down');
   await app.close();
+  await close();
   process.exit(0);
 };
 process.on('SIGTERM', () => void shutdown('SIGTERM'));

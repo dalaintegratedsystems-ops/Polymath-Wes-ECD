@@ -2,16 +2,16 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { ErrorEnvelopeSchema } from '@wes/shared';
-import { buildApp } from '../src/app';
 import { defineRoute } from '../src/platform/route';
+import { createHarness, type Harness } from './helpers';
 
+let h: Harness;
 let app: FastifyInstance;
 let writes = 0;
 
 beforeAll(async () => {
-  app = await buildApp({
-    logger: false,
-    config: { NODE_ENV: 'test', APP_VERSION: '0.0.0-test', RATE_LIMIT_PER_MINUTE: 1000 },
+  h = await createHarness({
+    seed: false,
     register: async (a) => {
       // Fixture route exercising validation and idempotency.
       defineRoute(
@@ -34,8 +34,9 @@ beforeAll(async () => {
       );
     },
   });
+  app = h.app;
 });
-afterAll(async () => app.close());
+afterAll(async () => h.close());
 
 describe('system', () => {
   it('reports health', async () => {
@@ -75,10 +76,10 @@ describe('error envelope', () => {
     expect(ErrorEnvelopeSchema.parse(res.json()).error.code).toBe('not_found');
   });
 
-  it('answers 501 for phase-2 routes', async () => {
+  it('requires sign-in for phase-2 routes', async () => {
     const res = await app.inject({ method: 'GET', url: '/v1/behaviour/coach' });
-    expect(res.statusCode).toBe(501);
-    expect(res.json().error.code).toBe('not_implemented');
+    expect(res.statusCode).toBe(401);
+    expect(res.json().error.code).toBe('unauthenticated');
   });
 
   it('reports validation failures with field paths', async () => {

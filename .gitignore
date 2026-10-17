@@ -22,3 +22,6 @@ test-results/
 # Machine-specific preview config
 .claude/launch.json
 .claude/settings.local.json
+
+# Embedded dev database
+.data/

@@ -20,6 +20,10 @@ export interface RouteSpec<
   auth: 'public' | 'user';
   /** Writes that must carry an Idempotency-Key header. */
   idempotent?: boolean;
+  /** Per-route limit, stricter than the global one (e.g. OTP requests). */
+  rateLimit?: { max: number; timeWindow: string };
+  /** Extra OpenAPI header parameters (documentation only; validate in the handler). */
+  headers?: { name: string; in: 'header'; required: boolean; schema: Record<string, unknown> }[];
   params?: P;
   query?: Q;
   body?: B;
@@ -70,7 +74,11 @@ export function defineRoute<P extends z.ZodType, Q extends z.ZodType, B extends 
   app.route({
     method: spec.method,
     url: spec.url,
-    config: { idempotent: spec.idempotent ?? false, auth: spec.auth },
+    config: {
+      idempotent: spec.idempotent ?? false,
+      auth: spec.auth,
+      ...(spec.rateLimit ? { rateLimit: spec.rateLimit } : {}),
+    },
     handler: async (request, reply) => {
       const params = parseOrThrow(spec.params, request.params, 'params');
       const query = parseOrThrow(spec.query, request.query, 'query');

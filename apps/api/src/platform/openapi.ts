@@ -49,7 +49,11 @@ export function buildOpenApi(routes: readonly RouteSpec[], version: string) {
 
   for (const spec of routes) {
     const path = spec.url.replace(/:(\w+)/g, '{$1}');
-    const parameters: unknown[] = [...pathParams(spec), ...queryParams(spec)];
+    const parameters: unknown[] = [
+      ...pathParams(spec),
+      ...queryParams(spec),
+      ...(spec.headers ?? []),
+    ];
     if (spec.idempotent) {
       parameters.push({
         name: 'Idempotency-Key',

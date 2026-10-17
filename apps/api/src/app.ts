@@ -4,6 +4,8 @@ import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { loadConfig, type Config } from './config';
+import { registerAuthentication } from './platform/context';
+import type { AppDeps } from './platform/deps';
 import { registerErrorHandling } from './platform/errors';
 import {
   createMemoryIdempotencyStore,
@@ -11,10 +13,15 @@ import {
   type IdempotencyStore,
 } from './platform/idempotency';
 import { registerRouteRegistry } from './platform/route';
+import { createTokenService } from './platform/tokens';
+import { authRoutes } from './modules/auth/routes';
+import { centreRoutes } from './modules/centres/routes';
+import { childrenRoutes } from './modules/children/routes';
 import { phase2Routes } from './modules/phase2/routes';
 import { systemRoutes } from './modules/system/routes';
 
 export interface BuildOptions {
+  deps: AppDeps;
   config?: Partial<Config>;
   idempotencyStore?: IdempotencyStore;
   logger?: boolean;
@@ -23,12 +30,17 @@ export interface BuildOptions {
 }
 
 /**
- * Modular monolith. Each domain module (auth, centres, children, consent, attendance,
- * compliance, policies, planner, printables, assistant, channels) registers its own
- * routes as it is built in Milestones 1–6.
+ * Modular monolith. Each domain module registers its own routes; all of them reach the
+ * database only through `withRequestContext`, so row-level security always applies.
  */
-export async function buildApp(options: BuildOptions = {}): Promise<FastifyInstance> {
+export async function buildApp(options: BuildOptions): Promise<FastifyInstance> {
   const config = { ...loadConfig(), ...options.config };
+  const { deps } = options;
+  const tokens = createTokenService({
+    secret: config.JWT_SIGNING_SECRET,
+    accessTtlSeconds: config.JWT_ACCESS_TTL_SECONDS,
+    now: deps.now,
+  });
 
   const app = Fastify({
     logger:
@@ -36,8 +48,15 @@ export async function buildApp(options: BuildOptions = {}): Promise<FastifyInsta
         ? false
         : {
             level: config.NODE_ENV === 'production' ? 'info' : 'debug',
-            // Never log credentials or contact details.
-            redact: ['req.headers.authorization', 'req.headers.cookie', '*.phone', '*.phoneE164'],
+            // Never log credentials, PINs or contact details.
+            redact: [
+              'req.headers.authorization',
+              'req.headers.cookie',
+              '*.phone',
+              '*.phoneE164',
+              '*.code',
+              '*.refreshToken',
+            ],
           },
     genReqId: (req) => {
       const incoming = req.headers['x-request-id'];
@@ -46,6 +65,7 @@ export async function buildApp(options: BuildOptions = {}): Promise<FastifyInsta
         : randomUUID();
     },
     bodyLimit: 1_000_000,
+    trustProxy: config.NODE_ENV === 'production',
   });
 
   app.addHook('onSend', async (request, reply) => {
@@ -62,9 +82,13 @@ export async function buildApp(options: BuildOptions = {}): Promise<FastifyInsta
 
   registerRouteRegistry(app);
   registerErrorHandling(app);
+  registerAuthentication(app, tokens);
   registerIdempotency(app, options.idempotencyStore ?? createMemoryIdempotencyStore());
 
   await app.register(systemRoutes, { config });
+  await app.register(authRoutes, { deps, config, tokens });
+  await app.register(centreRoutes, { deps });
+  await app.register(childrenRoutes, { deps, config });
   await app.register(phase2Routes);
   if (options.register) await options.register(app);
 

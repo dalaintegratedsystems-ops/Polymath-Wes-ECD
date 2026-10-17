@@ -18,6 +18,15 @@ export function registerErrorHandling(app: FastifyInstance): void {
         .status(err.status)
         .send(envelope(err.code, err.message, request.id, err.details));
     }
+    // Postgres: RLS/privilege refusal and unique violations surface as clean client errors.
+    const e = err as { code?: string; cause?: { code?: string } };
+    const pgCode = e.cause?.code ?? e.code;
+    if (pgCode === '42501') {
+      return reply.status(403).send(envelope('forbidden', 'Your role cannot do this.', request.id));
+    }
+    if (pgCode === '23505') {
+      return reply.status(409).send(envelope('conflict', 'That already exists.', request.id));
+    }
     if (err.statusCode === 429) {
       return reply
         .status(429)
