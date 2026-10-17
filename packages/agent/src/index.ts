@@ -12,3 +12,4 @@ export * from './generate';
 export * from './pipeline';
 export * from './knowledge/chunk';
 export * from './knowledge/embeddings';
+export * from './knowledge/ingest';

@@ -20,3 +20,22 @@ describe('job registry', () => {
     expect(log).toHaveBeenCalledOnce();
   });
 });
+
+describe('knowledge ingestion', () => {
+  it('ingests the corpus once and skips unchanged files on re-run', async () => {
+    const { createTestDb } = await import('@wes/db/testing');
+    const { runIngest } = await import('../src/processors');
+    const t = await createTestDb();
+    const dir = new URL('../../../knowledge', import.meta.url).pathname.replace(
+      /^\/([A-Za-z]:)/,
+      '$1',
+    );
+    const log = vi.fn();
+    const first = await runIngest(t.db, dir, log);
+    expect(first.results[0]).toMatchObject({ slug: 'placeholder-ncf', outcome: 'inserted' });
+    expect(first.results[0]!.chunks).toBeGreaterThan(0);
+    const second = await runIngest(t.db, dir, log);
+    expect(second.results[0]!.outcome).toBe('unchanged');
+    await t.close();
+  }, 120_000);
+});

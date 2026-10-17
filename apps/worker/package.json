@@ -9,9 +9,11 @@
     "start": "node --enable-source-maps dist/index.js",
     "lint": "eslint src test",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "ingest": "tsx --env-file-if-exists=../../.env src/scripts/ingest.ts"
   },
   "dependencies": {
+    "@wes/agent": "workspace:^",
     "@wes/db": "workspace:^",
     "@wes/shared": "workspace:^",
     "bullmq": "^5",

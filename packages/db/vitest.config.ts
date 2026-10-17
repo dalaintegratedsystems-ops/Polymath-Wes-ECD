@@ -3,6 +3,8 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     // Each file spins up its own database; PGlite startup + migrations take a few seconds.
+    // Each file starts its own embedded Postgres; running them in parallel thrashes the CPU.
+    fileParallelism: false,
     testTimeout: 60_000,
     hookTimeout: 120_000,
     env: {
