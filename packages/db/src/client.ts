@@ -25,7 +25,12 @@ export function assumeRoleOnEachTransaction<T extends object>(
 }
 
 export function createDatabase(url: string, options: { max?: number } = {}) {
-  const client = postgres(url, { max: options.max ?? 10, prepare: false, onnotice: () => {} });
+  const client = postgres(url, {
+    max: options.max ?? 10,
+    prepare: false,
+    onnotice: () => {},
+    ...(/sslmode=(require|verify-full)/.test(url) ? { ssl: 'require' as const } : {}),
+  });
   const db = drizzle(client, { schema });
   return { db: db as unknown as Database, close: () => client.end() };
 }

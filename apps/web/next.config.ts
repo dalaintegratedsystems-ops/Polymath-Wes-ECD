@@ -1,4 +1,5 @@
 import withSerwistInit from '@serwist/next';
+import { fileURLToPath } from 'node:url';
 import type { NextConfig } from 'next';
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -29,6 +30,9 @@ const withSerwist = withSerwistInit({
 
 const config: NextConfig = {
   reactStrictMode: true,
+  // Self-contained server for the container image (includes only the files it needs).
+  output: 'standalone',
+  outputFileTracingRoot: fileURLToPath(new URL('../../', import.meta.url)),
   poweredByHeader: false,
   transpilePackages: ['@wes/ui', '@wes/shared'],
   // Lint runs as its own CI step with the repo-wide flat config.

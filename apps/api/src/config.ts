@@ -2,6 +2,11 @@ import { z } from 'zod';
 
 const ConfigSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  /**
+   * Deployment environment. 'production' enforces every safety check; 'staging' is a private
+   * pilot that may print PINs to the server log and run Wes offline. Defaults from NODE_ENV.
+   */
+  APP_ENV: z.enum(['development', 'test', 'staging', 'production']).optional(),
   API_PORT: z.coerce.number().int().default(4000),
   WEB_ORIGIN: z.string().default('http://localhost:3000'),
   RATE_LIMIT_PER_MINUTE: z.coerce.number().int().default(120),
@@ -29,7 +34,9 @@ const ConfigSchema = z.object({
   OTP_MAX_PER_WINDOW: z.coerce.number().int().default(3),
 });
 
-export type Config = z.infer<typeof ConfigSchema>;
+export type Config = z.infer<typeof ConfigSchema> & {
+  APP_ENV: 'development' | 'test' | 'staging' | 'production';
+};
 
 const DEV_DEFAULTS = ['JWT_SIGNING_SECRET', 'OTP_PEPPER'] as const;
 
@@ -38,15 +45,22 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
   if (!parsed.success) {
     throw new Error(`Invalid API configuration:\n${z.prettifyError(parsed.error)}`);
   }
-  const config = parsed.data;
-  if (config.NODE_ENV === 'production') {
+  const config = {
+    ...parsed.data,
+    APP_ENV:
+      parsed.data.APP_ENV ??
+      (parsed.data.NODE_ENV === 'production' ? 'production' : parsed.data.NODE_ENV),
+  } as Config;
+  if (config.APP_ENV === 'staging' || config.APP_ENV === 'production') {
     for (const key of DEV_DEFAULTS) {
-      if (!env[key]) throw new Error(`${key} must be set in production`);
+      if (!env[key]) throw new Error(`${key} must be set in ${config.APP_ENV}`);
     }
-    if (!config.DATABASE_URL) throw new Error('DATABASE_URL must be set in production');
-    if (config.OTP_DELIVERY === 'console')
-      throw new Error('OTP_DELIVERY=console is not allowed in production');
-    if (config.OTP_OUTBOX_FILE) throw new Error('OTP_OUTBOX_FILE is not allowed in production');
+    if (!config.DATABASE_URL) throw new Error(`DATABASE_URL must be set in ${config.APP_ENV}`);
+    if (config.OTP_OUTBOX_FILE)
+      throw new Error('OTP_OUTBOX_FILE is only for development and tests');
+  }
+  if (config.APP_ENV === 'production' && config.OTP_DELIVERY === 'console') {
+    throw new Error('OTP_DELIVERY=console is not allowed in production (PINs would be logged)');
   }
   return config;
 }

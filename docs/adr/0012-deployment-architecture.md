@@ -1,54 +1,58 @@
-# ADR-0012: Deployment architecture (right-sized)
+# ADR-0012: Deployment architecture (simple, low overhead, secure)
 
-- Status: Proposed (recommended 2026-10-17; built in Milestone 7)
-- Date: 2026-10-17
+- Status: Accepted — one-click template built (2026-10-18)
+- Date: 2026-10-17, revised 2026-10-18
 
 ## Context
 
 Pilot scale is tens of centres, growing to a few thousand. Children's data must stay in South
-Africa (POPIA). The team is small, so every managed service is something to secure, pay for and
-operate. We want strong security where it matters without platform sprawl.
+Africa (POPIA). The team is small: every managed service is something to secure, pay for and
+operate. The owner asked for the simplest secure option and a one-click deployment.
 
 ## Decision
 
-**Azure South Africa North, one region, two environments (staging, production).**
+**Azure South Africa North, one resource group per environment, five core resources:**
 
-| Concern       | Choice                                                                                                                                                                                                                          |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Compute       | Azure Container Apps: one environment, three apps (web, api, worker). Built-in ingress with managed TLS and a custom domain. Staging scales to zero.                                                                            |
-| Database      | Azure Database for PostgreSQL Flexible Server (Burstable tier to start), pgvector, VNet-integrated with **no public endpoint**, automated backups + point-in-time restore. Zone-redundant HA when production load justifies it. |
-| Files         | Blob Storage, private containers, short-lived SAS links, lifecycle rules.                                                                                                                                                       |
-| Secrets       | Key Vault referenced by Container Apps through **managed identities**. No secrets in images, CI or env files.                                                                                                                   |
-| Observability | Application Insights + Log Analytics with the same redaction rules as the API logger; budget alerts.                                                                                                                            |
-| Delivery      | GitHub Actions → Azure Container Registry. GitHub OIDC federation to Azure (no long-lived credentials). Merge to `main` deploys staging; a tagged release deploys production after manual approval.                             |
-| IaC           | Bicep modules under `infra/`.                                                                                                                                                                                                   |
+| Concern       | Choice                                                                                                                                                                                                                     |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Compute       | Azure Container Apps (Consumption profile): **web** (public) and **api** (internal-only ingress). Staging scales to zero.                                                                                                  |
+| Release       | An init container in the API runs `dist/release.js` before each revision: migrations, `wes_app`/`wes_worker` passwords, knowledge ingestion, optional demo data. The owner database credential is given only to this step. |
+| Database      | PostgreSQL 16 Flexible Server (Burstable), pgvector, VNet-integrated, **no public endpoint**, TLS, automatic backups.                                                                                                      |
+| Secrets       | Key Vault (RBAC). Container Apps reference secrets by URI through a user-assigned managed identity. Secrets are generated on first deployment and never re-written unless asked.                                           |
+| Files         | Private Blob Storage, shared-key access disabled (identity only).                                                                                                                                                          |
+| Observability | Log Analytics + Application Insights.                                                                                                                                                                                      |
+| Delivery      | GitHub Actions builds images to GHCR on every push; optional OIDC-federated roll-out to staging. Infrastructure in Bicep (`infra/`), compiled to `infra/azuredeploy.json` for the Deploy-to-Azure button.                  |
 
-**Recommended simplification (pending decision):** run background jobs on a Postgres-backed
-queue (e.g. pg-boss) instead of Redis + BullMQ. It removes a managed service and a secret at
-this scale; revisit if job volume grows.
+Background jobs will run inside the API process with a Postgres-backed queue (no Redis) when
+they are needed (Milestone 3); the separate worker app is not deployed until volume justifies it.
 
-## Security baseline at deployment
+### Environments
 
-Already in the application: RLS per centre (ADR-0003), OTP + rotating refresh tokens
-(ADR-0004), httpOnly session cookies (ADR-0011), field encryption (ADR-0007), append-only audit
-log, CSP/helmet, rate limits, idempotency, redaction before model calls, secret and dependency
-scanning in CI.
+- **staging**: a private pilot. PINs go to the server log until WhatsApp/SMS (M6); Wes may run
+  offline and with local embeddings.
+- **production**: refuses to start without real PIN delivery and model/embedding keys; warm
+  replicas, purge protection, 35-day backups.
 
-Added at deployment: private database networking; managed identities; HTTPS-only + HSTS;
-database roles `wes_owner` / `wes_app` / `wes_worker` with credentials in Key Vault (or Entra ID
-auth); backups with a documented restore drill; Microsoft Defender for Cloud free-tier
-recommendations; nonce-based CSP; WhatsApp webhook signature verification (M6); JWT secret
-rotation runbook.
+## Security baseline
+
+Application: RLS per centre (ADR-0003), OTP + rotating refresh tokens (ADR-0004), httpOnly
+session cookies (ADR-0011), field encryption (ADR-0007), append-only audit log, CSP/helmet,
+rate limits, idempotency, redaction before model calls, secret and dependency scanning.
+
+Platform: API not internet-facing; database private; managed identities; HTTPS only; secrets
+only in Key Vault; least-privilege role assignments; logs redacted.
 
 ## Deliberately not now
 
-AKS/Kubernetes, service mesh, microservices, multi-region active-active, Front Door + WAF
-(add when traffic or attack patterns justify it), SIEM, HSM-backed keys. Each adds cost and
-operational load without addressing a current risk.
+AKS, service mesh, microservices, Redis, multi-region, Front Door + WAF (add when traffic or
+attack patterns justify it), SIEM, HSM-backed keys, Key Vault private endpoint.
 
 ## Alternatives considered
 
-- **AWS af-south-1 (Cape Town)** with ECS Fargate + RDS + S3 + Secrets Manager: equivalent; choose
-  if Dala's credits or skills favour AWS. Nothing in the code is cloud-specific.
-- **Azure App Service**: also viable; Container Apps chosen for the worker and scale-to-zero.
-- **Vercel / Supabase / similar**: rejected — data would be processed or stored outside South Africa.
+- **AWS af-south-1**: ECS Fargate + RDS + S3 + Secrets Manager is equivalent; nothing in the code
+  is cloud-specific. Only `infra/` would change.
+- **AWS Amplify**: hosts the Next.js app but not the long-running API, worker, Postgres RLS or
+  pgvector without a rewrite; rejected.
+- **Single VPS with Docker Compose**: cheapest, but OS patching, firewalling and backups become
+  our job; not recommended for children's data without a dedicated operator.
+- **Vercel / Supabase**: data processed or stored outside South Africa; rejected.

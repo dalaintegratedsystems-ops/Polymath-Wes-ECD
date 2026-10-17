@@ -75,7 +75,7 @@ export function createEmbeddingProvider(
       dimensions: env.EMBEDDING_DIMENSIONS ? Number(env.EMBEDDING_DIMENSIONS) : undefined,
     });
   }
-  if (env.NODE_ENV === 'production') {
+  if ((env.APP_ENV ?? env.NODE_ENV) === 'production') {
     throw new Error('Production requires EMBEDDING_PROVIDER=voyage and VOYAGE_API_KEY (ADR-0006).');
   }
   return createHashEmbeddingProvider();

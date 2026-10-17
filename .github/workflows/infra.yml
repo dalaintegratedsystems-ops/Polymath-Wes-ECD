@@ -1,0 +1,37 @@
+name: Infrastructure
+
+# Lints the Bicep templates and checks that infra/azuredeploy.json (used by the
+# "Deploy to Azure" button) was regenerated from infra/main.bicep.
+
+on:
+  push:
+    branches: [main]
+    paths: ['infra/**', '.github/workflows/infra.yml']
+  pull_request:
+    paths: ['infra/**', '.github/workflows/infra.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  bicep:
+    name: Lint and build Bicep
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Bicep
+        run: |
+          curl -fsSLo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64
+          chmod +x bicep && sudo mv bicep /usr/local/bin/bicep
+          bicep --version
+      - name: Lint
+        run: bicep lint infra/main.bicep
+      - name: Template is up to date
+        run: |
+          bicep build infra/main.bicep --outfile /tmp/azuredeploy.json
+          # Compare ignoring the generator metadata (Bicep version and template hash).
+          strip() { jq 'walk(if type == "object" then del(._generator) else . end)' "$1"; }
+          if ! diff <(strip infra/azuredeploy.json) <(strip /tmp/azuredeploy.json) >/dev/null; then
+            echo "::error::infra/azuredeploy.json is stale. Run: bicep build infra/main.bicep --outfile infra/azuredeploy.json"
+            exit 1
+          fi

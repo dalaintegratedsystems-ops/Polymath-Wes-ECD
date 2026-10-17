@@ -80,6 +80,14 @@ deep ink on soft sand. Nunito at 16 px minimum, 48 px touch targets, icon plus l
 action, one primary action per screen. Every text colour pair is tested for WCAG 2.2 AA in
 both themes (`packages/ui/test/tokens.test.ts`).
 
+## Deploy
+
+One click to Azure South Africa North (web, internal API, private Postgres with pgvector, Key Vault):
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdalaintegratedsystems-ops%2FPolymath-Wes-ECD%2Fmain%2Finfra%2Fazuredeploy.json)
+
+The button needs a public repository; otherwise run `./infra/deploy.sh <resource-group>`. Full guide: [docs/deployment.md](docs/deployment.md).
+
 ## Docs
 
 - [Architecture](docs/architecture.md) · [API](docs/api.md) · [Agent](docs/agent.md)

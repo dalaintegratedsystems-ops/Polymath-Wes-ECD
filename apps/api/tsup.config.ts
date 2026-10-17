@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup';
 
 // Bundle workspace packages (they ship TypeScript source); keep npm dependencies external.
 export default defineConfig({
-  entry: ['src/server.ts'],
+  entry: ['src/server.ts', 'src/release.ts'],
   format: ['esm'],
   target: 'node24',
   platform: 'node',

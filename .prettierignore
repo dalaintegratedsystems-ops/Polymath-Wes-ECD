@@ -8,3 +8,4 @@ storybook-static
 packages/db/migrations/meta
 CLAUDE.md
 packages/ui/src/tokens.css
+infra/azuredeploy.json

@@ -21,6 +21,12 @@ import { createConsoleOtpSender, createFileOtpSender, type AppDeps } from './pla
  */
 export async function createDeps(config: Config, log: (msg: string) => void) {
   const crypto = createFieldCrypto();
+  if (config.OTP_DELIVERY !== 'console') {
+    // Never fall back to logging PINs when real delivery was asked for.
+    throw new Error(
+      `OTP_DELIVERY=${config.OTP_DELIVERY} is not available yet (WhatsApp and SMS arrive in Milestone 6).`,
+    );
+  }
   const consoleSender = createConsoleOtpSender(log);
   const otpSender = config.OTP_OUTBOX_FILE
     ? createFileOtpSender(config.OTP_OUTBOX_FILE, consoleSender)
@@ -34,7 +40,9 @@ export async function createDeps(config: Config, log: (msg: string) => void) {
     const { db, close } = createDatabase(config.DATABASE_URL);
     return { deps: { ...base, db } satisfies AppDeps, close };
   }
-  if (config.NODE_ENV === 'production') throw new Error('DATABASE_URL is required in production');
+  if (config.APP_ENV === 'staging' || config.APP_ENV === 'production') {
+    throw new Error('DATABASE_URL is required outside development');
+  }
 
   const embedded = await createEmbeddedDatabase(config.EMBEDDED_DB_DIR);
   const [row] = await embedded.ownerDb

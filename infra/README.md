@@ -1,24 +1,23 @@
 # Infrastructure (Azure, South Africa North)
 
-Bicep modules land in **Milestone 7**. Planned layout:
+How to deploy: [docs/deployment.md](../docs/deployment.md). Design: [ADR-0012](../docs/adr/0012-deployment-architecture.md).
 
 ```
 infra/
-  main.bicep                 # subscription-level entry: resource group + modules
+  main.bicep              entry point (resource group scope)
+  azuredeploy.json        compiled template for the Deploy to Azure button (generated)
+  deploy.sh / deploy.ps1  one-command deployment with the Azure CLI
   modules/
-    container-apps.bicep     # api, worker, web (Container Apps environment)
-    postgres.bicep           # Azure Database for PostgreSQL Flexible Server 16 + pgvector
-    storage.bicep            # Blob Storage (documents, PDFs) with private endpoints
-    keyvault.bicep           # Key Vault: JWT keys, field-encryption data key, provider secrets
-    monitoring.bicep         # Log Analytics + Application Insights
-    redis.bicep              # Azure Cache for Redis (BullMQ)
-  parameters/
-    staging.bicepparam
-    production.bicepparam
+    network.bicep         VNet, delegated subnets, private DNS for Postgres
+    postgres.bicep        PostgreSQL 16 Flexible Server + pgvector, private access
+    keyvault.bicep        Key Vault, generated secrets, identity read access
+    storage.bicep         private blob storage for documents and PDFs
+    monitoring.bicep      Log Analytics + Application Insights
+    apps.bicep            Container Apps environment, web (public) and api (internal)
 ```
 
-Inputs still needed: `<<AZURE_SUBSCRIPTION_ID>>`, `<<AZURE_RESOURCE_GROUP>>`.
+After editing any `.bicep` file, regenerate the button template (CI fails if you forget):
 
-Principles: everything in `southafricanorth`; private networking between services; managed
-identities instead of connection-string secrets where possible; database roles `wes_owner`,
-`wes_app` and `wes_worker` created by a post-deploy script (see ADR-0003).
+```bash
+bicep build infra/main.bicep --outfile infra/azuredeploy.json
+```
