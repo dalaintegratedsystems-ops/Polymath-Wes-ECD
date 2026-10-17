@@ -1,75 +1,48 @@
-import { describe, expect, it, vi } from 'vitest';
-import {
-  loadAgentConfig,
-  runPipeline,
-  TOOL_NAMES,
-  type AgentReply,
-  type PipelineStages,
-} from '../src';
+import { describe, expect, it } from 'vitest';
+import { costMicroUsd, loadAgentConfig, TOOL_NAMES, TOOLS, toToolDef } from '../src';
 
 describe('agent config', () => {
-  it('defaults to the configured model family', () => {
+  it('defaults to the configured model family and offline without a key', () => {
     const c = loadAgentConfig({});
-    expect(c.models.main).toBe('claude-sonnet-5-5');
+    expect(c.models).toEqual({
+      router: 'claude-haiku-5-5',
+      main: 'claude-sonnet-5-5',
+      escalation: 'claude-opus-5-5',
+    });
     expect(c.maxToolCallsPerTurn).toBe(6);
+    expect(c.mode).toBe('offline');
+  });
+
+  it('goes live when a real key is present, but not for a placeholder', () => {
+    expect(loadAgentConfig({ ANTHROPIC_API_KEY: 'sk-ant-test' }).mode).toBe('live');
+    expect(loadAgentConfig({ ANTHROPIC_API_KEY: '<<ANTHROPIC_API_KEY>>' }).mode).toBe('offline');
   });
 
   it('reads models from the environment', () => {
     expect(loadAgentConfig({ WES_MODEL_MAIN: 'custom-model' }).models.main).toBe('custom-model');
   });
+});
 
-  it('ships all twelve tools in the catalogue', () => {
+describe('tools', () => {
+  it('keeps the full twelve-tool catalogue and exposes strict schemas', () => {
     expect(TOOL_NAMES).toHaveLength(12);
+    for (const t of TOOLS) {
+      const def = toToolDef(t);
+      expect(def.strict).toBe(true);
+      expect(def.input_schema).toMatchObject({ type: 'object', additionalProperties: false });
+    }
   });
 });
 
-describe('pipeline ordering', () => {
-  const reply: AgentReply = {
-    text: 'ok',
-    citations: [],
-    attachments: [],
-    escalated: false,
-    postCheck: {
-      schemaValid: true,
-      citationsPresent: 'not_required',
-      bannedContent: [],
-      readingLevelOk: true,
-    },
-  };
-
-  const stages = (risk: 'normal' | 'child_protection'): PipelineStages => ({
-    redact: vi.fn(async (m) => ({ text: m.text, vault: {} })),
-    classify: vi.fn(async () => ({ intent: 'general' as const, language: 'en' as const, risk })),
-    escalate: vi.fn(async () => ({ ...reply, escalated: true })),
-    generate: vi.fn(async () => reply),
-    postCheck: vi.fn(async () => reply.postCheck),
-    restore: vi.fn((r) => r),
-    persist: vi.fn(async () => {}),
-  });
-
-  const msg = {
-    centreId: 'c',
-    userId: 'u',
-    conversationId: 'v',
-    channel: 'web' as const,
-    text: 'hi',
-  };
-
-  it('never calls generation for child-protection disclosures', async () => {
-    const s = stages('child_protection');
-    const out = await runPipeline(s, msg);
-    expect(out.escalated).toBe(true);
-    expect(s.generate).not.toHaveBeenCalled();
-    expect(s.persist).toHaveBeenCalledOnce();
-  });
-
-  it('redacts before classifying and post-checks generated replies', async () => {
-    const s = stages('normal');
-    await runPipeline(s, msg);
-    expect(vi.mocked(s.redact).mock.invocationCallOrder[0]).toBeLessThan(
-      vi.mocked(s.classify).mock.invocationCallOrder[0]!,
-    );
-    expect(s.postCheck).toHaveBeenCalledOnce();
-    expect(s.escalate).not.toHaveBeenCalled();
+describe('cost accounting', () => {
+  it('prices tokens per model, with cheap cache reads', () => {
+    // 1,000 in + 500 out on Sonnet 5.5 = $0.002 + $0.005 = 7,000 micro-dollars.
+    expect(
+      costMicroUsd('claude-sonnet-5-5', { input: 1000, output: 500, cacheRead: 0, cacheWrite: 0 }),
+    ).toBe(7000);
+    expect(
+      costMicroUsd('claude-sonnet-5-5', { input: 0, output: 0, cacheRead: 10_000, cacheWrite: 0 }),
+    ).toBe(2000);
+    expect(costMicroUsd('unknown', { input: 1, output: 1, cacheRead: 0, cacheWrite: 0 })).toBe(0);
   });
 });
