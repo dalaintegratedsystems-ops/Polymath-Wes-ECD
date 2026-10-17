@@ -10,6 +10,9 @@ export default defineConfig({
   sourcemap: true,
   splitting: false,
   noExternal: [/^@wes\//],
+  banner: {
+    js: "import { createRequire as __wesCreateRequire } from 'node:module'; const require = __wesCreateRequire(import.meta.url);",
+  },
   external: [/^@electric-sql\//, 'postgres', 'drizzle-orm'],
   onSuccess: async () => {
     cpSync('../../packages/db/migrations', 'dist/migrations', { recursive: true });
