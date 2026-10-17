@@ -25,9 +25,29 @@ knowledge/
 3. Add an entry to `sources.yaml`: `slug`, `title`, `publisher`, `kind`, `url`, `licence`,
    `published_on`.
 4. Bump `corpus_version` at the top of `sources.yaml` (e.g. `2026.11.0`).
-5. Run the ingestion job (Milestone 2): `pnpm --filter @wes/worker ingest`. It extracts text,
-   splits it into chunks along headings, embeds each chunk and records page anchors for citations.
-6. Run the evals. Registration and planning cases must still pass with the new corpus.
+5. Convert PDFs and Word files to Markdown or text first, keeping page markers as `[page 12]`
+   (the ingester reads `.md` and `.txt`; PDF extraction is a Milestone 3 task). Point `path` at
+   the converted file.
+6. Ingest. With Postgres (Docker or Azure), using `DATABASE_WORKER_URL` or `DATABASE_OWNER_URL`:
+
+   ```bash
+   pnpm --filter @wes/worker ingest
+   ```
+
+   With the embedded development database, just restart the API: it ingests `knowledge/` on
+   start-up. Unchanged files are skipped, so re-running is cheap. Each chunk keeps an anchor
+   ("Section › Subsection, p. 12") that users see as the citation.
+
+7. Run the evals and ask Wes a few real questions. Registration and planning cases must still
+   pass with the new corpus:
+
+   ```bash
+   pnpm --filter @wes/agent evals
+   ```
+
+Search uses both full-text ranking and embeddings (Voyage AI in production, a local hashed
+embedding in development), over the newest `corpus_version` of each source. Sources with
+`kind: placeholder` are stored but never returned to Wes.
 
 ## Rules
 

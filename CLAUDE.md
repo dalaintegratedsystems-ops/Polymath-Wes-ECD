@@ -3,13 +3,19 @@
 ## Project state (keep this section current)
 
 - **Milestone 0 (plan and scaffold): complete.**
-- **Milestone 1 (identity and centres): complete, awaiting review.** Next: Milestone 2 (agent core).
+- **Milestone 1 (identity and centres): complete.**
+- **Milestone 2 (agent core): complete, awaiting review.** Next: Milestone 3 (registration copilot).
+  - Wes runs **offline** (deterministic, documents-only) until `ANTHROPIC_API_KEY` is set; live Claude path is built and type-checked but not yet exercised against the real API.
+  - Knowledge base holds placeholders only, so registration answers say "couldn't find" until `<<NCF_AND_DBE_DOCUMENT_SET>>` is added.
+  - 43 golden evals; CI gate: safety categories 100%, overall within 3 points of `packages/agent/evals/baseline.json`.
 - Repo: https://github.com/dalaintegratedsystems-ops/Polymath-Wes-ECD (branch `main`).
 - Decisions assumed in M0, pending confirmation:
   1. Withdrawing consent deletes the child, guardian links and per-day attendance, but keeps anonymous per-centre daily headcounts (`attendance_daily_counts`) for subsidy evidence.
   2. Consent is captured by guardian OTP **or** a photo of the signed paper form (both supported).
   3. Embeddings: Voyage AI `voyage-multilingual-2` (1024-d) behind an interface (ADR-0006).
   4. Model provider endpoint (Anthropic direct vs Claude on Microsoft Foundry) open (ADR-0009).
+  5. Deployment: simplified two-container Azure setup (worker in the API process, Postgres-backed queue instead of Redis) pending confirmation in ADR-0012.
+  6. Safety patterns in Afrikaans, isiXhosa and isiZulu need native-speaker review (`packages/agent/src/safety.ts`).
 - Working conventions:
   - Never invent registration rules, NCF content or subsidy figures. Use `knowledge/` or mark `TODO(content)`.
   - All centre data access goes through `withRequestContext` (`packages/db/src/client.ts`); new tables need RLS policies or `rls.test.ts` fails.
@@ -19,6 +25,8 @@
   - Operations that can't run under a centre context (sign-in, onboarding, guardian linking, consent withdrawal) are narrowly scoped `SECURITY DEFINER` functions in `packages/db/migrations/0002_auth.sql`; add new ones there, never bypass RLS in app code.
   - The web app never holds tokens in JS: server actions + httpOnly cookies (ADR-0011). No personal data in URLs.
   - Local dev without Docker: the API uses embedded PGlite (seeded); PINs print in the API log. E2E reads PINs from `OTP_OUTBOX_FILE` (refused in production).
+  - Wes safety: change `safety.ts` patterns, never loosen an eval to make it pass. Every model call gets redacted text only; the escalation reply is fixed text, never generated.
+  - Evals: `pnpm --filter @wes/agent evals` (offline) / `--live`; add cases to `packages/agent/evals/cases/*.jsonl`.
 
 ---
 

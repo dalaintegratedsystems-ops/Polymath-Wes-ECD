@@ -83,8 +83,39 @@ flowchart LR
   RS --> PS[7 Persist<br/>AgentRun, cost, latency]
 ```
 
-The ordering is fixed in `runPipeline` (`packages/agent/src/pipeline.ts`), so a stage cannot
-skip the safety gate.
+The ordering is fixed in `createWes().respond()` (`packages/agent/src/pipeline.ts`), so a stage
+cannot skip the safety gate. A deterministic safety pre-check runs on the original text before
+any model call; models can raise risk, never lower it. Details: [agent.md](agent.md).
+
+## Chat streaming and retrieval
+
+```mermaid
+sequenceDiagram
+  participant B as Browser (PWA)
+  participant W as Web /api/assistant
+  participant A as API
+  participant P as Wes pipeline
+  participant DB as Postgres (RLS)
+  participant M as Claude (or offline model)
+  B->>W: POST {text, conversationId}
+  W->>A: POST /v1/assistant/messages (Bearer from httpOnly cookie)
+  A->>DB: load names to redact, history, budget
+  A->>P: respond()
+  P->>M: classify (redacted), then stream with tools
+  M-->>P: search_knowledge(query)
+  P->>DB: hybrid search: full-text + pgvector, newest corpus version
+  M-->>P: text deltas citing [n]
+  P-->>A: restored deltas
+  A-->>B: SSE start / delta / replace / done
+  A->>DB: persist redacted messages, run, tool calls, usage, audit
+```
+
+**Ingestion.** `knowledge/sources.yaml` lists the curated documents. `ingestCorpus`
+(`packages/agent/src/knowledge/ingest.ts`) chunks them along headings, embeds each chunk and
+stores a new source version; unchanged files are skipped by content hash. It runs as the worker
+job `knowledge.ingest`, as `pnpm --filter @wes/worker ingest`, and automatically when the
+embedded development database starts. Only the worker and owner roles can write knowledge
+tables; the API reads them.
 
 ## Data model
 
