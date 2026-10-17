@@ -1,6 +1,6 @@
 # ADR-0004: In-house phone OTP and JWT auth
 
-- Status: Accepted (Milestone 0), built in Milestone 1
+- Status: Accepted (Milestone 0), built in Milestone 1 (2026-10-17)
 - Date: 2026-10-16
 
 ## Context

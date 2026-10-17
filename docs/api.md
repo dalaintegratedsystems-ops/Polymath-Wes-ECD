@@ -16,22 +16,41 @@
 | Rate limits | Per client per minute; `429 rate_limited`.                                                                                                                                     |
 | Child data  | Every read and write is written to the audit log.                                                                                                                              |
 
-## Available now (Milestone 0)
+## Available now (Milestones 0–1)
+
+| Endpoint                                 | Who                          | Notes                                                                                                                                            |
+| ---------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `POST /v1/auth/otp`                      | anyone                       | Sends a 6-digit PIN; never reveals whether the number has an account. Newest PIN only; 5 attempts; 5-minute expiry; per-phone and per-IP limits. |
+| `POST /v1/auth/token`                    | anyone                       | PIN → access JWT (10 min) + refresh token (30 days). Links the phone to any guardian records (parent membership).                                |
+| `POST /v1/auth/refresh`                  | anyone with a refresh token  | Rotates. Reusing an old token revokes the whole session family.                                                                                  |
+| `POST /v1/auth/logout`                   | anyone with a refresh token  | Revokes the session family.                                                                                                                      |
+| `GET                                     | PATCH /v1/me`                | signed in                                                                                                                                        | You and your centres; update name and language. |
+| `POST /v1/centres`                       | signed in                    | Onboarding: create a centre, become its principal.                                                                                               |
+| `GET /v1/centres/{id}`                   | members                      | 404 for non-members (ids can't be probed).                                                                                                       |
+| `PATCH /v1/centres/{id}`                 | principal                    |                                                                                                                                                  |
+| `GET /v1/centres/{id}/staff`             | principal, practitioner      |                                                                                                                                                  |
+| `GET /v1/centres/{id}/children`          | staff; parents see their own | Includes intakes awaiting consent (staff). Audited.                                                                                              |
+| `POST /v1/centres/{id}/children`         | staff                        | Creates an **intake**, not a child record. Guardian phone encrypted.                                                                             |
+| `POST /v1/children/{id}/consents/otp`    | staff                        | Sends the guardian a consent PIN (masked number returned).                                                                                       |
+| `POST /v1/children/{id}/consents`        | staff                        | Guardian PIN (or paper evidence, M3) → child record created.                                                                                     |
+| `POST /v1/children/{id}/consents/revoke` | staff; the child's parent    | Deletes the child's records; keeps anonymous daily headcounts.                                                                                   |
+
+Routes under `/v1/children/{id}` take the centre in the `X-Centre-Id` header.
 
 ```bash
-curl -s localhost:4000/healthz
-curl -s localhost:4000/v1/meta
-curl -s localhost:4000/v1/openapi.json | head -c 400
-curl -s -i localhost:4000/v1/behaviour/coach   # 501: reserved for phase 2
+curl -s -X POST localhost:4000/v1/auth/otp -H 'content-type: application/json' -d '{"phone":"060 000 0001"}'
 ```
+
+In development the PIN is printed in the API log (`OTP_DELIVERY=console`). Seeded demo users:
+Nomsa (principal, `060 000 0001`), Thandi (practitioner, `060 000 0002`), Fatima (principal of a
+second centre, `060 000 0003`), Ayanda (parent, `060 000 0005`), Lerato (funder, `060 000 0006`).
 
 ## Roadmap
 
-| Milestone | Endpoints                                                                                                                                                                                  |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1         | `POST /v1/auth/otp`, `/auth/token`, `/auth/refresh`; `GET\|PATCH /v1/centres/{id}`; `GET /v1/centres/{id}/staff`; `GET\|POST /v1/centres/{id}/children`; `POST /v1/children/{id}/consents` |
-| 2         | `POST /v1/assistant/messages` (SSE), `POST /v1/assistant/feedback`                                                                                                                         |
-| 3         | `GET /v1/compliance/checklist`, `POST /v1/compliance/audit`, `/documents`, `/pack`; `POST /v1/policies/generate`, `GET /v1/policies/{id}.pdf`                                              |
-| 4         | `POST /v1/plans/weekly`, `/activities/adapt`, `/printables`                                                                                                                                |
-| 5         | `POST /v1/centres/{id}/attendance`, `GET /v1/attendance/export?month=YYYY-MM`                                                                                                              |
-| 6         | `POST /v1/channels/whatsapp/webhook`, `/channels/sms/webhook`                                                                                                                              |
+| Milestone | Endpoints                                                                                                                                     |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2         | `POST /v1/assistant/messages` (SSE), `POST /v1/assistant/feedback`                                                                            |
+| 3         | `GET /v1/compliance/checklist`, `POST /v1/compliance/audit`, `/documents`, `/pack`; `POST /v1/policies/generate`, `GET /v1/policies/{id}.pdf` |
+| 4         | `POST /v1/plans/weekly`, `/activities/adapt`, `/printables`                                                                                   |
+| 5         | `POST /v1/centres/{id}/attendance`, `GET /v1/attendance/export?month=YYYY-MM`                                                                 |
+| 6         | `POST /v1/channels/whatsapp/webhook`, `/channels/sms/webhook`                                                                                 |

@@ -2,7 +2,9 @@
 
 ## Project state (keep this section current)
 
-- **Milestone 0 (plan and scaffold): complete, awaiting review.** Next: Milestone 1 (identity and centres).
+- **Milestone 0 (plan and scaffold): complete.**
+- **Milestone 1 (identity and centres): complete, awaiting review.** Next: Milestone 2 (agent core).
+- Repo: https://github.com/dalaintegratedsystems-ops/Polymath-Wes-ECD (branch `main`).
 - Decisions assumed in M0, pending confirmation:
   1. Withdrawing consent deletes the child, guardian links and per-day attendance, but keeps anonymous per-centre daily headcounts (`attendance_daily_counts`) for subsidy evidence.
   2. Consent is captured by guardian OTP **or** a photo of the signed paper form (both supported).
@@ -13,7 +15,10 @@
   - All centre data access goes through `withRequestContext` (`packages/db/src/client.ts`); new tables need RLS policies or `rls.test.ts` fails.
   - Screens live in `packages/ui/src/screens`; `apps/web` pages are thin and pass data plus `nextRenderLink`.
   - Colours only through semantic tokens (`packages/ui/src/tokens.ts`, then `pnpm --filter @wes/ui tokens`).
-  - Windows with a long checkout path: set `npm_config_virtual_store_dir` to a short path before `pnpm install`.
+  - Windows with a long checkout path: set `npm_config_virtual_store_dir` to a short path before `pnpm install`, and `git config core.longpaths true`.
+  - Operations that can't run under a centre context (sign-in, onboarding, guardian linking, consent withdrawal) are narrowly scoped `SECURITY DEFINER` functions in `packages/db/migrations/0002_auth.sql`; add new ones there, never bypass RLS in app code.
+  - The web app never holds tokens in JS: server actions + httpOnly cookies (ADR-0011). No personal data in URLs.
+  - Local dev without Docker: the API uses embedded PGlite (seeded); PINs print in the API log. E2E reads PINs from `OTP_OUTBOX_FILE` (refused in production).
 
 ---
 

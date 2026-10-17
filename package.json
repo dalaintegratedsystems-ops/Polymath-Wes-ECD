@@ -7,7 +7,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --filter=@wes/api --filter=@wes/web",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
@@ -17,7 +17,8 @@
     "db:generate": "pnpm --filter @wes/db generate",
     "db:migrate": "pnpm --filter @wes/db migrate",
     "db:seed": "pnpm --filter @wes/db seed",
-    "storybook": "pnpm --filter @wes/ui storybook"
+    "storybook": "pnpm --filter @wes/ui storybook",
+    "dev:all": "turbo run dev"
   },
   "devDependencies": {
     "@eslint/js": "^9",

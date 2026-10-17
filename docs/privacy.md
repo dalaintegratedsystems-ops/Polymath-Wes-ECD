@@ -28,7 +28,13 @@
    guardian links and per-day attendance are deleted. What remains: the consent row (no name),
    the audit trail, and anonymous daily headcounts used for subsidy claims.
 
-> Pending decision #2: confirm anonymous headcounts may be kept after withdrawal.
+> Pending decision #1 (Milestone 0): confirm anonymous headcounts may be kept after withdrawal.
+
+**Implemented in Milestone 1:** intake → guardian PIN → child record; withdrawal by staff or by the
+child's own parent (`app.revoke_child_consent`), which deletes the child, per-day attendance,
+the guardian (if no other children) and their parent membership, and keeps only anonymous daily
+counts. When a guardian later signs in with the number the centre recorded, their account is
+linked by blind index and they can see only their own children.
 
 ## Data flow
 

@@ -15,6 +15,25 @@ incident response, breach notification) arrive in Milestone 7.
 | MinIO console | http://localhost:9001 | user `wes` / `wes_minio_dev`                                            |
 | Mailpit       | http://localhost:8025 |                                                                         |
 
+## Development without Docker
+
+`pnpm dev` starts the API and the web app. With no `DATABASE_URL`, the API creates an embedded
+Postgres in `apps/api/.data/pglite`, runs migrations and seeds demo data. Sign-in PINs and
+consent PINs are printed in the API log. Delete `apps/api/.data` to start fresh.
+
+## End-to-end tests
+
+```bash
+pnpm build
+```
+
+```bash
+pnpm --filter @wes/web e2e
+```
+
+Playwright starts the built API (fresh embedded database on ports 4100) and the production web
+build (3100), and reads PINs from a temporary outbox file.
+
 ## Common tasks
 
 ```bash
