@@ -13,8 +13,6 @@ import {
   SetupScreen,
   VerifyScreen,
   WelcomeScreen,
-  WesScreen,
-  type ChatMessage,
   type ChildRow,
   type JourneyStep,
   type WeekPlan,
@@ -100,12 +98,4 @@ export function PlanView(props: { plan: WeekPlan | null; todayKey?: string; demo
 
 export function RegistrationView(props: { steps: JourneyStep[]; demo?: boolean }) {
   return <RegistrationScreen {...props} renderLink={nextRenderLink} />;
-}
-
-export function WesView(props: {
-  messages: ChatMessage[];
-  suggestions: string[];
-  initialDraft?: string;
-}) {
-  return <WesScreen {...props} renderLink={nextRenderLink} />;
 }

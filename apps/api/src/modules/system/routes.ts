@@ -11,9 +11,14 @@ const MetaSchema = z.object({
   version: z.string(),
   locales: z.array(z.string()),
   features: z.record(z.string(), z.boolean()),
+  /** 'offline' when no model key is configured (development). */
+  assistantMode: z.enum(['live', 'offline']),
 });
 
-export async function systemRoutes(app: FastifyInstance, opts: { config: Config }) {
+export async function systemRoutes(
+  app: FastifyInstance,
+  opts: { config: Config; assistantMode: 'live' | 'offline' },
+) {
   defineRoute(
     app,
     {
@@ -45,6 +50,7 @@ export async function systemRoutes(app: FastifyInstance, opts: { config: Config 
       features: Object.fromEntries(
         (Object.keys(FEATURE_FLAGS) as FeatureFlag[]).map((f) => [f, isFeatureEnabled(f)]),
       ),
+      assistantMode: opts.assistantMode,
     }),
   );
 

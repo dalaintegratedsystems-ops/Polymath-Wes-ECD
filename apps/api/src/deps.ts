@@ -1,5 +1,15 @@
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { sql } from 'drizzle-orm';
-import { createDatabase, createEmbeddedDatabase, createFieldCrypto, schema, seed } from '@wes/db';
+import { ingestCorpus } from '@wes/agent';
+import {
+  createDatabase,
+  createEmbeddedDatabase,
+  createFieldCrypto,
+  schema,
+  seed,
+  storeKnowledgeSource,
+} from '@wes/db';
 import type { Config } from './config';
 import { createAgentServices } from './platform/agent';
 import { createConsoleOtpSender, createFileOtpSender, type AppDeps } from './platform/deps';
@@ -33,6 +43,29 @@ export async function createDeps(config: Config, log: (msg: string) => void) {
   if (!row || row.n === 0) {
     await seed(embedded.ownerDb, crypto);
     log(`Embedded database created at ${config.EMBEDDED_DB_DIR} and seeded with demo data.`);
+  }
+  // Keep the dev knowledge base in step with knowledge/ (unchanged files are skipped).
+  const dir = resolve(process.env.KNOWLEDGE_DIR ?? '../../knowledge');
+  if (existsSync(resolve(dir, 'sources.yaml'))) {
+    const report = await ingestCorpus({
+      dir,
+      embedder: agent.embedder,
+      store: (src) =>
+        storeKnowledgeSource(embedded.ownerDb, {
+          ...src,
+          chunks: src.chunks.map((c) => ({
+            ordinal: c.ordinal,
+            heading: c.heading,
+            citation: c.citation,
+            content: c.content,
+            tokenCount: c.tokenCount,
+            embedding: c.embedding,
+          })),
+        }),
+    });
+    log(
+      `Knowledge corpus ${report.corpusVersion}: ${report.results.map((r) => `${r.slug} (${r.outcome})`).join(', ')}`,
+    );
   }
   return { deps: { ...base, db: embedded.db } satisfies AppDeps, close: embedded.close };
 }

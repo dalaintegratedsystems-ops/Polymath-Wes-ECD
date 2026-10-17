@@ -83,7 +83,7 @@ export async function buildApp(options: BuildOptions): Promise<FastifyInstance> 
   registerAuthentication(app, tokens);
   registerIdempotency(app, options.idempotencyStore ?? createPostgresIdempotencyStore(deps.db));
 
-  await app.register(systemRoutes, { config });
+  await app.register(systemRoutes, { config, assistantMode: deps.agent.config.mode });
   await app.register(authRoutes, { deps, config, tokens });
   await app.register(centreRoutes, { deps });
   await app.register(childrenRoutes, { deps, config });

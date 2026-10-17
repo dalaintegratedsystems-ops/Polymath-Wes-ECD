@@ -155,3 +155,30 @@ export const BookIcon = (p: IconProps) => (
     <path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5Z" />
   </Svg>
 );
+
+export const ThumbUpIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M7 10.5v9H4.5a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z" />
+    <path d="M7 10.5 11 3a2.5 2.5 0 0 1 2.5 2.5V9h5a2 2 0 0 1 2 2.3l-1.2 6.5a2 2 0 0 1-2 1.7H7" />
+  </Svg>
+);
+
+export const ThumbDownIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M17 13.5v-9h2.5a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1Z" />
+    <path d="M17 13.5 13 21a2.5 2.5 0 0 1-2.5-2.5V15h-5a2 2 0 0 1-2-2.3l1.2-6.5a2 2 0 0 1 2-1.7H17" />
+  </Svg>
+);
+
+export const SpeakerIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z" />
+    <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />
+  </Svg>
+);
+
+export const PhoneIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M6.5 3.5h3l1.5 4-2 1.5a11 11 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 4.5 5.5a2 2 0 0 1 2-2Z" />
+  </Svg>
+);

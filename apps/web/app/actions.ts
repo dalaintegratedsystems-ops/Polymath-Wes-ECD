@@ -150,6 +150,25 @@ export async function confirmConsent(
   }
 }
 
+export async function sendFeedback(input: {
+  messageId: string;
+  rating: 'up' | 'down';
+  reason?: 'wrong' | 'not_helpful' | 'not_relevant_locally' | 'too_long' | 'unsafe' | 'other';
+}): Promise<string | null> {
+  const { token, membership } = await requireCentre();
+  try {
+    await api('/v1/assistant/feedback', {
+      method: 'POST',
+      token,
+      centreId: membership.centreId,
+      body: input,
+    });
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
 export async function signOut(): Promise<void> {
   const refresh = (await cookies()).get(COOKIES.refresh)?.value;
   if (refresh) {

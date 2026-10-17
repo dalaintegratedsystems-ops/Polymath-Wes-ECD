@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
   demoChat,
+  escalationDemo,
   demoChildren,
   demoGroups,
   demoHome,
@@ -13,7 +14,7 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { OfflineScreen } from '../screens/OfflineScreen';
 import { PlanScreen } from '../screens/PlanScreen';
 import { RegistrationScreen } from '../screens/RegistrationScreen';
-import { WesScreen } from '../screens/WesScreen';
+import { WesChatDemo } from './WesChat';
 
 const meta: Meta = { title: 'Screens', parameters: { layout: 'fullscreen' } };
 export default meta;
@@ -77,11 +78,24 @@ export const WeeklyPlanEmpty: Story = {
 
 export const AskWes: Story = {
   name: 'Ask Wes chat',
-  render: () => <WesScreen messages={demoChat} suggestions={demoSuggestions} />,
+  render: () => <WesChatDemo initial={demoChat} suggestions={demoSuggestions} />,
 };
 export const AskWesFirstRun: Story = {
   name: 'Ask Wes — first run',
-  render: () => <WesScreen messages={[]} suggestions={demoSuggestions} />,
+  render: () => <WesChatDemo initial={[]} suggestions={demoSuggestions} />,
 };
 
 export const Offline: Story = { render: () => <OfflineScreen /> };
+
+export const AskWesSafety: Story = {
+  name: 'Ask Wes — child-protection response',
+  render: () => (
+    <WesChatDemo
+      initial={[
+        { id: 'u1', role: 'user', text: 'A child told me someone at home hurts her.' },
+        { id: 'w1', role: 'wes', text: escalationDemo, safety: true },
+      ]}
+      suggestions={[]}
+    />
+  ),
+};

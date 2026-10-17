@@ -194,7 +194,7 @@ export const demoChat: ChatMessage[] = [
     id: 'w0',
     role: 'wes',
     text: 'Good question! Your application usually needs a set of written policies, like admissions and child protection.\n\nI’ll check the exact list against the official guidance once it’s loaded, and show you the source.',
-    citations: ['Registration guidance (placeholder)'],
+    citations: [{ n: 1, title: 'Registration guidance (placeholder)', anchor: 'Policies' }],
   },
 ];
 
@@ -203,3 +203,13 @@ export const demoSuggestions = [
   'Plan next week',
   'Ideas for a rainy day',
 ];
+
+/** The fixed safety response, for Storybook (the real one comes from the agent). */
+export const escalationDemo = [
+  'Thank you for telling me. What you describe could mean a child is not safe. Acting on it is the right thing to do.',
+  '',
+  '1. If the child is in danger right now, keep them with a safe adult and call the police on 10111.',
+  '2. Tell your centre’s child-protection person today.',
+  '3. Report it to a social worker at your local Department of Social Development office, or call Childline on 116 (free, 24 hours).',
+  '4. Write down what you saw or heard, in the child’s own words, with the date and time.',
+].join('\n');
