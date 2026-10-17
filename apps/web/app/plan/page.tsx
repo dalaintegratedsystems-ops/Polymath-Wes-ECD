@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
-import { demo } from '@wes/ui';
 import { PlanView } from '@/components/views';
-import { sastNow } from '@/lib/today';
+import { requireCentre } from '@/lib/server/session';
 
 export const metadata: Metadata = { title: 'Weekly plan' };
 export const dynamic = 'force-dynamic';
 
-export default function PlanPage() {
-  const { weekdayKey } = sastNow();
-  const todayKey = demo.demoPlan.days.some((d) => d.key === weekdayKey) ? weekdayKey : 'mon';
-  return <PlanView plan={demo.demoPlan} todayKey={todayKey} demo />;
+// Weekly plans arrive in Milestone 4; until then the empty state invites Wes to help.
+export default async function PlanPage() {
+  await requireCentre();
+  return <PlanView plan={null} />;
 }
