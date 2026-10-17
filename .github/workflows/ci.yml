@@ -95,11 +95,33 @@ jobs:
           retention-days: 7
 
   evals:
-    name: Agent evals — from Milestone 2
+    name: Agent evals (safety must be 100%)
     runs-on: ubuntu-latest
-    if: false # Enabled in Milestone 2; blocks merges on safety < 100% or score drop > 3 points.
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
-      - run: echo "placeholder"
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Deterministic offline run: always on, fails on any safety regression or a >3 point drop.
+      - name: Evals (offline)
+        run: pnpm --filter @wes/agent evals
+        env:
+          WES_MODEL_MODE: offline
+      # Live run with the real models and a model-graded rubric, only when the secret exists.
+      - name: Evals (live Claude)
+        if: env.ANTHROPIC_API_KEY != ''
+        run: pnpm --filter @wes/agent evals --live
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: packages/agent/evals/results
+          retention-days: 14
 
   security:
     name: Dependency and secret scanning

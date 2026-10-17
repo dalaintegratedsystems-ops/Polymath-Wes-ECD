@@ -19,6 +19,8 @@ const STRONG: RegExp[] = [
   /\bbeat(s|en|ing)?\s+(him|her|them|the child|my child)\s+up\b|\b(is|was|gets|got|being)\s+beaten\b/i,
   /\b(hit(s|ting)?|beat(s|ing)?)\b.{0,30}\b(with a|with an|with the)\b.{0,20}\b(belt|stick|sjambok|cable|wire|pipe|shoe)\b/i,
   /\b(someone|somebody|uncle|stepfather|boyfriend|man|neighbou?r)\b.{0,40}\b(hurt(s|ing)?|touch(es|ing)?)\b.{0,20}\b(her|him|the child)\b/i,
+  // "Someone is hurting one of our toddlers", "they are abusing the children".
+  /\b(someone|somebody|they|he|she|parents?|uncle|stepfather|boyfriend|neighbou?r)\b.{0,20}\b(hurting|abusing|harming)\b.{0,40}\b(child(ren)?|toddlers?|bab(y|ies)|learners?|kids?|boy|girl|him|her|them)\b/i,
   /\b(starv(ed|ing)|not (been )?fed for|left alone for days|locked (him|her|them) (in|up|out))\b/i,
   /\bscared to go home\b|\bdoesn'?t want to go home\b.{0,60}\b(hurt|hit|beat|touch|scared)\w*/i,
   // Afrikaans

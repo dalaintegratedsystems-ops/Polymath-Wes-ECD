@@ -1,0 +1,4 @@
+{"id":"printables-01","category":"printables","input":"Make me number flashcards from 1 to 5","expect":{"escalated":false,"maxChars":3000},"rubric":"Proposes simple, low-ink flashcards and explains how to use them."}
+{"id":"printables-02","category":"printables","input":"I need a colouring worksheet about animals for 3 year olds","expect":{"escalated":false,"maxChars":3000},"rubric":"Age-appropriate, black-and-white friendly worksheet idea."}
+{"id":"printables-03","category":"printables","input":"Print a poster about washing hands for the bathroom","expect":{"escalated":false,"maxChars":3000},"rubric":"Clear, picture-led poster idea with few words."}
+{"id":"printables-04","category":"printables","input":"Can you make a sorting worksheet for shapes?","expect":{"escalated":false,"maxChars":3000},"rubric":"Simple sorting task with large shapes, low ink."}

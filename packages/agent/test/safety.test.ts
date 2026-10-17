@@ -56,6 +56,7 @@ describe('safety pre-check', () => {
     'A child told me she is being beaten at home with a belt',
     'Ngicabanga ukuthi uhlukunyezwa ekhaya',
     'Ek dink sy word misbruik',
+    'I am worried, someone is hurting one of our toddlers at home',
   ])('flags child protection: %s', (text) => {
     expect(precheck(text)).toMatchObject({ risk: 'child_protection', childProtection: true });
   });

@@ -25,3 +25,6 @@ test-results/
 
 # Embedded dev database
 .data/
+
+# Eval run output
+packages/agent/evals/results/

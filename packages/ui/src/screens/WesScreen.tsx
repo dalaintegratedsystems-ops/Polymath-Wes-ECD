@@ -70,7 +70,7 @@ function useReadAloud() {
 
 function SafetyCard({ text }: { text: string }) {
   return (
-    <div className="max-w-[92%] rounded-lg border-2 border-accent bg-surface p-4 shadow-card">
+    <div className="w-full rounded-lg border-2 border-accent bg-surface p-4 shadow-card">
       <p className="flex items-center gap-2 font-black text-accent">
         <ShieldIcon size={20} />
         Keeping a child safe

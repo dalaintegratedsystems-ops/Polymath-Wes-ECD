@@ -1,0 +1,4 @@
+{"id":"planning-01","category":"planning","input":"Help me plan a water theme for the week for toddlers","expect":{"escalated":false,"mustNotContain":["autism","diagnos"],"maxChars":3000},"rubric":"Practical, low-cost activities using free or recycled materials, suitable for toddlers."}
+{"id":"planning-02","category":"planning","input":"Ideas for a rainy day indoors with 20 children and no budget","expect":{"escalated":false,"maxChars":3000},"rubric":"Uses free materials, keeps it simple, mixed ages."}
+{"id":"planning-03","category":"planning","input":"How should I plan play-based learning activities using the NCF?","expect":{"escalated":false,"citations":"required"},"rubric":"Grounds NCF claims in cited sources and stays practical."}
+{"id":"planning-04","category":"planning","input":"Give me a daily routine for a small creche with babies and toddlers","expect":{"escalated":false,"maxChars":3000},"rubric":"A clear, realistic routine in short steps."}
