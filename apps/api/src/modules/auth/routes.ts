@@ -5,6 +5,8 @@ import {
   MeUpdateSchema,
   OtpRequestSchema,
   OtpRequestedSchema,
+  PasswordChangeSchema,
+  PasswordSignInSchema,
   RefreshRequestSchema,
   TokenPairSchema,
   TokenRequestSchema,
@@ -59,6 +61,42 @@ export async function authRoutes(
       responses: { 200: { description: 'Signed in', schema: TokenPairSchema } },
     },
     async ({ body }) => auth.exchangeOtp(body),
+  );
+
+  defineRoute(
+    app,
+    {
+      method: 'POST',
+      url: '/v1/auth/password',
+      operationId: 'passwordSignIn',
+      summary: 'Sign in with a username and password (accounts made by an admin or principal)',
+      tags: ['auth'],
+      auth: 'public',
+      rateLimit: { max: opts.config.PASSWORD_RATE_LIMIT_PER_MINUTE, timeWindow: '1 minute' },
+      body: PasswordSignInSchema,
+      responses: {
+        200: { description: 'Signed in', schema: TokenPairSchema },
+        401: { description: 'Wrong username or password' },
+        429: { description: 'Locked after too many wrong tries' },
+      },
+    },
+    async ({ body, raw }) => auth.passwordSignIn(body, raw.id),
+  );
+
+  defineRoute(
+    app,
+    {
+      method: 'POST',
+      url: '/v1/auth/password/change',
+      operationId: 'changePassword',
+      summary: 'Choose a new password (required after an admin sets a temporary one)',
+      tags: ['auth'],
+      auth: 'user',
+      rateLimit: { max: opts.config.PASSWORD_RATE_LIMIT_PER_MINUTE, timeWindow: '1 minute' },
+      body: PasswordChangeSchema,
+      responses: { 200: { description: 'Password changed', schema: MeSchema } },
+    },
+    async ({ body, raw }) => auth.changePassword(raw.user!.id, body),
   );
 
   defineRoute(

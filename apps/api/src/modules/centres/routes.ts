@@ -30,6 +30,7 @@ function toCentre(row: typeof schema.centres.$inferSelect): Centre {
     childCount: row.childCount,
     registrationStatus: row.registrationStatus,
     defaultLocale: row.defaultLocale,
+    logoUrl: row.logoBlobKey ? `/v1/centres/${row.id}/logo?v=${row.logoBlobKey.slice(0, 8)}` : null,
   };
 }
 

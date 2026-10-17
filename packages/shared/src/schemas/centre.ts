@@ -22,11 +22,13 @@ export const CentreSchema = z
     childCount: z.int().min(0).max(500),
     registrationStatus: z.enum(REGISTRATION_STATUSES),
     defaultLocale: LocaleSchema,
+    /** API path of the centre logo, or null. */
+    logoUrl: z.string().nullable(),
   })
   .meta({ id: 'Centre' });
 export type Centre = z.infer<typeof CentreSchema>;
 
-export const CentreUpdateSchema = CentreSchema.omit({ id: true }).partial().meta({
+export const CentreUpdateSchema = CentreSchema.omit({ id: true, logoUrl: true }).partial().meta({
   id: 'CentreUpdate',
 });
 
@@ -35,6 +37,7 @@ export const CentreCreateSchema = CentreSchema.omit({
   id: true,
   registrationStatus: true,
   defaultLocale: true,
+  logoUrl: true,
 })
   .extend({ addressLine: z.string().max(200).default('') })
   .refine((c) => c.agesServedMinMonths <= c.agesServedMaxMonths, {

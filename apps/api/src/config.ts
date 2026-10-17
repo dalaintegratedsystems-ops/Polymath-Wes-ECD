@@ -30,6 +30,9 @@ const ConfigSchema = z.object({
   OTP_PEPPER: z.string().min(16).default('dev-only-otp-pepper-change-me'),
   OTP_TTL_SECONDS: z.coerce.number().int().default(300),
   OTP_MAX_ATTEMPTS: z.coerce.number().int().default(5),
+  PASSWORD_MAX_FAILURES: z.coerce.number().int().min(3).default(5),
+  PASSWORD_LOCK_MINUTES: z.coerce.number().int().min(1).default(15),
+  PASSWORD_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().default(10),
   /** Sign-in codes allowed per phone in 15 minutes. */
   OTP_MAX_PER_WINDOW: z.coerce.number().int().default(3),
 });

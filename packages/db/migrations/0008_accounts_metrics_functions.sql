@@ -116,7 +116,7 @@ BEGIN
 END $$;
 --> statement-breakpoint
 
-CREATE OR REPLACE FUNCTION app.manage_set_password(p_user_id uuid, p_hash text) RETURNS void
+CREATE OR REPLACE FUNCTION app.manage_set_password(p_user_id uuid, p_hash text) RETURNS boolean
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
 BEGIN
   IF NOT app.can_manage_user(p_user_id) THEN
@@ -124,7 +124,9 @@ BEGIN
   END IF;
   UPDATE users SET password_hash = p_hash, must_change_password = true, failed_logins = 0, locked_until = NULL
   WHERE id = p_user_id AND username IS NOT NULL;
+  IF NOT FOUND THEN RETURN false; END IF;
   UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = p_user_id AND revoked_at IS NULL;
+  RETURN true;
 END $$;
 --> statement-breakpoint
 
@@ -245,9 +247,9 @@ BEGIN
     'centres', jsonb_build_object(
       'total', (SELECT count(*) FROM fc),
       'new', (SELECT count(*) FROM centres WHERE id IN (SELECT id FROM fc) AND created_at::date BETWEEN p_from AND p_to),
-      'byProvince', coalesce((SELECT jsonb_agg(jsonb_build_object('province', province, 'count', n) ORDER BY n DESC)
+      'byProvince', coalesce((SELECT jsonb_agg(jsonb_build_object('label', province, 'count', n) ORDER BY n DESC)
                               FROM (SELECT province, count(*) n FROM centres WHERE id IN (SELECT id FROM fc) GROUP BY province) x), '[]'::jsonb),
-      'funnel', coalesce((SELECT jsonb_agg(jsonb_build_object('status', s, 'count', n))
+      'funnel', coalesce((SELECT jsonb_agg(jsonb_build_object('label', s, 'count', n))
                           FROM (SELECT registration_status s, count(*) n FROM centres WHERE id IN (SELECT id FROM fc) GROUP BY 1) x), '[]'::jsonb),
       'childrenActive', (SELECT count(*) FROM children WHERE centre_id IN (SELECT id FROM fc) AND status = 'active')
     ),
@@ -279,12 +281,12 @@ BEGIN
       'avgLatencyMs', (SELECT round(avg(latency_ms)) FROM runs),
       'errors', (SELECT count(*) FROM runs WHERE error IS NOT NULL),
       'escalations', (SELECT count(*) FROM runs WHERE escalated),
-      'topIntents', coalesce((SELECT jsonb_agg(jsonb_build_object('intent', intent, 'count', n) ORDER BY n DESC)
+      'topIntents', coalesce((SELECT jsonb_agg(jsonb_build_object('label', intent, 'count', n) ORDER BY n DESC)
                               FROM (SELECT intent, count(*) n FROM runs WHERE intent IS NOT NULL GROUP BY 1 ORDER BY 2 DESC LIMIT 8) x), '[]'::jsonb),
       'feedback', jsonb_build_object(
         'up', (SELECT count(*) FROM fb WHERE rating = 'up'),
         'down', (SELECT count(*) FROM fb WHERE rating = 'down'),
-        'reasons', coalesce((SELECT jsonb_agg(jsonb_build_object('reason', reason, 'count', n) ORDER BY n DESC)
+        'reasons', coalesce((SELECT jsonb_agg(jsonb_build_object('label', reason, 'count', n) ORDER BY n DESC)
                              FROM (SELECT reason, count(*) n FROM fb WHERE rating = 'down' AND reason IS NOT NULL GROUP BY 1) x), '[]'::jsonb)
       )
     )

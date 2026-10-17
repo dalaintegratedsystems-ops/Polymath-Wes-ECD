@@ -1,5 +1,6 @@
 import {
   boolean,
+  customType,
   date,
   primaryKey,
   index,
@@ -171,4 +172,23 @@ export const refreshTokens = pgTable(
     uniqueIndex('refresh_token_hash_uq').on(t.tokenHash),
     index('refresh_family_idx').on(t.familyId),
   ],
+);
+
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => 'bytea' });
+
+/**
+ * Profile photos and centre logos: small (resized on the phone, metadata stripped on the
+ * server), so they live in Postgres with RLS rather than in blob storage. Never children.
+ */
+export const profileImages = pgTable(
+  'profile_images',
+  {
+    id: id(),
+    ownerKind: text('owner_kind', { enum: ['user', 'centre'] }).notNull(),
+    ownerId: uuid('owner_id').notNull(),
+    mimeType: text('mime_type').notNull(),
+    bytes: bytea('bytes').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex('profile_images_owner_uq').on(t.ownerKind, t.ownerId)],
 );

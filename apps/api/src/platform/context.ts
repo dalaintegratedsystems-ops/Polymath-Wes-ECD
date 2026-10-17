@@ -11,8 +11,21 @@ declare module 'fastify' {
   }
 }
 
-/** Verify the bearer token on routes declared `auth: 'user'`. */
-export function registerAuthentication(app: FastifyInstance, tokens: TokenService): void {
+/** Routes a user who must choose a new password can still reach. */
+const ALLOWED_BEFORE_PASSWORD_CHANGE = new Set(['/v1/me', '/v1/auth/password/change']);
+
+/**
+ * Verify the bearer token on routes declared `auth: 'user'`, then check the account itself on
+ * every request: deactivation takes effect at once (not when the token expires), and an
+ * admin-set temporary password must be replaced before anything else. The same lookup records
+ * one activity row per user per day for the dashboards (no content, just "was active").
+ */
+export function registerAuthentication(
+  app: FastifyInstance,
+  tokens: TokenService,
+  deps: AppDeps,
+): void {
+  const recorded = new Set<string>();
   app.addHook('preHandler', async (request) => {
     if (request.routeOptions.config.auth !== 'user') return;
     const header = request.headers.authorization;
@@ -20,7 +33,34 @@ export function registerAuthentication(app: FastifyInstance, tokens: TokenServic
       throw new AppError('unauthenticated', 'Please sign in.');
     }
     const claims = await tokens.verifyAccess(header.slice(7));
-    request.user = { id: claims.userId };
+    const userId = claims.userId;
+    const day = deps.now().toISOString().slice(0, 10);
+    const key = `${userId}:${day}`;
+    const account = await withRequestContext(
+      deps.db,
+      { userId, centreId: null, role: null },
+      async (tx) => {
+        const [u] = await tx
+          .select({ status: schema.users.status, mustChange: schema.users.mustChangePassword })
+          .from(schema.users)
+          .where(eq(schema.users.id, userId));
+        if (u?.status === 'active' && !recorded.has(key)) {
+          await tx.insert(schema.userActivityDays).values({ userId, day }).onConflictDoNothing();
+        }
+        return u;
+      },
+    );
+    if (!account || account.status !== 'active') {
+      throw new AppError('unauthenticated', 'Please sign in again.');
+    }
+    if (recorded.size > 50_000) recorded.clear();
+    recorded.add(key);
+    if (account.mustChange && !ALLOWED_BEFORE_PASSWORD_CHANGE.has(request.routeOptions.url ?? '')) {
+      throw new AppError('forbidden', 'Choose a new password first.', [
+        { path: 'account', message: 'password_change_required' },
+      ]);
+    }
+    request.user = { id: userId };
   });
 }
 

@@ -15,7 +15,10 @@ import { assistantRoutes } from './modules/assistant/routes';
 import { authRoutes } from './modules/auth/routes';
 import { centreRoutes } from './modules/centres/routes';
 import { childrenRoutes } from './modules/children/routes';
+import { dashboardRoutes } from './modules/dashboards/routes';
+import { peopleRoutes } from './modules/people/routes';
 import { phase2Routes } from './modules/phase2/routes';
+import { profileRoutes } from './modules/profile/routes';
 import { systemRoutes } from './modules/system/routes';
 
 export interface BuildOptions {
@@ -80,7 +83,7 @@ export async function buildApp(options: BuildOptions): Promise<FastifyInstance> 
 
   registerRouteRegistry(app);
   registerErrorHandling(app);
-  registerAuthentication(app, tokens);
+  registerAuthentication(app, tokens, deps);
   registerIdempotency(app, options.idempotencyStore ?? createPostgresIdempotencyStore(deps.db));
 
   await app.register(systemRoutes, { config, assistantMode: deps.agent.config.mode });
@@ -88,6 +91,9 @@ export async function buildApp(options: BuildOptions): Promise<FastifyInstance> 
   await app.register(centreRoutes, { deps });
   await app.register(childrenRoutes, { deps, config });
   await app.register(assistantRoutes, { deps });
+  await app.register(peopleRoutes, { deps });
+  await app.register(dashboardRoutes, { deps });
+  await app.register(profileRoutes, { deps });
   await app.register(phase2Routes);
   if (options.register) await options.register(app);
 

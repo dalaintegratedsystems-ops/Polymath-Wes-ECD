@@ -26,6 +26,7 @@ export const PERMISSIONS = {
   'plan:write': ['principal', 'practitioner'],
   'assistant:use': ['principal', 'practitioner', 'parent'],
   'aggregate:read': ['funder', 'admin'],
+  'dashboard:read': ['principal', 'practitioner'],
 } as const satisfies Record<string, readonly Role[]>;
 
 export type Permission = keyof typeof PERMISSIONS;

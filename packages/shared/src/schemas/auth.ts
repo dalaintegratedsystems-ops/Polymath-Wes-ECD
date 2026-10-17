@@ -37,6 +37,12 @@ export const MeSchema = z
     id: UuidSchema,
     displayName: z.string(),
     locale: z.enum(['en', 'af', 'xh', 'zu']),
+    username: z.string().nullable(),
+    /** API path of the profile photo, or null. */
+    avatarUrl: z.string().nullable(),
+    /** Accounts created by an admin must choose their own password first. */
+    mustChangePassword: z.boolean(),
+    isPlatformAdmin: z.boolean(),
     memberships: z.array(MembershipSchema),
   })
   .meta({ id: 'Me' });
