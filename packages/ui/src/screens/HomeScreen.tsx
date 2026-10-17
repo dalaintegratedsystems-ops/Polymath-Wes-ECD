@@ -48,7 +48,16 @@ export function HomeScreen({
             </span>
             Wes
           </span>
-          <Avatar name={data.userName} size={40} />
+          {renderLink({
+            href: '/account',
+            className: 'rounded-full',
+            children: (
+              <>
+                <span className="sr-only">Your account</span>
+                <Avatar name={data.userName} size={40} />
+              </>
+            ),
+          })}
         </div>
         <h1 className="mt-5 text-[2rem] leading-[1.1] font-black tracking-tight text-ink">
           {GREETING[greetingFor(data.hour)]},

@@ -294,7 +294,8 @@ export function ConsentScreen({
             {childName} is in your register
           </h1>
           <p className="mt-2 text-ink-muted">
-            Consent is saved with the date and time. {who} can change their mind at any time.
+            Consent is saved with the date and time. {guardianName ?? 'They'} can change their mind
+            at any time.
           </p>
           <div className="mt-8 grid w-full gap-3">
             {renderLink({

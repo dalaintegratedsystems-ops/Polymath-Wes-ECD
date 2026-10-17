@@ -99,7 +99,7 @@ export function ChildrenScreen({
                         <p className="text-sm text-ink-muted">Not in the register yet</p>
                       </div>
                       {renderLink({
-                        href: `/children/${c.id}/consent?name=${encodeURIComponent(c.firstName)}`,
+                        href: `/children/${c.id}/consent`,
                         className: buttonClass({ variant: 'primary' }),
                         children: 'Get consent',
                       })}

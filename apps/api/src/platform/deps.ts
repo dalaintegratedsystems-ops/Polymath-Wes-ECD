@@ -24,6 +24,19 @@ export function createConsoleOtpSender(log: (msg: string) => void): OtpSender {
   };
 }
 
+/** Development/e2e: also writes each PIN as a JSON line so automated tests can read it. */
+export function createFileOtpSender(file: string, inner: OtpSender): OtpSender {
+  return {
+    channel: inner.channel,
+    async send(phone, code, purpose) {
+      await inner.send(phone, code, purpose);
+      const { appendFile } = await import('node:fs/promises');
+      const line = JSON.stringify({ phone, code, purpose, at: new Date().toISOString() });
+      await appendFile(file, `${line}\n`);
+    },
+  };
+}
+
 /** Test helper: remembers the last PIN sent to each phone. */
 export function createMemoryOtpSender(): OtpSender & { last(phone: string): string | undefined } {
   const sent = new Map<string, string>();

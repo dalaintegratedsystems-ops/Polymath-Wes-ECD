@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { createDatabase, createEmbeddedDatabase, createFieldCrypto, schema, seed } from '@wes/db';
 import type { Config } from './config';
-import { createConsoleOtpSender, type AppDeps } from './platform/deps';
+import { createConsoleOtpSender, createFileOtpSender, type AppDeps } from './platform/deps';
 
 /**
  * Production wiring: Postgres as wes_app. Development without DATABASE_URL: an embedded,
@@ -10,7 +10,11 @@ import { createConsoleOtpSender, type AppDeps } from './platform/deps';
  */
 export async function createDeps(config: Config, log: (msg: string) => void) {
   const crypto = createFieldCrypto();
-  const base = { crypto, otpSender: createConsoleOtpSender(log), now: () => new Date() };
+  const consoleSender = createConsoleOtpSender(log);
+  const otpSender = config.OTP_OUTBOX_FILE
+    ? createFileOtpSender(config.OTP_OUTBOX_FILE, consoleSender)
+    : consoleSender;
+  const base = { crypto, otpSender, now: () => new Date() };
 
   if (config.DATABASE_URL) {
     const { db, close } = createDatabase(config.DATABASE_URL);

@@ -20,6 +20,8 @@ const ConfigSchema = z.object({
     .default(30 * 24 * 3600),
 
   OTP_DELIVERY: z.enum(['console', 'whatsapp', 'sms']).default('console'),
+  /** Development/e2e only: also append sent PINs as JSON lines to this file. */
+  OTP_OUTBOX_FILE: z.string().optional(),
   OTP_PEPPER: z.string().min(16).default('dev-only-otp-pepper-change-me'),
   OTP_TTL_SECONDS: z.coerce.number().int().default(300),
   OTP_MAX_ATTEMPTS: z.coerce.number().int().default(5),
@@ -44,6 +46,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     if (!config.DATABASE_URL) throw new Error('DATABASE_URL must be set in production');
     if (config.OTP_DELIVERY === 'console')
       throw new Error('OTP_DELIVERY=console is not allowed in production');
+    if (config.OTP_OUTBOX_FILE) throw new Error('OTP_OUTBOX_FILE is not allowed in production');
   }
   return config;
 }
