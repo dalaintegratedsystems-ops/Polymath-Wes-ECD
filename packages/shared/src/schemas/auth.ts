@@ -42,6 +42,13 @@ export const MeSchema = z
   .meta({ id: 'Me' });
 export type Me = z.infer<typeof MeSchema>;
 
+export const MeUpdateSchema = z
+  .object({
+    displayName: z.string().trim().min(1).max(60).optional(),
+    locale: z.enum(['en', 'af', 'xh', 'zu']).optional(),
+  })
+  .meta({ id: 'MeUpdate' });
+
 export const TokenPairSchema = z
   .object({
     accessToken: z.string(),

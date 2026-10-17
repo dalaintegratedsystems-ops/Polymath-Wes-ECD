@@ -7,11 +7,8 @@ import { loadConfig, type Config } from './config';
 import { registerAuthentication } from './platform/context';
 import type { AppDeps } from './platform/deps';
 import { registerErrorHandling } from './platform/errors';
-import {
-  createMemoryIdempotencyStore,
-  registerIdempotency,
-  type IdempotencyStore,
-} from './platform/idempotency';
+import { registerIdempotency, type IdempotencyStore } from './platform/idempotency';
+import { createPostgresIdempotencyStore } from './platform/idempotency-pg';
 import { registerRouteRegistry } from './platform/route';
 import { createTokenService } from './platform/tokens';
 import { authRoutes } from './modules/auth/routes';
@@ -83,7 +80,7 @@ export async function buildApp(options: BuildOptions): Promise<FastifyInstance> 
   registerRouteRegistry(app);
   registerErrorHandling(app);
   registerAuthentication(app, tokens);
-  registerIdempotency(app, options.idempotencyStore ?? createMemoryIdempotencyStore());
+  registerIdempotency(app, options.idempotencyStore ?? createPostgresIdempotencyStore(deps.db));
 
   await app.register(systemRoutes, { config });
   await app.register(authRoutes, { deps, config, tokens });

@@ -173,3 +173,17 @@ describe('tokens', () => {
     expect(res.statusCode).toBe(501);
   });
 });
+
+describe('profile', () => {
+  it('lets a new user set their name and language', async () => {
+    const { accessToken } = await signIn(h, '+27733334444');
+    const res = await h.app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: { ...bearer(accessToken), 'idempotency-key': 'profile-key-0001' },
+      payload: { displayName: 'Sindi', locale: 'xh' },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchObject({ displayName: 'Sindi', locale: 'xh' });
+  });
+});

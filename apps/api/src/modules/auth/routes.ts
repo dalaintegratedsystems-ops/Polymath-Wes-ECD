@@ -1,13 +1,15 @@
 import type { FastifyInstance } from 'fastify';
+import { eq } from 'drizzle-orm';
 import {
   MeSchema,
+  MeUpdateSchema,
   OtpRequestSchema,
   OtpRequestedSchema,
   RefreshRequestSchema,
   TokenPairSchema,
   TokenRequestSchema,
 } from '@wes/shared';
-import { withRequestContext } from '@wes/db';
+import { schema, withRequestContext } from '@wes/db';
 import type { Config } from '../../config';
 import { userContext } from '../../platform/context';
 import type { AppDeps } from '../../platform/deps';
@@ -105,5 +107,27 @@ export async function authRoutes(
     },
     async ({ raw }) =>
       withRequestContext(opts.deps.db, userContext(raw), (tx) => loadMe(tx, raw.user!.id)),
+  );
+
+  defineRoute(
+    app,
+    {
+      method: 'PATCH',
+      url: '/v1/me',
+      operationId: 'updateMe',
+      summary: 'Update your name or language',
+      tags: ['auth'],
+      auth: 'user',
+      idempotent: true,
+      body: MeUpdateSchema,
+      responses: { 200: { description: 'Current user', schema: MeSchema } },
+    },
+    async ({ body, raw }) =>
+      withRequestContext(opts.deps.db, userContext(raw), async (tx) => {
+        if (Object.keys(body).length > 0) {
+          await tx.update(schema.users).set(body).where(eq(schema.users.id, raw.user!.id));
+        }
+        return loadMe(tx, raw.user!.id);
+      }),
   );
 }

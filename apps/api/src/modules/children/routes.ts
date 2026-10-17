@@ -76,8 +76,10 @@ export async function childrenRoutes(
             firstName: schema.children.firstName,
             birthMonth: schema.children.birthMonth,
             groupId: schema.children.groupId,
+            groupName: schema.groups.name,
           })
           .from(schema.children)
+          .leftJoin(schema.groups, eq(schema.groups.id, schema.children.groupId))
           .where(and(eq(schema.children.centreId, params.id), eq(schema.children.status, 'active')))
           .orderBy(schema.children.firstName);
         const pending = await tx
@@ -86,8 +88,10 @@ export async function childrenRoutes(
             firstName: schema.childIntakes.firstName,
             birthMonth: schema.childIntakes.birthMonth,
             groupId: schema.childIntakes.groupId,
+            groupName: schema.groups.name,
           })
           .from(schema.childIntakes)
+          .leftJoin(schema.groups, eq(schema.groups.id, schema.childIntakes.groupId))
           .where(eq(schema.childIntakes.centreId, params.id))
           .orderBy(schema.childIntakes.firstName);
         await audit(tx, raw, ctx, {
@@ -183,6 +187,7 @@ export async function childrenRoutes(
           firstName: body.firstName,
           birthMonth: body.birthMonth,
           groupId: body.groupId ?? null,
+          groupName: null,
           status: 'awaiting_consent' as const,
         };
       });

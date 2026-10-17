@@ -519,6 +519,110 @@
             }
           }
         }
+      },
+      "patch": {
+        "operationId": "updateMe",
+        "summary": "Update your name or language",
+        "tags": ["auth"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "Unique key (8–128 chars) so retries over flaky networks never double-write.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "displayName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "locale": {
+                    "type": "string",
+                    "enum": ["en", "af", "xh", "zu"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "locale": {
+                      "type": "string",
+                      "enum": ["en", "af", "xh", "zu"]
+                    },
+                    "memberships": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "centreId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "centreName": {
+                            "type": "string"
+                          },
+                          "role": {
+                            "type": "string",
+                            "enum": ["principal", "practitioner", "parent", "funder", "admin"]
+                          }
+                        },
+                        "required": ["centreId", "centreName", "role"],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": ["id", "displayName", "locale", "memberships"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/centres": {
@@ -1133,12 +1237,22 @@
                               }
                             ]
                           },
+                          "groupName": {
+                            "type": ["string", "null"]
+                          },
                           "status": {
                             "type": "string",
                             "enum": ["active", "awaiting_consent"]
                           }
                         },
-                        "required": ["id", "firstName", "birthMonth", "groupId", "status"],
+                        "required": [
+                          "id",
+                          "firstName",
+                          "birthMonth",
+                          "groupId",
+                          "groupName",
+                          "status"
+                        ],
                         "additionalProperties": false
                       }
                     }
@@ -1277,12 +1391,15 @@
                         }
                       ]
                     },
+                    "groupName": {
+                      "type": ["string", "null"]
+                    },
                     "status": {
                       "type": "string",
                       "enum": ["active", "awaiting_consent"]
                     }
                   },
-                  "required": ["id", "firstName", "birthMonth", "groupId", "status"],
+                  "required": ["id", "firstName", "birthMonth", "groupId", "groupName", "status"],
                   "additionalProperties": false
                 }
               }

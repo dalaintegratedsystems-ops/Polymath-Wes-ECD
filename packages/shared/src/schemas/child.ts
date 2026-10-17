@@ -37,6 +37,7 @@ export const ChildListItemSchema = z
     firstName: z.string(),
     birthMonth: BirthMonthSchema,
     groupId: UuidSchema.nullable(),
+    groupName: z.string().nullable(),
     status: z.enum(['active', 'awaiting_consent']),
   })
   .meta({ id: 'ChildListItem' });
