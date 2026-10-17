@@ -50,6 +50,20 @@
       "when": 1792270203452,
       "tag": "0006_assistant_members",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792277015742,
+      "tag": "0007_accounts_profiles",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792277124439,
+      "tag": "0008_accounts_metrics_functions",
+      "breakpoints": true
     }
   ]
 }
