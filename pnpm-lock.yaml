@@ -158,6 +158,12 @@ importers:
 
   packages/db:
     dependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.5.10
+        version: 0.5.10
+      '@electric-sql/pglite-pgvector':
+        specifier: ^0.0.11
+        version: 0.0.11(@electric-sql/pglite@0.5.10)
       '@wes/shared':
         specifier: workspace:^
         version: link:../shared
@@ -168,12 +174,6 @@ importers:
         specifier: ^3
         version: 3.4.9
     devDependencies:
-      '@electric-sql/pglite':
-        specifier: ^0.5.10
-        version: 0.5.10
-      '@electric-sql/pglite-pgvector':
-        specifier: ^0.0.11
-        version: 0.0.11(@electric-sql/pglite@0.5.10)
       drizzle-kit:
         specifier: ^0.31
         version: 0.31.11

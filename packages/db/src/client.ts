@@ -9,10 +9,22 @@ export type Schema = typeof schema;
 export type Database = PgDatabase<PgQueryResultHKT, Schema, any>;
 export type Transaction = Parameters<Parameters<Database['transaction']>[0]>[0];
 
+/**
+ * When the connection itself is privileged (embedded PGlite in dev and tests runs as a
+ * superuser), every request transaction must first drop to the RLS-restricted role.
+ * Production connects as `wes_app` directly and needs no switch.
+ */
+const ASSUME_ROLE = Symbol.for('wes.assumeRole');
+
+export function assumeRoleOnEachTransaction<T extends object>(db: T, role: 'wes_app' | 'wes_worker'): T {
+  Object.defineProperty(db, ASSUME_ROLE, { value: role, enumerable: false });
+  return db;
+}
+
 export function createDatabase(url: string, options: { max?: number } = {}) {
-  const client = postgres(url, { max: options.max ?? 10, prepare: false });
+  const client = postgres(url, { max: options.max ?? 10, prepare: false, onnotice: () => {} });
   const db = drizzle(client, { schema });
-  return { db, close: () => client.end() };
+  return { db: db as unknown as Database, close: () => client.end() };
 }
 
 /**
@@ -26,13 +38,17 @@ export interface RequestContext {
   role: 'principal' | 'practitioner' | 'parent' | 'funder' | 'admin' | 'system' | null;
 }
 
-/** Run `fn` in a transaction scoped to `ctx`. All centre data access must go through this. */
+export const ANONYMOUS: RequestContext = { userId: null, centreId: null, role: null };
+
+/** Run `fn` in a transaction scoped to `ctx`. All data access from the API goes through this. */
 export async function withRequestContext<T>(
   db: Database,
   ctx: RequestContext,
   fn: (tx: Transaction) => Promise<T>,
 ): Promise<T> {
+  const role = (db as unknown as Record<symbol, string | undefined>)[ASSUME_ROLE];
   return db.transaction(async (tx) => {
+    if (role) await tx.execute(sql.raw(`SET LOCAL ROLE ${role}`));
     await tx.execute(sql`select
       set_config('app.user_id', ${ctx.userId ?? ''}, true),
       set_config('app.centre_id', ${ctx.centreId ?? ''}, true),

@@ -15,6 +15,20 @@
       "when": 1792102350729,
       "tag": "0001_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792257686715,
+      "tag": "0002_auth",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792257823285,
+      "tag": "0003_otp_purpose",
+      "breakpoints": true
     }
   ]
 }

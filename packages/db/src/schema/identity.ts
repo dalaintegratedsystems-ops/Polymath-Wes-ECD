@@ -106,6 +106,10 @@ export const otpChallenges = pgTable(
     phoneE164: text('phone_e164').notNull(),
     codeHash: text('code_hash').notNull(),
     channel: text('channel', { enum: ['whatsapp', 'sms', 'console'] }).notNull(),
+    /** 'sign_in' for login codes; 'consent' when a guardian confirms consent for a child. */
+    purpose: text('purpose', { enum: ['sign_in', 'consent'] }).notNull().default('sign_in'),
+    /** For consent codes: the pending child id the code confirms. */
+    subjectId: uuid('subject_id'),
     attempts: integer('attempts').notNull().default(0),
     expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
     consumedAt: timestamp('consumed_at', { withTimezone: true }),
