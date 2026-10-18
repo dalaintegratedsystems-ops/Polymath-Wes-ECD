@@ -6,9 +6,10 @@ import {
   type KnownNames,
   type ToolServices,
 } from '@wes/agent';
-import { AppError, type AssistantTurn } from '@wes/shared';
+import { AppError, type AssistantTurn, type AuditGap } from '@wes/shared';
 import { schema, searchKnowledge, withRequestContext, type RequestContext } from '@wes/db';
 import type { AppDeps } from '../../platform/deps';
+import { registrationProgress, stepLabel } from '../compliance/service';
 
 /** Everything the pipeline needs about the caller's centre, loaded in one transaction. */
 export interface TurnContext {
@@ -159,6 +160,31 @@ export function toolServices(deps: AppDeps, ctx: RequestContext): ToolServices {
           .from(schema.complianceItems)
           .orderBy(asc(schema.complianceItems.sortOrder)),
       );
+    },
+    async registrationProgress() {
+      return withRequestContext(deps.db, ctx, async (tx) => {
+        const progress = await registrationProgress(tx, ctx.centreId!, deps.now());
+        const [audit] = await tx
+          .select({ gaps: schema.auditRuns.gaps })
+          .from(schema.auditRuns)
+          .where(eq(schema.auditRuns.centreId, ctx.centreId!))
+          .orderBy(desc(schema.auditRuns.createdAt))
+          .limit(1);
+        return {
+          percent: progress.percent,
+          steps: progress.steps.map((s) => ({
+            step: stepLabel(s.id),
+            status: s.status,
+            detail: s.detail,
+          })),
+          openItems: ((audit?.gaps ?? []) as AuditGap[]).map((g) => ({
+            title: g.title,
+            priority: g.priority,
+            action: g.action,
+          })),
+          expiringDocuments: progress.expiringDocuments,
+        };
+      });
     },
     async createReminder({ message, dueDate }) {
       return withRequestContext(deps.db, ctx, async (tx) => {

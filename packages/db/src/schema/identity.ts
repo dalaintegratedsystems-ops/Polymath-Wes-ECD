@@ -52,6 +52,8 @@ export const centres = pgTable('centres', {
   /** Person the centre designates for child-protection concerns (escalation flow). */
   designatedSafeguardingUserId: uuid('designated_safeguarding_user_id'),
   logoBlobKey: text('logo_blob_key'),
+  /** When the centre last built its registration application pack. */
+  registrationPackAt: timestamp('registration_pack_at', { withTimezone: true }),
   ...timestamps(),
 });
 

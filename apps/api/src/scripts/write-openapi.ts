@@ -1,4 +1,5 @@
 // Writes the OpenAPI document to docs/openapi.json so it can be reviewed in pull requests.
+import { createMemoryBlobStore } from '../platform/blob';
 import { writeFile } from 'node:fs/promises';
 import { createEmbeddedDatabase, createFieldCrypto } from '@wes/db';
 import { buildApp } from '../app';
@@ -15,6 +16,7 @@ const app = await buildApp({
       Buffer.alloc(32, 2).toString('base64'),
     ),
     otpSender: createMemoryOtpSender(),
+    blobs: createMemoryBlobStore(),
     agent: createAgentServices({}),
     now: () => new Date(),
   },

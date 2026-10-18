@@ -1,0 +1,1 @@
+ALTER TABLE "centres" ADD COLUMN "registration_pack_at" timestamp with time zone;

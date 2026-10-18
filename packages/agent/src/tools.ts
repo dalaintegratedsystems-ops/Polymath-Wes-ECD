@@ -5,6 +5,7 @@ import type { ToolDef } from './model';
 export const TOOL_NAMES = [
   'search_knowledge',
   'get_compliance_checklist',
+  'get_registration_progress',
   'run_self_audit',
   'generate_policy_draft',
   'build_application_pack',
@@ -34,6 +35,13 @@ export interface ToolServices {
     { code: string; category: string; title: string; guidance: string }[]
   >;
   createReminder(input: { message: string; dueDate: string }): Promise<{ id: string }>;
+  /** The centre's registration journey and latest self-audit gaps (Milestone 3). */
+  registrationProgress?(): Promise<{
+    percent: number;
+    steps: { step: string; status: string; detail: string }[];
+    openItems: { title: string; priority: number; action: string }[];
+    expiringDocuments: number;
+  }>;
 }
 
 export interface ToolContext {
@@ -103,6 +111,18 @@ export const TOOLS: ToolDefinition[] = [
     roles: STAFF,
     async run(_input, ctx) {
       return { items: await ctx.services.complianceChecklist() };
+    },
+  }),
+  defineTool({
+    name: 'get_registration_progress',
+    description:
+      "Look up this centre's own registration progress: which journey steps are done, open items from its latest self-audit, and documents that are expired or need renewing soon. Use when the person asks what is left to do for registration.",
+    input: z.object({}),
+    roles: STAFF,
+    async run(_input, ctx) {
+      if (!ctx.services.registrationProgress)
+        return { note: 'Registration progress is not available.' };
+      return ctx.services.registrationProgress();
     },
   }),
   defineTool({

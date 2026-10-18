@@ -18,7 +18,8 @@ export interface HomeData {
   centreName: string;
   dateLabel: string;
   hour: number;
-  registration: { percent: number; stepsLeft: number; nextStep: string };
+  /** Registration progress for staff; parents do not see it. */
+  registration?: { percent: number; stepsLeft: number; nextStep: string };
   /** Today's attendance once the register is taken (Milestone 5). */
   attendance?: { present: number; total: number };
   /** Children in the register; shown when there is no attendance yet. */
@@ -84,30 +85,32 @@ export function HomeScreen({
 
       <main className="relative -mt-10 space-y-5 px-4">
         {/* The one primary action: keep registration moving */}
-        <section aria-labelledby="reg-title" className="rounded-xl bg-surface p-5 shadow-raised">
-          <div className="flex items-center gap-4">
-            <ProgressRing percent={reg.percent} label="Registration progress" />
-            <div className="min-w-0">
-              <Chip tone="brand">Registration</Chip>
-              <h2 id="reg-title" className="mt-2 text-xl leading-snug font-black text-ink">
-                {stepsLeftLabel(reg.stepsLeft)}
-              </h2>
+        {reg && (
+          <section aria-labelledby="reg-title" className="rounded-xl bg-surface p-5 shadow-raised">
+            <div className="flex items-center gap-4">
+              <ProgressRing percent={reg.percent} label="Registration progress" />
+              <div className="min-w-0">
+                <Chip tone="brand">Registration</Chip>
+                <h2 id="reg-title" className="mt-2 text-xl leading-snug font-black text-ink">
+                  {stepsLeftLabel(reg.stepsLeft)}
+                </h2>
+              </div>
             </div>
-          </div>
-          <p className="mt-4 rounded-md bg-sunk px-3 py-2.5 text-sm text-ink-muted">
-            <span className="font-extrabold text-ink">Next:</span> {reg.nextStep}
-          </p>
-          {renderLink({
-            href: '/registration',
-            className: cx(buttonClass({ size: 'lg', block: true }), 'mt-4'),
-            children: (
-              <>
-                Continue registration
-                <ArrowRightIcon size={20} />
-              </>
-            ),
-          })}
-        </section>
+            <p className="mt-4 rounded-md bg-sunk px-3 py-2.5 text-sm text-ink-muted">
+              <span className="font-extrabold text-ink">Next:</span> {reg.nextStep}
+            </p>
+            {renderLink({
+              href: '/registration',
+              className: cx(buttonClass({ size: 'lg', block: true }), 'mt-4'),
+              children: (
+                <>
+                  Continue registration
+                  <ArrowRightIcon size={20} />
+                </>
+              ),
+            })}
+          </section>
+        )}
 
         {/* Today at a glance */}
         <section aria-labelledby="today-title">

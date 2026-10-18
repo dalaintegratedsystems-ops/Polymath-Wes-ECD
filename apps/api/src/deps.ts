@@ -12,7 +12,25 @@ import {
 } from '@wes/db';
 import type { Config } from './config';
 import { createAgentServices } from './platform/agent';
+import {
+  createAzureBlobStore,
+  createFilesystemBlobStore,
+  createMemoryBlobStore,
+  type BlobStore,
+} from './platform/blob';
 import { createConsoleOtpSender, createFileOtpSender, type AppDeps } from './platform/deps';
+
+export function createBlobStore(config: Config): BlobStore {
+  if (config.BLOB_DRIVER === 'azure') {
+    return createAzureBlobStore({
+      accountUrl: config.BLOB_ACCOUNT_URL!,
+      container: config.BLOB_CONTAINER,
+      clientId: config.AZURE_CLIENT_ID,
+    });
+  }
+  if (config.BLOB_DRIVER === 'memory') return createMemoryBlobStore();
+  return createFilesystemBlobStore(config.BLOB_DIR);
+}
 
 /**
  * Production wiring: Postgres as wes_app. Development without DATABASE_URL: an embedded,
@@ -34,7 +52,7 @@ export async function createDeps(config: Config, log: (msg: string) => void) {
   const now = () => new Date();
   const agent = createAgentServices(process.env, now);
   log(`Wes is running in ${agent.config.mode} mode (embeddings: ${agent.embedder.name}).`);
-  const base = { crypto, otpSender, agent, now };
+  const base = { crypto, otpSender, agent, now, blobs: createBlobStore(config) };
 
   if (config.DATABASE_URL) {
     const { db, close } = createDatabase(config.DATABASE_URL);

@@ -160,7 +160,13 @@ test.describe('principal', () => {
     await signIn(page, NOMSA.local, NOMSA.e164);
     await expect(page).toHaveURL(/\/$/);
     await settle(page);
-    const { failures, visited } = await crawl(page, ['/', '/account', '/dashboard', '/people']);
+    const { failures, visited } = await crawl(page, [
+      '/',
+      '/account',
+      '/dashboard',
+      '/people',
+      '/registration',
+    ]);
     expect(failures).toEqual([]);
     expect(visited).toEqual(
       expect.arrayContaining(['/children', '/plan', '/registration', '/wes']),

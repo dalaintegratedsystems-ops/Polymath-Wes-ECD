@@ -24,8 +24,9 @@ describe('agent config', () => {
 });
 
 describe('tools', () => {
-  it('keeps the full twelve-tool catalogue and exposes strict schemas', () => {
-    expect(TOOL_NAMES).toHaveLength(12);
+  it('keeps the twelve brief tools plus registration progress, all strict', () => {
+    expect(TOOL_NAMES).toHaveLength(13);
+    expect(TOOL_NAMES).toContain('get_registration_progress');
     for (const t of TOOLS) {
       const def = toToolDef(t);
       expect(def.strict).toBe(true);

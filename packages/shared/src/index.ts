@@ -9,3 +9,4 @@ export * from './schemas/auth';
 export * from './schemas/assistant';
 export * from './i18n';
 export * from './schemas/accounts';
+export * from './schemas/compliance';

@@ -318,3 +318,134 @@ export async function uploadLogo(form: FormData): Promise<string | null> {
     return message(err);
   }
 }
+
+// ---------- Registration copilot ----------
+
+async function centreCall<T>(
+  path: string,
+  init: { method?: 'POST' | 'PATCH' | 'PUT' | 'DELETE'; body?: unknown } = {},
+) {
+  const { token, membership } = await requireCentre();
+  return api<T>(path, { ...init, token, centreId: membership.centreId });
+}
+
+export async function runSelfAudit(
+  answers: Record<string, 'yes' | 'no' | 'unsure'>,
+): Promise<string | null> {
+  try {
+    await centreCall('/v1/compliance/audit', { method: 'POST', body: { answers } });
+    revalidatePath('/registration', 'layout');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+export async function saveCentreDetails(input: {
+  addressLine: string;
+  suburb: string;
+  city: string;
+  childCount: number;
+}): Promise<string | null> {
+  const { token, membership } = await requireCentre();
+  try {
+    await api(`/v1/centres/${membership.centreId}`, { method: 'PATCH', token, body: input });
+    revalidatePath('/registration', 'layout');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+export async function generatePolicy(
+  kind: string,
+  answers: Record<string, string>,
+): Promise<string | null> {
+  try {
+    await centreCall('/v1/policies/generate', { method: 'POST', body: { kind, answers } });
+    revalidatePath('/registration', 'layout');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+export async function savePolicyText(id: string, bodyMarkdown: string): Promise<string | null> {
+  try {
+    await centreCall(`/v1/policies/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: { bodyMarkdown },
+    });
+    revalidatePath('/registration', 'layout');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+export async function approvePolicy(id: string): Promise<string | null> {
+  try {
+    await centreCall(`/v1/policies/${encodeURIComponent(id)}/approve`, { method: 'POST' });
+    revalidatePath('/registration', 'layout');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+const DOCUMENT_TYPES_ALLOWED = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'application/pdf',
+]);
+
+export async function uploadDocument(form: FormData): Promise<string | null> {
+  const { token, membership } = await requireCentre();
+  const file = form.get('file');
+  const type = String(form.get('type') ?? '');
+  const expiresOn = String(form.get('expiresOn') ?? '');
+  if (!(file instanceof Blob) || file.size === 0) return 'Choose a photo or PDF first.';
+  if (file.size > 5 * 1024 * 1024) return 'That file is too big. Use one under 5 MB.';
+  const contentType = DOCUMENT_TYPES_ALLOWED.has(file.type) ? file.type : 'image/jpeg';
+  const qs = new URLSearchParams({ type });
+  if (/^\d{4}-\d{2}-\d{2}$/.test(expiresOn)) qs.set('expiresOn', expiresOn);
+  try {
+    await api(`/v1/compliance/documents?${qs}`, {
+      method: 'POST',
+      token,
+      centreId: membership.centreId,
+      raw: { bytes: await file.arrayBuffer(), contentType },
+    });
+    revalidatePath('/registration', 'layout');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+export async function deleteDocument(id: string): Promise<string | null> {
+  try {
+    await centreCall(`/v1/compliance/documents/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    revalidatePath('/registration', 'layout');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+export async function markSubmitted(): Promise<string | null> {
+  const { token, membership } = await requireCentre();
+  try {
+    await api(`/v1/centres/${membership.centreId}`, {
+      method: 'PATCH',
+      token,
+      body: { registrationStatus: 'submitted' },
+    });
+    revalidatePath('/registration', 'layout');
+    revalidatePath('/');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}

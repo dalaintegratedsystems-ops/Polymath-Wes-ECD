@@ -100,9 +100,13 @@ export interface JourneyStep {
 export function JourneySteps({
   steps,
   renderAction,
+  renderSecondary,
 }: {
   steps: JourneyStep[];
+  /** The main button, shown on the current step. */
   renderAction?: (s: JourneyStep) => ReactNode;
+  /** A quieter link on other steps, so steps can be done in any order. */
+  renderSecondary?: (s: JourneyStep) => ReactNode;
 }) {
   return (
     <ol className="relative flex flex-col">
@@ -148,6 +152,9 @@ export function JourneySteps({
               {s.detail && <p className="mt-0.5 text-sm text-ink-muted">{s.detail}</p>}
               {s.status === 'current' && renderAction && (
                 <div className="mt-3">{renderAction(s)}</div>
+              )}
+              {s.status !== 'current' && renderSecondary && (
+                <div className="mt-1">{renderSecondary(s)}</div>
               )}
             </div>
           </li>

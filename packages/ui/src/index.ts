@@ -19,3 +19,4 @@ export * from './screens/onboarding/SetupScreen';
 export * from './screens/onboarding/ChildConsentScreens';
 export * from './screens/DashboardScreens';
 export * from './screens/AccountScreens';
+export * from './screens/RegistrationSteps';

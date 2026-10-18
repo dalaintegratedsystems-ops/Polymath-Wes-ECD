@@ -40,6 +40,7 @@ export default defineConfig({
         API_PORT: '4100',
         WEB_ORIGIN: 'http://localhost:3100',
         EMBEDDED_DB_DIR: join(runDir, 'pglite'),
+        BLOB_DIR: join(runDir, 'blobs'),
         OTP_OUTBOX_FILE: OTP_OUTBOX,
         RATE_LIMIT_PER_MINUTE: '1000',
         OTP_RATE_LIMIT_PER_MINUTE: '1000',

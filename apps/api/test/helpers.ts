@@ -3,6 +3,7 @@ import { createFieldCrypto, seed } from '@wes/db';
 import { createTestDb, type TestDb } from '@wes/db/testing';
 import { buildApp, type BuildOptions } from '../src/app';
 import { createAgentServices } from '../src/platform/agent';
+import { createMemoryBlobStore } from '../src/platform/blob';
 import { createMemoryOtpSender } from '../src/platform/deps';
 
 export const TEST_CONFIG = {
@@ -39,6 +40,7 @@ export async function createHarness(
       db: db.appDb,
       crypto,
       otpSender: otp,
+      blobs: createMemoryBlobStore(),
       agent: createAgentServices({ NODE_ENV: 'test' }, () => clock.now),
       now: () => clock.now,
     },

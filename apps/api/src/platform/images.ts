@@ -94,10 +94,16 @@ function stripWebp(buf: Buffer): Buffer {
 }
 
 /** Validate an uploaded image and return it without metadata. */
-export function cleanImage(buf: Buffer): { mime: ImageMime; bytes: Buffer } {
+export function cleanImage(
+  buf: Buffer,
+  maxBytes = MAX_IMAGE_BYTES,
+): { mime: ImageMime; bytes: Buffer } {
   if (buf.length === 0) invalid();
-  if (buf.length > MAX_IMAGE_BYTES) {
-    throw new AppError('validation_failed', 'That photo is too big. Use one under 512 KB.');
+  if (buf.length > maxBytes) {
+    throw new AppError(
+      'validation_failed',
+      `That photo is too big. Use one under ${Math.round(maxBytes / 1024)} KB.`,
+    );
   }
   const mime = sniffImage(buf);
   if (!mime) invalid();

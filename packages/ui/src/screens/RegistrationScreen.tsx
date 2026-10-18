@@ -1,7 +1,7 @@
-import { ArrowRightIcon, DocumentIcon, SendIcon } from '../icons';
+import { ArrowRightIcon, DocumentIcon } from '../icons';
 import { Celebration } from '../illustrations';
 import { defaultRenderLink, type RenderLink } from '../nav';
-import { Button, Card, Chip, buttonClass } from '../primitives';
+import { Card, Chip, buttonClass, cx } from '../primitives';
 import { JourneySteps, ProgressRing, type JourneyStep } from '../progress';
 import { AppShell, PageHeader } from '../shell';
 
@@ -16,14 +16,19 @@ export function registrationPercent(steps: JourneyStep[]): number {
 
 export function RegistrationScreen({
   steps,
+  percent: givenPercent,
+  expiringDocuments = 0,
   renderLink = defaultRenderLink,
   demo,
 }: {
   steps: JourneyStep[];
+  /** Progress from the API; computed from the steps when not given (stories, demo). */
+  percent?: number;
+  expiringDocuments?: number;
   renderLink?: RenderLink;
   demo?: boolean;
 }) {
-  const percent = registrationPercent(steps);
+  const percent = givenPercent ?? registrationPercent(steps);
   const complete = steps.length > 0 && steps.every((s) => s.status === 'done');
   const done = steps.filter((s) => s.status === 'done').length;
 
@@ -37,18 +42,20 @@ export function RegistrationScreen({
         {complete ? (
           <Card className="text-center">
             <Celebration className="mx-auto w-48" />
-            <h2 className="mt-2 text-2xl font-black text-ink">Your application pack is ready!</h2>
+            <h2 className="mt-2 text-2xl font-black text-ink">Your application is submitted!</h2>
             <p className="mt-1 text-ink-muted">
-              Well done. Check it once more, then submit it to your district office.
+              Well done. Keep your documents up to date: Wes reminds you before they expire.
             </p>
-            <div className="mt-5 grid gap-3">
-              <Button size="lg" block icon={<DocumentIcon size={20} />}>
-                Download pack (PDF)
-              </Button>
-              <Button variant="secondary" block icon={<SendIcon size={20} />}>
-                Share on WhatsApp
-              </Button>
-            </div>
+            {renderLink({
+              href: '/registration/pack',
+              className: cx(buttonClass({ size: 'lg', block: true }), 'mt-5'),
+              children: (
+                <>
+                  <DocumentIcon size={20} />
+                  Your application pack
+                </>
+              ),
+            })}
           </Card>
         ) : (
           <Card className="flex items-center gap-4">
@@ -64,9 +71,32 @@ export function RegistrationScreen({
           </Card>
         )}
 
+        {expiringDocuments > 0 &&
+          renderLink({
+            href: '/registration/documents',
+            className:
+              'block rounded-lg border-2 border-accent bg-accent-soft p-4 font-extrabold text-ink',
+            children: (
+              <>
+                {expiringDocuments === 1
+                  ? '1 document has expired or needs renewing soon.'
+                  : `${expiringDocuments} documents have expired or need renewing soon.`}{' '}
+                <span className="text-primary">See documents</span>
+              </>
+            ),
+          })}
+
         <Card>
           <JourneySteps
             steps={steps}
+            renderSecondary={(s) =>
+              renderLink({
+                href: `/registration/${s.id}`,
+                className:
+                  'inline-flex min-h-touch items-center text-sm font-extrabold text-primary',
+                children: s.status === 'done' ? 'View or change' : 'Start this step',
+              })
+            }
             renderAction={(s) =>
               renderLink({
                 href: `/registration/${s.id}`,
@@ -83,8 +113,7 @@ export function RegistrationScreen({
         </Card>
 
         <p className="px-1 pb-4 text-sm text-ink-muted">
-          Wes checks your answers against the official registration guidance and shows its sources.
-          You stay in charge: nothing is submitted without you.
+          You can do the steps in any order. You stay in charge: nothing is submitted without you.
         </p>
         {demo && (
           <p className="pb-4 text-center">

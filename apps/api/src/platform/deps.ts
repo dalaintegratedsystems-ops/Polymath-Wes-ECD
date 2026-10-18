@@ -1,5 +1,6 @@
 import type { Database, FieldCrypto } from '@wes/db';
 import type { AgentServices } from './agent';
+import type { BlobStore } from './blob';
 
 /** Something that can deliver a one-time PIN to a phone (WhatsApp template, SMS, console). */
 export interface OtpSender {
@@ -13,6 +14,8 @@ export interface AppDeps {
   crypto: FieldCrypto;
   otpSender: OtpSender;
   agent: AgentServices;
+  /** Private storage for registration documents. */
+  blobs: BlobStore;
   now: () => Date;
 }
 

@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest } from 'fastify';
+import type { FastifyInstance } from 'fastify';
 import { and, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import {
@@ -12,7 +12,7 @@ import {
 } from '@wes/shared';
 import { schema, withRequestContext } from '@wes/db';
 import type { Config } from '../../config';
-import { audit, centreContext } from '../../platform/context';
+import { audit, centreContext, centreHeader, centreIdFromHeader } from '../../platform/context';
 import type { AppDeps } from '../../platform/deps';
 import { defineRoute } from '../../platform/route';
 import { rowsOf } from '../../platform/sql';
@@ -24,23 +24,6 @@ const ChildParams = z.object({ id: z.uuid() });
 
 /** Pending intakes expire if a guardian never consents (privacy.md). */
 const INTAKE_TTL_DAYS = 14;
-
-/** Routes under /v1/children/{id} name the centre in this header (the child id alone can't). */
-function centreIdFromHeader(req: FastifyRequest): string {
-  const value = req.headers['x-centre-id'];
-  const parsed = z.uuid().safeParse(value);
-  if (!parsed.success) throw new AppError('bad_request', 'Send the X-Centre-Id header.');
-  return parsed.data;
-}
-
-const centreHeader = [
-  {
-    name: 'X-Centre-Id',
-    in: 'header' as const,
-    required: true,
-    schema: { type: 'string', format: 'uuid' },
-  },
-];
 
 export async function childrenRoutes(
   app: FastifyInstance,

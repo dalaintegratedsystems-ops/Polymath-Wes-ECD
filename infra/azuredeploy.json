@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.48.1.52935",
-      "templateHash": "5184626189278649153"
+      "templateHash": "17492479926675169402"
     }
   },
   "functions": [
@@ -818,6 +818,15 @@
           "identityId": {
             "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('{0}-id-{1}', parameters('namePrefix'), variables('suffix')))]"
           },
+          "identityClientId": {
+            "value": "[reference('identity').clientId]"
+          },
+          "blobEndpoint": {
+            "value": "[reference('storage').outputs.blobEndpoint.value]"
+          },
+          "blobContainer": {
+            "value": "[reference('storage').outputs.containerName.value]"
+          },
           "keyVaultUri": {
             "value": "[reference('keyvault').outputs.uri.value]"
           },
@@ -857,7 +866,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.48.1.52935",
-              "templateHash": "9569926291835554720"
+              "templateHash": "15251643431560641381"
             }
           },
           "functions": [
@@ -911,6 +920,18 @@
               "type": "string"
             },
             "identityId": {
+              "type": "string"
+            },
+            "identityClientId": {
+              "type": "string",
+              "metadata": {
+                "description": "Client ID of the managed identity, used to get storage tokens."
+              }
+            },
+            "blobEndpoint": {
+              "type": "string"
+            },
+            "blobContainer": {
               "type": "string"
             },
             "keyVaultUri": {
@@ -1082,7 +1103,7 @@
                         "cpu": "[json('0.75')]",
                         "memory": "1.5Gi"
                       },
-                      "env": "[concat(variables('sharedEnv'), variables('keyEnv'), createArray(createObject('name', 'API_PORT', 'value', '4000'), createObject('name', 'WEB_ORIGIN', 'value', format('https://{0}.{1}', variables('webName'), reference('env').defaultDomain)), createObject('name', 'DATABASE_URL', 'secretRef', 'database-url'), createObject('name', 'JWT_SIGNING_SECRET', 'secretRef', 'jwt-signing-secret'), createObject('name', 'OTP_PEPPER', 'secretRef', 'otp-pepper'), createObject('name', 'OTP_DELIVERY', 'value', if(variables('isProd'), 'sms', 'console')), createObject('name', 'WES_MODEL_MODE', 'value', if(parameters('hasAnthropicKey'), 'live', 'offline'))))]",
+                      "env": "[concat(variables('sharedEnv'), variables('keyEnv'), createArray(createObject('name', 'API_PORT', 'value', '4000'), createObject('name', 'WEB_ORIGIN', 'value', format('https://{0}.{1}', variables('webName'), reference('env').defaultDomain)), createObject('name', 'DATABASE_URL', 'secretRef', 'database-url'), createObject('name', 'JWT_SIGNING_SECRET', 'secretRef', 'jwt-signing-secret'), createObject('name', 'OTP_PEPPER', 'secretRef', 'otp-pepper'), createObject('name', 'OTP_DELIVERY', 'value', if(variables('isProd'), 'sms', 'console')), createObject('name', 'WES_MODEL_MODE', 'value', if(parameters('hasAnthropicKey'), 'live', 'offline')), createObject('name', 'BLOB_DRIVER', 'value', 'azure'), createObject('name', 'BLOB_ACCOUNT_URL', 'value', parameters('blobEndpoint')), createObject('name', 'BLOB_CONTAINER', 'value', parameters('blobContainer')), createObject('name', 'AZURE_CLIENT_ID', 'value', parameters('identityClientId'))))]",
                       "probes": [
                         {
                           "type": "Liveness",

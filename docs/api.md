@@ -16,7 +16,7 @@
 | Rate limits | Per client per minute; `429 rate_limited`. The assistant allows 20 messages a minute.                                                                                                                                                                          |
 | Child data  | Every read and write is written to the audit log.                                                                                                                                                                                                              |
 
-## Available now (Milestones 0 to 2.5)
+## Available now (Milestones 0 to 3)
 
 | Endpoint                                                                 | Who                                                        | Notes                                                                                                                                                                                                          |
 | ------------------------------------------------------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -50,7 +50,24 @@
 | `PUT /v1/centres/{id}/logo`, `GET /v1/centres/{id}/logo`                 | principal sets; members view                               | As above.                                                                                                                                                                                                      |
 | `GET /v1/meta`                                                           | anyone                                                     | Version, locales, feature flags, `assistantMode` (`live` or `offline`).                                                                                                                                        |
 
-Routes under `/v1/children/{id}` and `/v1/assistant` take the centre in the `X-Centre-Id` header.
+### Registration copilot (Milestone 3)
+
+All take the centre in the `X-Centre-Id` header. Reads: staff of the centre. Writes: the principal.
+
+| Endpoint                                                                                                         | Notes                                                                                                                     |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `GET /v1/compliance/checklist`                                                                                   | Items from the curated knowledge base; `isPlaceholder: true` until the DBE document set is loaded.                        |
+| `POST /v1/compliance/audit`, `GET /v1/compliance/audit/latest`                                                   | `{ answers: { [code]: yes, no or unsure } }`, every item answered. Returns a score and gaps, most urgent first.           |
+| `GET /v1/compliance/progress`                                                                                    | The six journey steps with done, current or todo, a percentage and the number of documents expired or due within 30 days. |
+| `POST /v1/compliance/documents?type&expiresOn&issuedOn&itemCode`                                                 | Raw JPEG, PNG, WebP or PDF body, max 5 MB. Type checked from the bytes; photo metadata removed.                           |
+| `GET /v1/compliance/documents`, `GET /v1/compliance/documents/{id}/file`, `DELETE /v1/compliance/documents/{id}` | Expiry flag per document: none, ok, soon, expired.                                                                        |
+| `POST /v1/policies/generate`                                                                                     | `{ kind, answers }` for admissions, health, safety or child_protection. Always a draft.                                   |
+| `GET /v1/policies`, `GET /v1/policies/{id}`, `PATCH /v1/policies/{id}`                                           | Editing an approved policy makes it a draft again.                                                                        |
+| `POST /v1/policies/{id}/approve`                                                                                 | Principal only. Older approved versions are archived.                                                                     |
+| `GET /v1/policies/{id}/pdf`                                                                                      | Low-ink A4 PDF; drafts are marked DRAFT.                                                                                  |
+| `POST /v1/compliance/pack`                                                                                       | One PDF: centre details, self-audit, approved policies, documents. Marks the pack step done.                              |
+
+Routes under `/v1/children/{id}` and `/v1/assistant` also take the centre in the `X-Centre-Id` header.
 
 ### Ask Wes: server-sent events
 
@@ -78,9 +95,8 @@ second centre, `060 000 0003`), Ayanda (parent, `060 000 0005`), Lerato (funder,
 
 ## Roadmap
 
-| Milestone | Endpoints                                                                                                                                     |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| 3         | `GET /v1/compliance/checklist`, `POST /v1/compliance/audit`, `/documents`, `/pack`; `POST /v1/policies/generate`, `GET /v1/policies/{id}.pdf` |
-| 4         | `POST /v1/plans/weekly`, `/activities/adapt`, `/printables`                                                                                   |
-| 5         | `POST /v1/centres/{id}/attendance`, `GET /v1/attendance/export?month=YYYY-MM`                                                                 |
-| 6         | `POST /v1/channels/whatsapp/webhook`, `/channels/sms/webhook`                                                                                 |
+| Milestone | Endpoints                                                                     |
+| --------- | ----------------------------------------------------------------------------- |
+| 4         | `POST /v1/plans/weekly`, `/activities/adapt`, `/printables`                   |
+| 5         | `POST /v1/centres/{id}/attendance`, `GET /v1/attendance/export?month=YYYY-MM` |
+| 6         | `POST /v1/channels/whatsapp/webhook`, `/channels/sms/webhook`                 |

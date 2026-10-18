@@ -6,6 +6,10 @@ param environmentType string
 param appsSubnetId string
 param workspaceName string
 param identityId string
+@description('Client ID of the managed identity, used to get storage tokens.')
+param identityClientId string
+param blobEndpoint string
+param blobContainer string
 param keyVaultUri string
 param insightsConnectionString string
 param webImage string
@@ -129,6 +133,11 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             // Staging pilots print PINs to the (private) log until WhatsApp/SMS arrive in M6.
             { name: 'OTP_DELIVERY', value: isProd ? 'sms' : 'console' }
             { name: 'WES_MODEL_MODE', value: hasAnthropicKey ? 'live' : 'offline' }
+            // Registration documents: private blob container, managed identity (no keys).
+            { name: 'BLOB_DRIVER', value: 'azure' }
+            { name: 'BLOB_ACCOUNT_URL', value: blobEndpoint }
+            { name: 'BLOB_CONTAINER', value: blobContainer }
+            { name: 'AZURE_CLIENT_ID', value: identityClientId }
           ])
           probes: [
             { type: 'Liveness', httpGet: { path: '/healthz', port: 4000 }, periodSeconds: 30 }

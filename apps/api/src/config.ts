@@ -16,6 +16,12 @@ const ConfigSchema = z.object({
   /** Postgres as wes_app. When unset in development, an embedded database is used. */
   DATABASE_URL: z.string().optional(),
   EMBEDDED_DB_DIR: z.string().default('.data/pglite'),
+  /** Registration documents: filesystem locally, Azure Blob (managed identity) when deployed. */
+  BLOB_DRIVER: z.enum(['memory', 'filesystem', 'azure']).default('filesystem'),
+  BLOB_DIR: z.string().default('.data/blobs'),
+  BLOB_ACCOUNT_URL: z.url().optional(),
+  BLOB_CONTAINER: z.string().default('documents'),
+  AZURE_CLIENT_ID: z.string().optional(),
 
   JWT_SIGNING_SECRET: z.string().min(32).default('dev-only-signing-secret-change-me-0123456789'),
   JWT_ACCESS_TTL_SECONDS: z.coerce.number().int().default(600),
@@ -61,6 +67,16 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     if (!config.DATABASE_URL) throw new Error(`DATABASE_URL must be set in ${config.APP_ENV}`);
     if (config.OTP_OUTBOX_FILE)
       throw new Error('OTP_OUTBOX_FILE is only for development and tests');
+  }
+  if (
+    (config.APP_ENV === 'staging' || config.APP_ENV === 'production') &&
+    config.BLOB_DRIVER !== 'azure'
+  ) {
+    // Container disks are wiped on every restart: documents must go to durable storage.
+    throw new Error('BLOB_DRIVER=azure is required outside development');
+  }
+  if (config.BLOB_DRIVER === 'azure' && !config.BLOB_ACCOUNT_URL) {
+    throw new Error('BLOB_ACCOUNT_URL is required when BLOB_DRIVER=azure');
   }
   if (config.APP_ENV === 'production' && config.OTP_DELIVERY === 'console') {
     throw new Error('OTP_DELIVERY=console is not allowed in production (PINs would be logged)');

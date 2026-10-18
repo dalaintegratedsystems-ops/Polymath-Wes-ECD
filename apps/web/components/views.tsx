@@ -6,6 +6,13 @@
  */
 import {
   AddChildScreen,
+  PackScreen,
+  PoliciesScreen,
+  CentreDetailsScreen,
+  DocumentsScreen,
+  PolicyScreen,
+  SelfAuditScreen,
+  SubmitScreen,
   ChangePasswordScreen,
   PasswordSignInScreen,
   PeopleScreen,
@@ -24,6 +31,14 @@ import {
 } from '@wes/ui';
 import {
   addChild,
+  approvePolicy,
+  deleteDocument,
+  generatePolicy,
+  markSubmitted,
+  runSelfAudit,
+  saveCentreDetails,
+  savePolicyText,
+  uploadDocument,
   changePassword,
   createPerson,
   passwordSignIn,
@@ -109,7 +124,12 @@ export function PlanView(props: { plan: WeekPlan | null; todayKey?: string; demo
   return <PlanScreen {...props} renderLink={nextRenderLink} />;
 }
 
-export function RegistrationView(props: { steps: JourneyStep[]; demo?: boolean }) {
+export function RegistrationView(props: {
+  steps: JourneyStep[];
+  percent?: number;
+  expiringDocuments?: number;
+  demo?: boolean;
+}) {
   return <RegistrationScreen {...props} renderLink={nextRenderLink} />;
 }
 
@@ -168,4 +188,76 @@ export function LogoPicker({ name, src }: { name: string; src: string | null }) 
       onUpload={(image) => uploadLogo(asForm(image))}
     />
   );
+}
+
+// ---------- Registration copilot ----------
+
+export function SelfAuditView(
+  props: Omit<Parameters<typeof SelfAuditScreen>[0], 'onSubmit' | 'renderLink'>,
+) {
+  return <SelfAuditScreen {...props} onSubmit={runSelfAudit} renderLink={nextRenderLink} />;
+}
+
+export function CentreDetailsView(
+  props: Omit<Parameters<typeof CentreDetailsScreen>[0], 'onSave' | 'renderLink'>,
+) {
+  return (
+    <CentreDetailsScreen
+      {...props}
+      onSave={({ addressLine, suburb, city, childCount }) =>
+        saveCentreDetails({ addressLine, suburb, city, childCount })
+      }
+      renderLink={nextRenderLink}
+    />
+  );
+}
+
+export function PolicyView(
+  props: Omit<
+    Parameters<typeof PolicyScreen>[0],
+    'onGenerate' | 'onSaveText' | 'onApprove' | 'renderLink'
+  > & {
+    kind: string;
+  },
+) {
+  const { kind, ...rest } = props;
+  const id = props.policy?.id;
+  return (
+    <PolicyScreen
+      {...rest}
+      onGenerate={(answers) => generatePolicy(kind, answers)}
+      onSaveText={(body) =>
+        id ? savePolicyText(id, body) : Promise.resolve('Write the draft first.')
+      }
+      onApprove={() => (id ? approvePolicy(id) : Promise.resolve('Write the draft first.'))}
+      renderLink={nextRenderLink}
+    />
+  );
+}
+
+export function DocumentsView(
+  props: Omit<Parameters<typeof DocumentsScreen>[0], 'onUpload' | 'onDelete' | 'renderLink'>,
+) {
+  return (
+    <DocumentsScreen
+      {...props}
+      onUpload={uploadDocument}
+      onDelete={deleteDocument}
+      renderLink={nextRenderLink}
+    />
+  );
+}
+
+export function SubmitView(
+  props: Omit<Parameters<typeof SubmitScreen>[0], 'onMarkSubmitted' | 'renderLink'>,
+) {
+  return <SubmitScreen {...props} onMarkSubmitted={markSubmitted} renderLink={nextRenderLink} />;
+}
+
+export function PoliciesView(props: Omit<Parameters<typeof PoliciesScreen>[0], 'renderLink'>) {
+  return <PoliciesScreen {...props} renderLink={nextRenderLink} />;
+}
+
+export function PackView(props: Omit<Parameters<typeof PackScreen>[0], 'renderLink'>) {
+  return <PackScreen {...props} renderLink={nextRenderLink} />;
 }

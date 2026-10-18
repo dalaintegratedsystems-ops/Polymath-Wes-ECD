@@ -1,5 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { and, eq } from 'drizzle-orm';
+import { z } from 'zod';
 import { AppError, can, type Permission, type Role } from '@wes/shared';
 import { schema, withRequestContext, type RequestContext, type Transaction } from '@wes/db';
 import type { AppDeps } from './deps';
@@ -132,3 +133,19 @@ export async function audit(
     metadata: entry.metadata ?? {},
   });
 }
+
+/** Routes not under /v1/centres/{id} name the centre in this header. */
+export function centreIdFromHeader(req: FastifyRequest): string {
+  const parsed = z.uuid().safeParse(req.headers['x-centre-id']);
+  if (!parsed.success) throw new AppError('bad_request', 'Send the X-Centre-Id header.');
+  return parsed.data;
+}
+
+export const centreHeader = [
+  {
+    name: 'X-Centre-Id',
+    in: 'header' as const,
+    required: true,
+    schema: { type: 'string', format: 'uuid' },
+  },
+];

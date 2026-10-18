@@ -149,6 +149,9 @@ module apps 'modules/apps.bicep' = {
     appsSubnetId: network.outputs.appsSubnetId
     workspaceName: monitoring.outputs.workspaceName
     identityId: identity.id
+    identityClientId: identity.properties.clientId
+    blobEndpoint: storage.outputs.blobEndpoint
+    blobContainer: storage.outputs.containerName
     keyVaultUri: keyvault.outputs.uri
     insightsConnectionString: monitoring.outputs.connectionString
     webImage: webImage
@@ -160,8 +163,6 @@ module apps 'modules/apps.bicep' = {
     hasVoyageKey: !empty(voyageApiKey)
     loadDemoData: loadDemoData
   }
-  // The identity must be able to write blobs before the API starts (Key Vault is already a dependency).
-  dependsOn: [storage]
 }
 
 @description('Open this in a phone browser to use Wes.')

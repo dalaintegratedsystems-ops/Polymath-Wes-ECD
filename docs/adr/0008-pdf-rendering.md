@@ -1,6 +1,6 @@
 # ADR-0008: PDF rendering with Playwright in the worker
 
-- Status: Accepted (Milestone 0), built in Milestones 3–4
+- Status: Superseded by ADR-0013 for rendering (pdf-lib in the API instead of Chromium)
 - Date: 2026-10-16
 
 ## Context

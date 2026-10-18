@@ -6,6 +6,8 @@ const deployed = {
   DATABASE_URL: 'postgres://wes_app:x@db/wes?sslmode=require',
   JWT_SIGNING_SECRET: 'a'.repeat(48),
   OTP_PEPPER: 'b'.repeat(32),
+  BLOB_DRIVER: 'azure',
+  BLOB_ACCOUNT_URL: 'https://wesdocs.blob.core.windows.net/',
 };
 
 describe('deployment configuration', () => {
@@ -14,6 +16,15 @@ describe('deployment configuration', () => {
       /not allowed in production/,
     );
     expect(loadConfig({ ...deployed, OTP_DELIVERY: 'sms' }).APP_ENV).toBe('production');
+  });
+
+  it('keeps documents on durable storage when deployed', () => {
+    expect(() => loadConfig({ ...deployed, BLOB_DRIVER: 'filesystem' })).toThrow(
+      /BLOB_DRIVER=azure/,
+    );
+    expect(() => loadConfig({ ...deployed, BLOB_ACCOUNT_URL: undefined })).toThrow(
+      /BLOB_ACCOUNT_URL/,
+    );
   });
 
   it('lets a private staging pilot log PINs, but still needs real secrets and a database', () => {
