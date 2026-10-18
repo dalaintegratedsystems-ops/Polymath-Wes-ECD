@@ -15,6 +15,8 @@ paths = [
   '''(^|/)e2e/.*\.ts$''',
   '''docker/postgres/init\.sql$''',
   '''infra/azuredeploy\.json$''',
+  # Storybook stories show made-up temporary passwords on the one-time password card.
+  '''packages/ui/src/stories/.*\.tsx$''',
 ]
 regexes = [
   # Base64 of "dev-only-…", "test-only-…" and "e2e-only-…" placeholder keys.
@@ -22,4 +24,7 @@ regexes = [
   '''dGVzdC1vbmx5LW[A-Za-z0-9+/=]+''',
   '''ZTJlLW9ubHkt[A-Za-z0-9+/=]+''',
   '''dev-only-[a-z0-9-]+''',
+  # Public Azure built-in role definition IDs (Key Vault Secrets User, Storage Blob Data Contributor).
+  '''4633458b-17de-408a-b874-0445c86b69e6''',
+  '''ba92f5b4-2d11-453d-a403-e96b0029c9fe''',
 ]
