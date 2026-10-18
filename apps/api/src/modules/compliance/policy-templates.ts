@@ -31,7 +31,8 @@ export function validateAnswers(kind: PolicyKind, answers: Answers): Answers {
   const out: Answers = {};
   const details: { path: string; message: string }[] = [];
   for (const q of POLICY_QUESTIONS[kind]) {
-    const v = clean(answers[q.id]);
+    // Choices are matched exactly (their values contain underscores); free text is cleaned.
+    const v = q.type === 'choice' ? (answers[q.id] ?? '').trim() : clean(answers[q.id]);
     if (q.required && !v)
       details.push({ path: `body.answers.${q.id}`, message: `${q.label} is needed` });
     if (q.type === 'choice' && v && !q.options?.some((o) => o.value === v)) {

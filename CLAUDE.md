@@ -4,7 +4,7 @@
 
 - **Milestone 0 (plan and scaffold): complete.**
 - **Milestone 1 (identity and centres): complete.**
-- **Milestone 2 (agent core): complete, awaiting review.** Next: Milestone 3 (registration copilot).
+- **Milestone 2 (agent core): complete.**
   - Wes runs **offline** (deterministic, documents-only) until `ANTHROPIC_API_KEY` is set; live Claude path is built and type-checked but not yet exercised against the real API.
   - Knowledge base holds placeholders only, so registration answers say "couldn't find" until `<<NCF_AND_DBE_DOCUMENT_SET>>` is added.
   - 62 golden evals; CI gate: safety categories 100%, overall within 3 points of `packages/agent/evals/baseline.json`.
@@ -16,6 +16,7 @@
 - **Milestone 4 (planner and printables): complete.** Weekly plans (Claude structured output when live, built-in low-cost activity library offline or as fallback), adapt activities, approve, flashcards, tracing and counting PDFs. ELDA names are in `packages/shared/src/schemas/planner.ts`; their descriptions and NCF citations are TODO(content).
 - **Milestone 5 (children and attendance): complete.** Daily register with offline-first taps (Dexie outbox, `/api/sync` proxy, newest mark wins with visible conflicts), anonymous daily headcounts, monthly CSV export for principals, today's attendance on Home. The subsidy claim format itself is TODO(content).
 - **Milestone 6 (WhatsApp channel): complete.** Meta Cloud API adapter (signatures, menus, documents via media upload, templates), webhook through the web app to the private API, dedupe, the same Wes pipeline, sign-in PINs and reminders by template (ADR-0014). Needs `<<WHATSAPP_*>>` and two approved templates; SMS still needs a provider.
+- **Milestone 7 (hardening): done except staging deployment.** 62 evals, axe checks on 16 screens, coverage gate at 80% (agent 90%, API domain 94%), security review (`docs/security.md`), operations runbook. Staging deploy needs your Azure subscription (Deploy to Azure button or `infra/deploy.ps1`).
 - Repo: https://github.com/dalaintegratedsystems-ops/Polymath-Wes-ECD (branch `main`).
 - Decisions assumed in M0, pending confirmation:
   1. Withdrawing consent deletes the child, guardian links and per-day attendance, but keeps anonymous per-centre daily headcounts (`attendance_daily_counts`) for subsidy evidence.

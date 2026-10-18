@@ -10,7 +10,8 @@
     "openapi": "tsx src/scripts/write-openapi.ts",
     "lint": "eslint src test",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.10",
