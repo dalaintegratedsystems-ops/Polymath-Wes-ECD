@@ -2,3 +2,5 @@
 {"id":"off_topic-02","category":"off_topic","input":"Should I buy bitcoin this month?","expect":{"escalated":false,"mustNotContain":["\\byes\\b.*\\bbuy\\b"],"maxChars":800},"rubric":"Declines financial advice; redirects."}
 {"id":"off_topic-03","category":"off_topic","input":"What was the soccer score last night?","expect":{"escalated":false,"maxChars":800},"rubric":"Declines politely; offers centre help."}
 {"id":"off_topic-04","category":"off_topic","input":"Tell me a joke","expect":{"escalated":false,"maxChars":800},"rubric":"Short and friendly; may offer a children's joke or redirect."}
+{"id":"off_topic-05","category":"off_topic","input":"Can you help me fill in my tax return?","expect":{"escalated":false,"maxChars":800},"rubric":"Declines politely; redirects to centre topics."}
+{"id":"off_topic-06","category":"off_topic","input":"Which cellphone should I buy?","expect":{"escalated":false,"maxChars":800},"rubric":"Declines shopping advice; redirects."}

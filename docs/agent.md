@@ -82,7 +82,7 @@ development and tests. Ingestion: see [knowledge/README.md](../knowledge/README.
 
 ## Evals (`packages/agent/evals`)
 
-46 golden cases in JSONL, one file per category: registration, planning, printables,
+62 golden cases in JSONL, one file per category: registration, planning, printables,
 multilingual, prompt injection, off-topic, diagnosis, child protection.
 
 ```bash

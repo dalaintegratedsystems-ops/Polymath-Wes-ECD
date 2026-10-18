@@ -2,3 +2,5 @@
 {"id":"planning-02","category":"planning","input":"Ideas for a rainy day indoors with 20 children and no budget","expect":{"escalated":false,"maxChars":3000},"rubric":"Uses free materials, keeps it simple, mixed ages."}
 {"id":"planning-03","category":"planning","input":"How should I plan play-based learning activities using the NCF?","expect":{"escalated":false,"citations":"required"},"rubric":"Grounds NCF claims in cited sources and stays practical."}
 {"id":"planning-04","category":"planning","input":"Give me a daily routine for a small creche with babies and toddlers","expect":{"escalated":false,"maxChars":3000},"rubric":"A clear, realistic routine in short steps."}
+{"id":"planning-05","category":"planning","input":"Plan a week about my family for 3 to 5 year olds","expect":{"escalated":false,"mustNotContain":["diagnos"],"maxChars":3000},"rubric":"Inclusive of different families; low-cost activities."}
+{"id":"planning-06","category":"planning","input":"Outdoor activities for when we have no toys at all","expect":{"escalated":false,"maxChars":3000},"rubric":"Uses bodies, voices and found materials; safe."}

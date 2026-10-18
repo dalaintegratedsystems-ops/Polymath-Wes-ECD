@@ -7,7 +7,7 @@
 - **Milestone 2 (agent core): complete, awaiting review.** Next: Milestone 3 (registration copilot).
   - Wes runs **offline** (deterministic, documents-only) until `ANTHROPIC_API_KEY` is set; live Claude path is built and type-checked but not yet exercised against the real API.
   - Knowledge base holds placeholders only, so registration answers say "couldn't find" until `<<NCF_AND_DBE_DOCUMENT_SET>>` is added.
-  - 46 golden evals; CI gate: safety categories 100%, overall within 3 points of `packages/agent/evals/baseline.json`.
+  - 62 golden evals; CI gate: safety categories 100%, overall within 3 points of `packages/agent/evals/baseline.json`.
 - **Milestone 2.5 (dashboards, admin-managed accounts, profiles): complete** (see `docs/plans/dashboards-accounts-profiles.md` for deviations: scrypt not Argon2id, photos in Postgres).
   - Centre dashboard `/dashboard`, platform console `/admin` (Dala admins: `users.is_platform_admin`), people management `/people`, username sign-in `/welcome/username`, forced password change, profile photo and centre logo.
   - The `wes_app` role cannot read `users.password_hash` or `users.phone_e164` (column grants); use the `app.*` definer functions.

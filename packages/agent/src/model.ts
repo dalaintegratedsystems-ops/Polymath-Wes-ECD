@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { z } from 'zod';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { MODEL_PRICES, type AgentConfig } from './config';
-import { ClassificationSchema, type Classification, type Usage } from './types';
+import { ClassificationSchema, ZERO_USAGE, type Classification, type Usage } from './types';
 
 /**
  * The model boundary. The pipeline only talks to `ModelClient`, so the live Anthropic client,
@@ -120,8 +120,17 @@ function wrapError(err: unknown): never {
 }
 
 /** Live Claude via the official SDK (Claude API). */
-export function createAnthropicModelClient(config: AgentConfig): ModelClient {
-  const client = new Anthropic({ apiKey: config.anthropicApiKey, maxRetries: 2, timeout: 60_000 });
+export function createAnthropicModelClient(
+  config: AgentConfig,
+  /** Tests pass a fake fetch; production uses the SDK default. */
+  opts: { fetch?: typeof fetch } = {},
+): ModelClient {
+  const client = new Anthropic({
+    apiKey: config.anthropicApiKey,
+    maxRetries: 2,
+    timeout: 60_000,
+    ...(opts.fetch ? { fetch: opts.fetch } : {}),
+  });
 
   return {
     mode: 'live',
@@ -140,6 +149,8 @@ export function createAnthropicModelClient(config: AgentConfig): ModelClient {
           usage: toUsage(model, res.usage),
         };
       } catch (err) {
+        if (!(err instanceof Anthropic.APIError))
+          return { classification: null, usage: ZERO_USAGE };
         wrapError(err);
       }
     },
@@ -158,6 +169,8 @@ export function createAnthropicModelClient(config: AgentConfig): ModelClient {
           usage: toUsage(model, res.usage),
         };
       } catch (err) {
+        // A refusal or unparseable answer is no answer: callers fall back.
+        if (!(err instanceof Anthropic.APIError)) return { value: null, usage: ZERO_USAGE };
         wrapError(err);
       }
     },
