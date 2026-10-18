@@ -20,13 +20,11 @@ import {
   PeopleScreen,
   PhotoPicker,
   type PersonRow,
-  ChildrenScreen,
   ConsentScreen,
   RegistrationScreen,
   SetupScreen,
   VerifyScreen,
   WelcomeScreen,
-  type ChildRow,
   type JourneyStep,
 } from '@wes/ui';
 import {
@@ -82,17 +80,6 @@ export function SetupView({ initialName }: { initialName: string }) {
       onCreateCentre={createCentre}
     />
   );
-}
-
-export function ChildrenView(props: {
-  childrenList: ChildRow[];
-  groups: string[];
-  todayIso: string;
-  attendance?: boolean;
-  canAdd?: boolean;
-  demo?: boolean;
-}) {
-  return <ChildrenScreen {...props} today={new Date(props.todayIso)} renderLink={nextRenderLink} />;
 }
 
 export function AddChildView({

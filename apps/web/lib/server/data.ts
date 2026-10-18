@@ -1,5 +1,6 @@
 import 'server-only';
 import type {
+  AttendanceDay,
   AuditResult,
   Centre,
   Checklist,
@@ -72,6 +73,15 @@ export async function getWeekPlan(token: string, centreId: string, week: string)
     return await api<WeeklyPlan>(`/v1/plans/current?week=${week}`, inCentre(token, centreId));
   } catch (err) {
     if (err instanceof ApiError && err.status === 404) return null;
+    throw err;
+  }
+}
+
+export async function getAttendanceDay(token: string, centreId: string, day: string) {
+  try {
+    return await api<AttendanceDay>(`/v1/centres/${centreId}/attendance?day=${day}`, { token });
+  } catch (err) {
+    if (err instanceof ApiError && (err.status === 403 || err.status === 404)) return null;
     throw err;
   }
 }

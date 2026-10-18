@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { CheckIcon, ChildrenIcon, ShieldIcon } from '../icons';
 import { SproutBook } from '../illustrations';
 import { defaultRenderLink, type RenderLink } from '../nav';
@@ -21,8 +21,8 @@ export interface ChildRow {
 
 /**
  * Child register. Rows are 64px tall: big, forgiving targets for a practitioner holding a
- * phone in one hand and a toddler in the other. Attendance taps arrive with Milestone 5;
- * until then `attendance={false}` shows the register without them.
+ * phone in one hand and a toddler in the other. Each tap is reported through `onToggle`, so
+ * the page can save it on the phone first and sync later (offline-first, ADR-0005).
  */
 export function ChildrenScreen({
   childrenList,
@@ -32,6 +32,9 @@ export function ChildrenScreen({
   canAdd = true,
   renderLink = defaultRenderLink,
   demo,
+  onToggle,
+  registerNote,
+  exportHref,
 }: {
   childrenList: ChildRow[];
   groups: string[];
@@ -40,6 +43,12 @@ export function ChildrenScreen({
   canAdd?: boolean;
   renderLink?: RenderLink;
   demo?: boolean;
+  /** Called on every tap with the child's new state. */
+  onToggle?: (childId: string, present: boolean) => void;
+  /** Sync status under the register summary, e.g. "Saved on this phone". */
+  registerNote?: ReactNode;
+  /** Monthly register download (principals). */
+  exportHref?: string | null;
 }) {
   const [group, setGroup] = useState<string>('All');
   const [present, setPresent] = useState<Record<string, boolean | null>>(
@@ -124,6 +133,16 @@ export function ChildrenScreen({
                     label="Children marked present"
                   />
                 </div>
+                {registerNote && <div className="mt-3 text-sm">{registerNote}</div>}
+                {exportHref && (
+                  <a
+                    href={exportHref}
+                    className={cx(buttonClass({ variant: 'ghost' }), 'mt-2')}
+                    download
+                  >
+                    Download this month’s register (CSV)
+                  </a>
+                )}
               </Card>
             )}
 
@@ -172,8 +191,11 @@ export function ChildrenScreen({
                         <button
                           type="button"
                           aria-pressed={isHere}
-                          aria-label={`${c.firstName}: ${isHere ? 'here' : 'not marked'}`}
-                          onClick={() => setPresent((p) => ({ ...p, [c.id]: !isHere }))}
+                          aria-label={`${c.firstName}: ${isHere ? 'here' : present[c.id] === false ? 'away' : 'not marked'}`}
+                          onClick={() => {
+                            setPresent((p) => ({ ...p, [c.id]: !isHere }));
+                            onToggle?.(c.id, !isHere);
+                          }}
                           className={cx(
                             'inline-flex min-h-touch min-w-24 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-extrabold transition-colors',
                             isHere

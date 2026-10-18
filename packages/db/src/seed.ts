@@ -239,7 +239,8 @@ export async function seed(
       })),
     );
 
-    const days = recentWeekdays(today, 5);
+    // Past days only: today's register is waiting to be taken.
+    const days = recentWeekdays(new Date(today.getTime() - 86_400_000), 5);
     const records = days.flatMap((day, d) =>
       CHILDREN.map(([, , , centreId], i) => ({
         centreId,

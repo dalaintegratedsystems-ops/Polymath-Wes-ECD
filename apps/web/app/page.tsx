@@ -1,6 +1,6 @@
 import { HomeScreen, demo } from '@wes/ui';
 import { can } from '@wes/shared';
-import { getCentre, getChildren, getProgress } from '@/lib/server/data';
+import { getAttendanceDay, getCentre, getChildren, getProgress } from '@/lib/server/data';
 import { redirect } from 'next/navigation';
 import { mediaUrl } from '@/lib/media';
 import { requireCentre, requireSession } from '@/lib/server/session';
@@ -28,7 +28,7 @@ export default async function HomePage() {
   if (!session.membership && session.me.isPlatformAdmin) redirect('/admin');
   const { token, me, membership } = await requireCentre();
   const now = sastNow();
-  const [centre, children, progress] = await Promise.all([
+  const [centre, children, progress, attendance] = await Promise.all([
     getCentre(token, membership.centreId),
     can(membership.role, 'child:read')
       ? getChildren(token, membership.centreId)
@@ -37,7 +37,12 @@ export default async function HomePage() {
     can(membership.role, 'compliance:read') && membership.role !== 'admin'
       ? getProgress(token, membership.centreId)
       : Promise.resolve(null),
+    can(membership.role, 'attendance:write')
+      ? getAttendanceDay(token, membership.centreId, now.iso)
+      : Promise.resolve(null),
   ]);
+  const active = children.filter((c) => c.status === 'active');
+  const marked = attendance?.marks.filter((m) => active.some((c) => c.id === m.childId)) ?? [];
   const nextStep = progress?.steps.find((s) => s.status === 'current');
 
   return (
@@ -60,7 +65,11 @@ export default async function HomePage() {
                 : 'All steps done.',
             }
           : undefined,
-        childrenCount: children.filter((c) => c.status === 'active').length,
+        childrenCount: active.length,
+        attendance:
+          marked.length > 0
+            ? { present: marked.filter((m) => m.status === 'present').length, total: active.length }
+            : undefined,
         suggestions: demo.demoHome.suggestions,
       }}
     />

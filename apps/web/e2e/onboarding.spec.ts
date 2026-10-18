@@ -62,7 +62,8 @@ test.describe('a returning principal', () => {
     await signIn(page, '060 000 0001', '+27600000001');
     await expect(page).toHaveURL(/\/$/);
     await expect(page.getByText('Siyakhula Educare (demo)')).toBeVisible();
-    await expect(page.getByText('children in your register')).toBeVisible();
+    // The register card, or today's attendance once the register has been taken.
+    await expect(page.getByText(/children in your register|children here/)).toBeVisible();
 
     await page.getByRole('link', { name: 'Your account' }).click();
     await page.getByRole('button', { name: 'Sign out' }).click();

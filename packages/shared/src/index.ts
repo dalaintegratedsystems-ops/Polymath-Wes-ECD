@@ -11,3 +11,4 @@ export * from './i18n';
 export * from './schemas/accounts';
 export * from './schemas/compliance';
 export * from './schemas/planner';
+export * from './schemas/attendance';
