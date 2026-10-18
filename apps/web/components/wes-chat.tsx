@@ -53,7 +53,7 @@ export function WesChat({
           res.status === 401
             ? 'Please sign in again.'
             : res.status === 429
-              ? 'Slow down a little — try again in a minute.'
+              ? 'Slow down a little and try again in a minute.'
               : 'Wes can’t answer right now. Please try again.';
         update(tempId, { text: msg, pending: false, error: true });
         return;
@@ -77,7 +77,7 @@ export function WesChat({
       update(finalId, { pending: false });
     } catch {
       update(tempId, {
-        text: 'You seem to be offline. Your question wasn’t sent — try again when you have signal.',
+        text: 'You seem to be offline. Your question wasn’t sent. Try again when you have signal.',
         pending: false,
         error: true,
       });

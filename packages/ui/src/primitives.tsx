@@ -103,10 +103,35 @@ const AVATAR_TONES = [
   'bg-sunk text-ink',
 ];
 
-/** Initial-letter avatar. No photos of children by default (POPIA). */
-export function Avatar({ name, size = 44 }: { name: string; size?: number }) {
+/**
+ * Initial-letter avatar, or an adult's own profile photo / a centre logo when `src` is set.
+ * Never photos of children (POPIA).
+ */
+export function Avatar({
+  name,
+  size = 44,
+  src,
+}: {
+  name: string;
+  size?: number;
+  src?: string | null;
+}) {
   const tone =
     AVATAR_TONES[[...name].reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_TONES.length];
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt=""
+        width={size}
+        height={size}
+        loading="lazy"
+        decoding="async"
+        className="shrink-0 rounded-full bg-sunk object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
   return (
     <span
       aria-hidden="true"

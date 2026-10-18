@@ -1,4 +1,11 @@
-import { ArrowRightIcon, ChildrenIcon, PlanIcon, ShieldIcon, SparkleIcon } from '../icons';
+import {
+  ArrowRightIcon,
+  ChartIcon,
+  ChildrenIcon,
+  PlanIcon,
+  ShieldIcon,
+  SparkleIcon,
+} from '../icons';
 import { SunriseScene } from '../illustrations';
 import { defaultRenderLink, type RenderLink } from '../nav';
 import { Avatar, Card, Chip, buttonClass, cx } from '../primitives';
@@ -20,6 +27,11 @@ export interface HomeData {
   plan?: { theme: string; today: string; eldas: string[] };
   suggestions: string[];
   demo?: boolean;
+  /** The signed-in adult's own photo. */
+  avatarUrl?: string | null;
+  /** Show the "Your progress" dashboard link (staff) and the platform console (Dala admins). */
+  showDashboard?: boolean;
+  showAdmin?: boolean;
 }
 
 const GREETING = { morning: 'Good morning', afternoon: 'Good afternoon', evening: 'Good evening' };
@@ -54,7 +66,7 @@ export function HomeScreen({
             children: (
               <>
                 <span className="sr-only">Your account</span>
-                <Avatar name={data.userName} size={40} />
+                <Avatar name={data.userName} src={data.avatarUrl} size={40} />
               </>
             ),
           })}
@@ -174,6 +186,51 @@ export function HomeScreen({
             })}
           </div>
         </section>
+
+        {(data.showDashboard || data.showAdmin) && (
+          <nav aria-label="Progress" className="grid gap-3">
+            {data.showDashboard &&
+              renderLink({
+                href: '/dashboard',
+                className:
+                  'flex min-h-touch-lg items-center gap-3 rounded-lg bg-surface p-4 shadow-card',
+                children: (
+                  <>
+                    <span className="grid size-10 place-items-center rounded-full bg-brand-soft text-brand-strong">
+                      <ChartIcon size={22} />
+                    </span>
+                    <span className="flex-1">
+                      <span className="block font-black text-ink">Your progress</span>
+                      <span className="block text-sm text-ink-muted">
+                        Children, consent, Wes and attendance trends
+                      </span>
+                    </span>
+                    <ArrowRightIcon size={20} className="text-primary" />
+                  </>
+                ),
+              })}
+            {data.showAdmin &&
+              renderLink({
+                href: '/admin',
+                className:
+                  'flex min-h-touch-lg items-center gap-3 rounded-lg bg-surface p-4 shadow-card',
+                children: (
+                  <>
+                    <span className="grid size-10 place-items-center rounded-full bg-accent-soft text-accent">
+                      <ChartIcon size={22} />
+                    </span>
+                    <span className="flex-1">
+                      <span className="block font-black text-ink">Platform console</span>
+                      <span className="block text-sm text-ink-muted">
+                        Usage, growth and people across all centres
+                      </span>
+                    </span>
+                    <ArrowRightIcon size={20} className="text-primary" />
+                  </>
+                ),
+              })}
+          </nav>
+        )}
 
         {/* Ask Wes */}
         <section aria-labelledby="wes-title">

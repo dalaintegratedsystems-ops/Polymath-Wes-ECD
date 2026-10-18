@@ -22,5 +22,7 @@ export function sastNow(now = new Date()) {
     hour: Number(parts.hour),
     dateLabel: `${parts.weekday} ${parts.day} ${parts.month}`,
     weekdayKey: weekdayShort,
+    /** Today's date in SAST as YYYY-MM-DD. */
+    iso: new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(now),
   };
 }

@@ -38,7 +38,7 @@ export const demoSteps: JourneyStep[] = [
   {
     id: 'audit',
     title: 'Check where you stand',
-    detail: 'Self-audit done — 4 gaps found',
+    detail: 'Self-audit done: 4 gaps found',
     status: 'done',
   },
   {
@@ -95,7 +95,7 @@ export const demoGroups = ['Babies', 'Toddlers', 'Pre-Grade R'];
 export const demoPlan: WeekPlan = {
   theme: 'Water play',
   weekLabel: 'Week of 12 October',
-  citation: 'Linked to the NCF (placeholder source — real citations in Milestone 4)',
+  citation: 'Linked to the NCF (placeholder source; real citations in Milestone 4)',
   days: [
     {
       key: 'mon',

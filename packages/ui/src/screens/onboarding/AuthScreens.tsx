@@ -32,9 +32,11 @@ function useSubmitting() {
 export function WelcomeScreen({
   onSubmit,
   initialPhone = '',
+  usernameHref = '/welcome/username',
 }: {
   onSubmit: Submit<string>;
   initialPhone?: string;
+  usernameHref?: string;
 }) {
   const [phone, setPhone] = useState(initialPhone);
   const { busy, error, run } = useSubmitting();
@@ -66,7 +68,7 @@ export function WelcomeScreen({
             Your helper for running a great ECD centre
           </h1>
           <p className="mt-2 text-ink-muted">
-            Registration, plans, printables and your child register — on your phone.
+            Registration, plans, printables and your child register, all on your phone.
           </p>
         </div>
         <SunriseScene className="pointer-events-none mx-auto -mb-1 block w-full max-w-md" />
@@ -102,6 +104,14 @@ export function WelcomeScreen({
             {!busy && <ArrowRightIcon size={20} />}
           </Button>
         </form>
+        <p className="mt-4 text-center">
+          <a
+            href={usernameHref}
+            className="inline-flex min-h-touch items-center font-extrabold text-primary underline-offset-4 hover:underline"
+          >
+            Sign in with a username instead
+          </a>
+        </p>
         <p className="mt-6 flex items-start gap-2 text-sm text-ink-muted">
           <ShieldIcon size={18} className="mt-0.5 shrink-0 text-success" />
           <span>

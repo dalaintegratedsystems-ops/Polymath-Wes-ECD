@@ -39,10 +39,10 @@ const LANGUAGES: { value: Locale; label: string }[] = [
 
 type Band = 'babies' | 'toddlers' | 'preschool' | 'gradeR';
 const BANDS: { value: Band; label: string; min: number; max: number }[] = [
-  { value: 'babies', label: 'Babies (0–18 months)', min: 0, max: 18 },
-  { value: 'toddlers', label: 'Toddlers (1½–3 years)', min: 18, max: 36 },
-  { value: 'preschool', label: '3–5 years', min: 36, max: 60 },
-  { value: 'gradeR', label: 'Grade R (5–6 years)', min: 60, max: 72 },
+  { value: 'babies', label: 'Babies (0 to 18 months)', min: 0, max: 18 },
+  { value: 'toddlers', label: 'Toddlers (1½ to 3 years)', min: 18, max: 36 },
+  { value: 'preschool', label: '3 to 5 years', min: 36, max: 60 },
+  { value: 'gradeR', label: 'Grade R (5 to 6 years)', min: 60, max: 72 },
 ];
 
 export interface CentreDraft {
@@ -180,7 +180,7 @@ export function SetupScreen({
             onChange={([v]) => v && setLocale(v)}
           />
           <p className="text-sm text-ink-muted">
-            Wes speaks English today. Afrikaans, isiXhosa and isiZulu are coming — we’ll remember
+            Wes speaks English today. Afrikaans, isiXhosa and isiZulu are coming, and we’ll remember
             your choice.
           </p>
           <FormError message={error} />
@@ -207,7 +207,7 @@ export function SetupScreen({
           </Field>
           <Field
             label="Street address"
-            hint="Optional for now — you’ll need it for registration."
+            hint="Optional for now. You’ll need it for registration."
             htmlFor="address"
           >
             <TextInput

@@ -25,7 +25,9 @@ export class ApiError extends Error {
 export async function api<T>(
   path: string,
   opts: {
-    method?: 'GET' | 'POST' | 'PATCH';
+    method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+    /** Raw bytes (e.g. an image) instead of JSON. */
+    raw?: { bytes: ArrayBuffer; contentType: string };
     body?: unknown;
     token?: string;
     centreId?: string;
@@ -36,6 +38,7 @@ export async function api<T>(
   const method = opts.method ?? 'GET';
   const headers: Record<string, string> = { accept: 'application/json' };
   if (opts.body !== undefined) headers['content-type'] = 'application/json';
+  if (opts.raw) headers['content-type'] = opts.raw.contentType;
   if (opts.token) headers.authorization = `Bearer ${opts.token}`;
   if (opts.centreId) headers['x-centre-id'] = opts.centreId;
   if (method !== 'GET') headers['idempotency-key'] = opts.idempotencyKey ?? randomUUID();
@@ -45,7 +48,11 @@ export async function api<T>(
     res = await fetch(`${API_URL}${path}`, {
       method,
       headers,
-      body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
+      body: opts.raw
+        ? opts.raw.bytes
+        : opts.body === undefined
+          ? undefined
+          : JSON.stringify(opts.body),
       cache: 'no-store',
     });
   } catch {

@@ -17,3 +17,5 @@ export * from './forms';
 export * from './screens/onboarding/AuthScreens';
 export * from './screens/onboarding/SetupScreen';
 export * from './screens/onboarding/ChildConsentScreens';
+export * from './screens/DashboardScreens';
+export * from './screens/AccountScreens';

@@ -189,7 +189,7 @@ export function renderTokensCss(): string {
     `  --wes-touch-lg: ${space.touchLg};`,
   ].join('\n');
 
-  return `/* GENERATED from src/tokens.ts — run \`pnpm --filter @wes/ui tokens\`. Do not edit by hand. */
+  return `/* GENERATED from src/tokens.ts: run \`pnpm --filter @wes/ui tokens\`. Do not edit by hand. */
 :root {
   color-scheme: light;
 ${vars(themes.light)}

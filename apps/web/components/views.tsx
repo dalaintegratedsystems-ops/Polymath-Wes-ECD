@@ -6,6 +6,11 @@
  */
 import {
   AddChildScreen,
+  ChangePasswordScreen,
+  PasswordSignInScreen,
+  PeopleScreen,
+  PhotoPicker,
+  type PersonRow,
   ChildrenScreen,
   ConsentScreen,
   PlanScreen,
@@ -19,6 +24,14 @@ import {
 } from '@wes/ui';
 import {
   addChild,
+  changePassword,
+  createPerson,
+  passwordSignIn,
+  removeAvatar,
+  resetPersonPassword,
+  setPersonStatus,
+  uploadAvatar,
+  uploadLogo,
   confirmConsent,
   createCentre,
   requestPin,
@@ -98,4 +111,61 @@ export function PlanView(props: { plan: WeekPlan | null; todayKey?: string; demo
 
 export function RegistrationView(props: { steps: JourneyStep[]; demo?: boolean }) {
   return <RegistrationScreen {...props} renderLink={nextRenderLink} />;
+}
+
+// ---------- Accounts, people and profile ----------
+
+export function PasswordSignInView() {
+  return <PasswordSignInScreen onSubmit={passwordSignIn} renderLink={nextRenderLink} />;
+}
+
+export function ChangePasswordView({ forced }: { forced: boolean }) {
+  return (
+    <ChangePasswordScreen forced={forced} onSubmit={changePassword} renderLink={nextRenderLink} />
+  );
+}
+
+export function PeopleView(props: {
+  people: PersonRow[];
+  centres: { id: string; name: string }[];
+  isPlatformAdmin: boolean;
+}) {
+  return (
+    <PeopleScreen
+      {...props}
+      onCreate={createPerson}
+      onResetPassword={resetPersonPassword}
+      onSetStatus={setPersonStatus}
+      renderLink={nextRenderLink}
+    />
+  );
+}
+
+const asForm = (image: Blob) => {
+  const form = new FormData();
+  form.set('image', image, 'image.jpg');
+  return form;
+};
+
+export function AvatarPicker({ name, src }: { name: string; src: string | null }) {
+  return (
+    <PhotoPicker
+      name={name}
+      src={src}
+      label="photo"
+      onUpload={(image) => uploadAvatar(asForm(image))}
+      onRemove={removeAvatar}
+    />
+  );
+}
+
+export function LogoPicker({ name, src }: { name: string; src: string | null }) {
+  return (
+    <PhotoPicker
+      name={name}
+      src={src}
+      label="logo"
+      onUpload={(image) => uploadLogo(asForm(image))}
+    />
+  );
 }

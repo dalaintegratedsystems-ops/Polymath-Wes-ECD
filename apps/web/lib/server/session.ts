@@ -38,12 +38,14 @@ export interface Session {
 }
 
 /** The signed-in user for this request, or a redirect to sign-in. Cached per request. */
-export const requireSession = cache(async (): Promise<Session> => {
+export const requireSession = cache(async (allowPasswordChange = false): Promise<Session> => {
   const jar = await cookies();
   const token = jar.get(COOKIES.access)?.value;
   if (!token) redirect('/welcome');
   try {
     const me = await api<Me>('/v1/me', { token });
+    // Accounts made by an admin must choose their own password before anything else.
+    if (me.mustChangePassword && !allowPasswordChange) redirect('/account/password');
     return { token, me, membership: pickCentre(me.memberships, jar.get(COOKIES.centre)?.value) };
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) redirect('/welcome');

@@ -24,7 +24,8 @@ const withSerwist = withSerwistInit({
   swSrc: 'app/sw.ts',
   swDest: 'public/sw.js',
   disable: isDev,
-  cacheOnNavigation: true,
+  // Registered by components/service-worker.tsx, which checks the browser supports it.
+  register: false,
   reloadOnOnline: false,
 });
 

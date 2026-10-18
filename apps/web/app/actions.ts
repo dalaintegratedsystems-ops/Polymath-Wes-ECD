@@ -6,6 +6,7 @@
  * can show plain-language messages.
  */
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import type { Centre, ChildListItem, TokenPair } from '@wes/shared';
 import { normaliseSaPhone } from '@wes/shared';
@@ -61,7 +62,11 @@ export async function verifyPin(code: string): Promise<string | null> {
   }
   await setSession(pair);
   jar.delete(COOKIES.pendingPhone);
-  redirect(pair.isNewUser || pair.me.memberships.length === 0 ? '/setup' : '/');
+  redirect(
+    pair.isNewUser || (pair.me.memberships.length === 0 && !pair.me.isPlatformAdmin)
+      ? '/setup'
+      : '/',
+  );
 }
 
 export async function saveProfile(input: {
@@ -178,4 +183,138 @@ export async function signOut(): Promise<void> {
   }
   await clearSession();
   redirect('/welcome');
+}
+
+// ---------- Username sign-in and passwords ----------
+
+export async function passwordSignIn(input: {
+  username: string;
+  password: string;
+}): Promise<string | null> {
+  let pair: TokenPair;
+  try {
+    pair = await api<TokenPair>('/v1/auth/password', { method: 'POST', body: input });
+  } catch (err) {
+    return message(err);
+  }
+  await setSession(pair);
+  if (pair.me.mustChangePassword) redirect('/account/password');
+  redirect(pair.me.memberships.length === 0 && !pair.me.isPlatformAdmin ? '/setup' : '/');
+}
+
+export async function changePassword(input: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<string | null> {
+  const { token } = await requireSession(true);
+  try {
+    await api('/v1/auth/password/change', { method: 'POST', token, body: input });
+  } catch (err) {
+    return message(err);
+  }
+  redirect('/account?changed=1');
+}
+
+// ---------- People ----------
+
+type Created = { temporaryPassword: string | null } | { error: string };
+
+export async function createPerson(input: {
+  displayName: string;
+  centreId: string;
+  role: string;
+  username?: string;
+  phone?: string;
+}): Promise<Created> {
+  const { token } = await requireSession();
+  try {
+    const res = await api<{ temporaryPassword: string | null }>('/v1/admin/users', {
+      method: 'POST',
+      token,
+      body: input,
+    });
+    revalidatePath('/people');
+    return { temporaryPassword: res.temporaryPassword };
+  } catch (err) {
+    return { error: message(err) };
+  }
+}
+
+export async function resetPersonPassword(userId: string): Promise<Created> {
+  const { token } = await requireSession();
+  try {
+    const res = await api<{ temporaryPassword: string }>(
+      `/v1/admin/users/${encodeURIComponent(userId)}/reset-password`,
+      { method: 'POST', token },
+    );
+    revalidatePath('/people');
+    return res;
+  } catch (err) {
+    return { error: message(err) };
+  }
+}
+
+export async function setPersonStatus(
+  userId: string,
+  status: 'active' | 'deactivated',
+): Promise<string | null> {
+  const { token } = await requireSession();
+  try {
+    await api(`/v1/admin/users/${encodeURIComponent(userId)}/status`, {
+      method: 'PATCH',
+      token,
+      body: { status },
+    });
+    revalidatePath('/people');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+// ---------- Profile photo and centre logo ----------
+
+async function imageFrom(
+  form: FormData,
+): Promise<{ bytes: ArrayBuffer; contentType: string } | null> {
+  const file = form.get('image');
+  if (!(file instanceof Blob) || file.size === 0 || file.size > 512 * 1024) return null;
+  return { bytes: await file.arrayBuffer(), contentType: file.type || 'image/jpeg' };
+}
+
+export async function uploadAvatar(form: FormData): Promise<string | null> {
+  const { token } = await requireSession();
+  const raw = await imageFrom(form);
+  if (!raw) return 'Use a photo under 512 KB.';
+  try {
+    await api('/v1/me/avatar', { method: 'PUT', token, raw });
+    revalidatePath('/account');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+export async function removeAvatar(): Promise<string | null> {
+  const { token } = await requireSession();
+  try {
+    await api('/v1/me/avatar', { method: 'DELETE', token });
+    revalidatePath('/account');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+export async function uploadLogo(form: FormData): Promise<string | null> {
+  const { token, membership } = await requireCentre();
+  const raw = await imageFrom(form);
+  if (!raw) return 'Use a picture under 512 KB.';
+  try {
+    await api(`/v1/centres/${membership.centreId}/logo`, { method: 'PUT', token, raw });
+    revalidatePath('/account');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
 }

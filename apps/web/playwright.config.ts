@@ -50,7 +50,7 @@ export default defineConfig({
       },
     },
     {
-      command: 'pnpm exec next start -p 3100',
+      command: process.env.E2E_WEB_COMMAND ?? 'pnpm exec next start -p 3100',
       url: 'http://localhost:3100/welcome',
       reuseExistingServer: false,
       timeout: 120_000,

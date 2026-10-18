@@ -58,7 +58,7 @@ export function RegistrationScreen({
                 {done} of {steps.length} steps done
               </p>
               <p className="mt-1 text-sm text-ink-muted">
-                Keep going — every step brings funding closer.
+                Keep going. Every step brings funding closer.
               </p>
             </div>
           </Card>

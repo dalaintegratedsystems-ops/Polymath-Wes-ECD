@@ -154,7 +154,7 @@ export function WesScreen({
 
       <main className="space-y-3 px-4 pt-4 pb-28">
         <p className="rounded-md bg-sunk px-3 py-2 text-center text-xs text-ink-muted">
-          Wes can make mistakes — check important answers. Wes never diagnoses children.
+          Wes can make mistakes, so check important answers. Wes never diagnoses children.
         </p>
 
         {messages.length === 0 && (

@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: '/',
-    name: 'Wes — ECD centre helper',
+    name: 'Wes, ECD centre helper',
     short_name: 'Wes',
     description:
       'Get registered, funded and running well. Plans, printables and registration help for ECD centres.',

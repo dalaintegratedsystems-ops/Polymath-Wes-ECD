@@ -14,7 +14,7 @@ export const NO_SOURCE_REPLY =
   'I couldn’t find this in the official documents I have, so I won’t guess. Your district ECD office or a local ECD support organisation can confirm it for you.';
 
 export const NO_DIAGNOSIS_REPLY = [
-  'I can’t say whether a child has a condition — only a health professional can do that.',
+  'I can’t say whether a child has a condition, because only a health professional can do that.',
   '',
   'What helps:',
   '1. Write down what you notice, when it happens, and for how long.',
@@ -35,6 +35,16 @@ export function readingLevelOk(text: string): boolean {
   const lengths = sentences.map((s) => s.split(/\s+/).length);
   const avg = lengths.reduce((a, b) => a + b, 0) / lengths.length;
   return avg <= 22 && Math.max(...lengths) <= 45;
+}
+
+/**
+ * House style: no em or en dashes in anything people read (they render poorly on some phones
+ * and read as jargon). Ranges become "to"; other dashes become a comma.
+ */
+export function plainPunctuation(text: string): string {
+  return text
+    .replace(/(\d)\s*[\u2013\u2014]\s*(\d)/g, '$1 to $2')
+    .replace(/\s*[\u2013\u2014]\s*/g, ', ');
 }
 
 export function postCheck(input: {
@@ -110,7 +120,7 @@ export function postCheck(input: {
   }
 
   return {
-    text,
+    text: plainPunctuation(text),
     citations,
     result: {
       citationsPresent: needsSources ? citations.length > 0 : 'not_required',

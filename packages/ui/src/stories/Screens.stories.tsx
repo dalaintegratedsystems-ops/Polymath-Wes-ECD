@@ -24,11 +24,11 @@ const today = new Date('2026-10-15T09:00:00');
 
 export const Home: Story = { render: () => <HomeScreen data={demoHome} /> };
 export const HomeOffline: Story = {
-  name: 'Home — offline',
+  name: 'Home: offline',
   render: () => <HomeScreen data={demoHome} offline />,
 };
 export const HomeAfternoonNearlyDone: Story = {
-  name: 'Home — one step left',
+  name: 'Home: one step left',
   render: () => (
     <HomeScreen
       data={{
@@ -50,7 +50,7 @@ export const RegistrationJourney: Story = {
   render: () => <RegistrationScreen steps={demoSteps} demo />,
 };
 export const RegistrationComplete: Story = {
-  name: 'Registration — pack complete',
+  name: 'Registration: pack complete',
   render: () => (
     <RegistrationScreen steps={demoSteps.map((s) => ({ ...s, status: 'done' as const }))} />
   ),
@@ -63,7 +63,7 @@ export const ChildRegister: Story = {
   ),
 };
 export const ChildRegisterEmpty: Story = {
-  name: 'Child register — empty',
+  name: 'Child register: empty',
   render: () => <ChildrenScreen childrenList={[]} groups={[]} today={today} />,
 };
 
@@ -72,7 +72,7 @@ export const WeeklyPlan: Story = {
   render: () => <PlanScreen plan={demoPlan} todayKey="thu" demo />,
 };
 export const WeeklyPlanEmpty: Story = {
-  name: 'Weekly plan — empty',
+  name: 'Weekly plan: empty',
   render: () => <PlanScreen plan={null} />,
 };
 
@@ -81,14 +81,14 @@ export const AskWes: Story = {
   render: () => <WesChatDemo initial={demoChat} suggestions={demoSuggestions} />,
 };
 export const AskWesFirstRun: Story = {
-  name: 'Ask Wes — first run',
+  name: 'Ask Wes: first run',
   render: () => <WesChatDemo initial={[]} suggestions={demoSuggestions} />,
 };
 
 export const Offline: Story = { render: () => <OfflineScreen /> };
 
 export const AskWesSafety: Story = {
-  name: 'Ask Wes — child-protection response',
+  name: 'Ask Wes: child-protection response',
   render: () => (
     <WesChatDemo
       initial={[

@@ -20,7 +20,7 @@ export const Welcome: Story = {
 };
 
 export const WelcomeWithError: Story = {
-  name: 'Welcome — wrong number',
+  name: 'Welcome: wrong number',
   render: () => (
     <WelcomeScreen
       initialPhone="021 123 4567"
@@ -84,7 +84,7 @@ export const Consent: Story = {
 };
 
 export const RegisterWithWaiting: Story = {
-  name: 'Register — one child waiting for consent',
+  name: 'Register: one child waiting for consent',
   render: () => (
     <ChildrenScreen
       attendance={false}

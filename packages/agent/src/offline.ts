@@ -43,7 +43,7 @@ const REPLIES = {
     'I’m here to help with running your ECD centre: registration, planning, printables, children and parents. I can’t help with that one, but ask me anything about your centre.',
   injection: 'I can’t change how I work, but I’m happy to help with your centre. What do you need?',
   diagnosis: [
-    'I can’t say whether a child has a condition — only a health professional can do that.',
+    'I can’t say whether a child has a condition, because only a health professional can do that.',
     '',
     'What helps:',
     '1. Write down what you notice, when it happens, and for how long.',

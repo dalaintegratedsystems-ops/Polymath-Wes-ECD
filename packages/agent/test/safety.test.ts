@@ -95,3 +95,12 @@ describe('safety pre-check', () => {
     expect(text).toContain('Nomsa');
   });
 });
+
+describe('plain punctuation', () => {
+  it('turns ranges into "to" and other long dashes into commas', async () => {
+    const { plainPunctuation } = await import('../src/postcheck');
+    expect(plainPunctuation('Ages 3–5 years')).toBe('Ages 3 to 5 years');
+    expect(plainPunctuation('Keep going — it helps.')).toBe('Keep going, it helps.');
+    expect(plainPunctuation('A well-run centre')).toBe('A well-run centre');
+  });
+});

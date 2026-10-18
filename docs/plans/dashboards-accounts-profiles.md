@@ -1,7 +1,15 @@
 # Plan: dashboards, admin-managed accounts and profiles ("Milestone 2.5")
 
-Status: approved by the owner on 2026-10-18 ("finish the project end to end") — build after
-Milestone 2 lands. Follows CLAUDE.md: RLS, POPIA, plain language, 360 px first.
+Status: **built** (2026-10-18). Deviations from the plan, chosen to stay simple and secure:
+
+- Passwords use scrypt from Node's standard library (OWASP parameters) instead of Argon2id,
+  so there is no native module to ship or patch. The hash format records its parameters.
+- Photos are resized on the phone and stored in Postgres (`profile_images`, under RLS) instead
+  of blob storage; the server sniffs the type and strips EXIF, GPS and XMP itself, so `sharp`
+  is not needed. Blob storage arrives with documents in Milestone 3.
+- A short built-in list of common passwords replaces the 10,000-entry list.
+- Activity is one row per user per day (`user_activity_days`), written by the auth hook,
+  rather than a view over the audit log.
 
 ## Sequencing
 

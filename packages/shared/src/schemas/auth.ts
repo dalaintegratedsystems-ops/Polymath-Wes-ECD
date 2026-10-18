@@ -48,8 +48,9 @@ export const MeSchema = z
   .meta({ id: 'Me' });
 export type Me = z.infer<typeof MeSchema>;
 
+/** Strict: unknown fields are refused, never silently dropped (no mass assignment). */
 export const MeUpdateSchema = z
-  .object({
+  .strictObject({
     displayName: z.string().trim().min(1).max(60).optional(),
     locale: z.enum(['en', 'af', 'xh', 'zu']).optional(),
   })
