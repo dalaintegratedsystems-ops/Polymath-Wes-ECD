@@ -449,3 +449,46 @@ export async function markSubmitted(): Promise<string | null> {
     return message(err);
   }
 }
+
+// ---------- Planner ----------
+
+export async function createPlan(input: {
+  theme: string;
+  ageGroups: string[];
+  weekStarting: string;
+}): Promise<string | null> {
+  try {
+    await centreCall('/v1/plans/weekly', { method: 'POST', body: input });
+    revalidatePath('/plan', 'layout');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+export async function approvePlan(id: string): Promise<string | null> {
+  try {
+    await centreCall(`/v1/plans/${encodeURIComponent(id)}/approve`, { method: 'POST' });
+    revalidatePath('/plan', 'layout');
+    return null;
+  } catch (err) {
+    return message(err);
+  }
+}
+
+export async function adaptPlanActivity(
+  planId: string,
+  activityId: string,
+  target: string,
+): Promise<
+  { title: string; steps: string[]; materials: string[]; note: string } | { error: string }
+> {
+  try {
+    return await centreCall('/v1/activities/adapt', {
+      method: 'POST',
+      body: { planId, activityId, target },
+    });
+  } catch (err) {
+    return { error: message(err) };
+  }
+}

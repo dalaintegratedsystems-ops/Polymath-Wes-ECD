@@ -45,3 +45,11 @@ export async function signIn(page: Page, local: string, e164: string) {
   await expect(page.getByRole('heading', { name: 'Enter your PIN' })).toBeVisible();
   await page.getByLabel('6-digit PIN').fill(await latestPin(e164, 'sign_in'));
 }
+
+/**
+ * Wait for a page to finish loading and hydrating. Acting on a page mid-hydration (a tap, or
+ * leaving it) makes React report errors from the page being taken over, which is noise.
+ */
+export async function settle(page: Page) {
+  await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => undefined);
+}

@@ -6,6 +6,7 @@ import {
   loadAgentConfig,
   type AgentConfig,
   type EmbeddingProvider,
+  type ModelClient,
 } from '@wes/agent';
 
 /** The agent and its retrieval embedder, wired from the environment. */
@@ -13,6 +14,8 @@ export interface AgentServices {
   config: AgentConfig;
   wes: ReturnType<typeof createWes>;
   embedder: EmbeddingProvider;
+  /** Direct model access for structured tasks (planner); offline clients have no `structured`. */
+  model: ModelClient;
 }
 
 export function createAgentServices(
@@ -25,5 +28,10 @@ export function createAgentServices(
   }
   const model =
     config.mode === 'live' ? createAnthropicModelClient(config) : createOfflineModelClient();
-  return { config, wes: createWes({ config, model, now }), embedder: createEmbeddingProvider(env) };
+  return {
+    config,
+    model,
+    wes: createWes({ config, model, now }),
+    embedder: createEmbeddingProvider(env),
+  };
 }

@@ -16,7 +16,7 @@
 | Rate limits | Per client per minute; `429 rate_limited`. The assistant allows 20 messages a minute.                                                                                                                                                                          |
 | Child data  | Every read and write is written to the audit log.                                                                                                                                                                                                              |
 
-## Available now (Milestones 0 to 3)
+## Available now (Milestones 0 to 4)
 
 | Endpoint                                                                 | Who                                                        | Notes                                                                                                                                                                                                          |
 | ------------------------------------------------------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -67,6 +67,18 @@ All take the centre in the `X-Centre-Id` header. Reads: staff of the centre. Wri
 | `GET /v1/policies/{id}/pdf`                                                                                      | Low-ink A4 PDF; drafts are marked DRAFT.                                                                                  |
 | `POST /v1/compliance/pack`                                                                                       | One PDF: centre details, self-audit, approved policies, documents. Marks the pack step done.                              |
 
+### Planner and printables (Milestone 4)
+
+Centre in the `X-Centre-Id` header; principals and practitioners.
+
+| Endpoint                                | Notes                                                                                                                                                                                                                                                                        |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /v1/plans/weekly`                 | `{ theme, ageGroups, weekStarting }`. Claude drafts the plan with structured output when live; otherwise built-in low-cost activity ideas. Five days, three activities a day, ELDA tags (suggestions until the NCF corpus is loaded), free materials, steps. Always a draft. |
+| `GET /v1/plans/current?week=YYYY-MM-DD` | The working draft for that week, or the approved plan.                                                                                                                                                                                                                       |
+| `POST /v1/plans/{id}/approve`           | The practitioner decides.                                                                                                                                                                                                                                                    |
+| `POST /v1/activities/adapt`             | `{ planId, activityId, target }` with target younger, older, outdoor or fewer_materials.                                                                                                                                                                                     |
+| `POST /v1/printables`                   | `{ kind, title, words, upTo }`: flashcards, tracing or counting. Low-ink A4 PDF.                                                                                                                                                                                             |
+
 Routes under `/v1/children/{id}` and `/v1/assistant` also take the centre in the `X-Centre-Id` header.
 
 ### Ask Wes: server-sent events
@@ -97,6 +109,5 @@ second centre, `060 000 0003`), Ayanda (parent, `060 000 0005`), Lerato (funder,
 
 | Milestone | Endpoints                                                                     |
 | --------- | ----------------------------------------------------------------------------- |
-| 4         | `POST /v1/plans/weekly`, `/activities/adapt`, `/printables`                   |
 | 5         | `POST /v1/centres/{id}/attendance`, `GET /v1/attendance/export?month=YYYY-MM` |
 | 6         | `POST /v1/channels/whatsapp/webhook`, `/channels/sms/webhook`                 |

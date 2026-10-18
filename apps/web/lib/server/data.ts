@@ -7,6 +7,7 @@ import type {
   ComplianceDocument,
   Policy,
   RegistrationProgress,
+  WeeklyPlan,
 } from '@wes/shared';
 import { ApiError, api } from './api';
 
@@ -64,4 +65,13 @@ export async function getDocuments(token: string, centreId: string) {
       inCentre(token, centreId),
     )
   ).items;
+}
+
+export async function getWeekPlan(token: string, centreId: string, week: string) {
+  try {
+    return await api<WeeklyPlan>(`/v1/plans/current?week=${week}`, inCentre(token, centreId));
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) return null;
+    throw err;
+  }
 }

@@ -4,7 +4,7 @@ import { createTestDb, type TestDb } from '@wes/db/testing';
 import { buildApp, type BuildOptions } from '../src/app';
 import { createAgentServices } from '../src/platform/agent';
 import { createMemoryBlobStore } from '../src/platform/blob';
-import { createMemoryOtpSender } from '../src/platform/deps';
+import { createMemoryOtpSender, type AppDeps } from '../src/platform/deps';
 
 export const TEST_CONFIG = {
   NODE_ENV: 'test' as const,
@@ -21,6 +21,8 @@ export interface Harness {
   otp: ReturnType<typeof createMemoryOtpSender>;
   clock: { now: Date };
   crypto: ReturnType<typeof createFieldCrypto>;
+  /** The live dependency object, so tests can swap the model or the clock. */
+  deps: AppDeps;
   close(): Promise<void>;
 }
 
@@ -33,17 +35,18 @@ export async function createHarness(
   const clock = { now: new Date('2026-10-15T08:00:00Z') };
   if (options.seed !== false) await seed(db.db, crypto, { today: clock.now });
   const otp = createMemoryOtpSender();
+  const deps: AppDeps = {
+    db: db.appDb,
+    crypto,
+    otpSender: otp,
+    blobs: createMemoryBlobStore(),
+    agent: createAgentServices({ NODE_ENV: 'test' }, () => clock.now),
+    now: () => clock.now,
+  };
   const app = await buildApp({
     logger: false,
     config: TEST_CONFIG,
-    deps: {
-      db: db.appDb,
-      crypto,
-      otpSender: otp,
-      blobs: createMemoryBlobStore(),
-      agent: createAgentServices({ NODE_ENV: 'test' }, () => clock.now),
-      now: () => clock.now,
-    },
+    deps,
     register: options.register,
   });
   return {
@@ -52,6 +55,7 @@ export async function createHarness(
     otp,
     clock,
     crypto,
+    deps,
     close: async () => {
       await app.close();
       await db.close();

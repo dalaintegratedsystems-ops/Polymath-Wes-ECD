@@ -3854,6 +3854,959 @@
         }
       }
     },
+    "/v1/plans/weekly": {
+      "post": {
+        "operationId": "createWeeklyPlan",
+        "summary": "Draft a theme plan for the week, tagged to ELDAs (a draft until a practitioner approves)",
+        "tags": ["planner"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Centre-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "Unique key (8–128 chars) so retries over flaky networks never double-write.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "theme": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 60,
+                    "pattern": "^[\\p{L}\\p{N} ,.'&-]+$"
+                  },
+                  "ageGroups": {
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": ["babies", "toddlers", "preschool"]
+                    }
+                  },
+                  "weekStarting": {
+                    "type": "string",
+                    "format": "date",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                  }
+                },
+                "required": ["theme", "ageGroups", "weekStarting"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Draft plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "theme": {
+                      "type": "string"
+                    },
+                    "weekStarting": {
+                      "type": "string",
+                      "format": "date",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                    },
+                    "ageGroups": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": ["babies", "toddlers", "preschool"]
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": ["draft", "approved", "archived"]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": ["wes", "library"]
+                    },
+                    "body": {
+                      "type": "object",
+                      "properties": {
+                        "days": {
+                          "minItems": 5,
+                          "maxItems": 5,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "day": {
+                                "type": "string",
+                                "enum": ["mon", "tue", "wed", "thu", "fri"]
+                              },
+                              "activities": {
+                                "minItems": 1,
+                                "maxItems": 5,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "maxLength": 40
+                                    },
+                                    "slot": {
+                                      "type": "string",
+                                      "maxLength": 40
+                                    },
+                                    "title": {
+                                      "type": "string",
+                                      "maxLength": 120
+                                    },
+                                    "durationMinutes": {
+                                      "type": "integer",
+                                      "minimum": 5,
+                                      "maximum": 90
+                                    },
+                                    "ageGroups": {
+                                      "minItems": 1,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": ["babies", "toddlers", "preschool"]
+                                      }
+                                    },
+                                    "eldas": {
+                                      "minItems": 1,
+                                      "maxItems": 3,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": [
+                                          "wellbeing",
+                                          "identity",
+                                          "communicating",
+                                          "maths",
+                                          "creativity",
+                                          "world"
+                                        ]
+                                      }
+                                    },
+                                    "materials": {
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "maxLength": 80
+                                      }
+                                    },
+                                    "steps": {
+                                      "minItems": 1,
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "maxLength": 300
+                                      }
+                                    },
+                                    "printable": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string",
+                                          "enum": ["flashcards", "tracing", "counting"]
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "slot",
+                                    "title",
+                                    "durationMinutes",
+                                    "ageGroups",
+                                    "eldas",
+                                    "materials",
+                                    "steps",
+                                    "printable"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              }
+                            },
+                            "required": ["day", "activities"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "themeWords": {
+                          "maxItems": 12,
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "maxLength": 14
+                          }
+                        }
+                      },
+                      "required": ["days", "themeWords"],
+                      "additionalProperties": false
+                    },
+                    "citations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "n": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "where": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["n", "source", "where"],
+                        "additionalProperties": false
+                      }
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "theme",
+                    "weekStarting",
+                    "ageGroups",
+                    "status",
+                    "source",
+                    "body",
+                    "citations",
+                    "createdAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plans/current": {
+      "get": {
+        "operationId": "getWeeklyPlan",
+        "summary": "The plan for a week (the approved one if there is one, otherwise the draft)",
+        "tags": ["planner"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "week",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+            }
+          },
+          {
+            "name": "X-Centre-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "theme": {
+                      "type": "string"
+                    },
+                    "weekStarting": {
+                      "type": "string",
+                      "format": "date",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                    },
+                    "ageGroups": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": ["babies", "toddlers", "preschool"]
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": ["draft", "approved", "archived"]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": ["wes", "library"]
+                    },
+                    "body": {
+                      "type": "object",
+                      "properties": {
+                        "days": {
+                          "minItems": 5,
+                          "maxItems": 5,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "day": {
+                                "type": "string",
+                                "enum": ["mon", "tue", "wed", "thu", "fri"]
+                              },
+                              "activities": {
+                                "minItems": 1,
+                                "maxItems": 5,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "maxLength": 40
+                                    },
+                                    "slot": {
+                                      "type": "string",
+                                      "maxLength": 40
+                                    },
+                                    "title": {
+                                      "type": "string",
+                                      "maxLength": 120
+                                    },
+                                    "durationMinutes": {
+                                      "type": "integer",
+                                      "minimum": 5,
+                                      "maximum": 90
+                                    },
+                                    "ageGroups": {
+                                      "minItems": 1,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": ["babies", "toddlers", "preschool"]
+                                      }
+                                    },
+                                    "eldas": {
+                                      "minItems": 1,
+                                      "maxItems": 3,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": [
+                                          "wellbeing",
+                                          "identity",
+                                          "communicating",
+                                          "maths",
+                                          "creativity",
+                                          "world"
+                                        ]
+                                      }
+                                    },
+                                    "materials": {
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "maxLength": 80
+                                      }
+                                    },
+                                    "steps": {
+                                      "minItems": 1,
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "maxLength": 300
+                                      }
+                                    },
+                                    "printable": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string",
+                                          "enum": ["flashcards", "tracing", "counting"]
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "slot",
+                                    "title",
+                                    "durationMinutes",
+                                    "ageGroups",
+                                    "eldas",
+                                    "materials",
+                                    "steps",
+                                    "printable"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              }
+                            },
+                            "required": ["day", "activities"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "themeWords": {
+                          "maxItems": 12,
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "maxLength": 14
+                          }
+                        }
+                      },
+                      "required": ["days", "themeWords"],
+                      "additionalProperties": false
+                    },
+                    "citations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "n": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "where": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["n", "source", "where"],
+                        "additionalProperties": false
+                      }
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "theme",
+                    "weekStarting",
+                    "ageGroups",
+                    "status",
+                    "source",
+                    "body",
+                    "citations",
+                    "createdAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No plan for that week"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plans/{id}/approve": {
+      "post": {
+        "operationId": "approveWeeklyPlan",
+        "summary": "Approve a plan for use (the practitioner decides)",
+        "tags": ["planner"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            }
+          },
+          {
+            "name": "X-Centre-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "description": "Unique key (8–128 chars) so retries over flaky networks never double-write.",
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                    },
+                    "theme": {
+                      "type": "string"
+                    },
+                    "weekStarting": {
+                      "type": "string",
+                      "format": "date",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
+                    },
+                    "ageGroups": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": ["babies", "toddlers", "preschool"]
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": ["draft", "approved", "archived"]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": ["wes", "library"]
+                    },
+                    "body": {
+                      "type": "object",
+                      "properties": {
+                        "days": {
+                          "minItems": 5,
+                          "maxItems": 5,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "day": {
+                                "type": "string",
+                                "enum": ["mon", "tue", "wed", "thu", "fri"]
+                              },
+                              "activities": {
+                                "minItems": 1,
+                                "maxItems": 5,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "maxLength": 40
+                                    },
+                                    "slot": {
+                                      "type": "string",
+                                      "maxLength": 40
+                                    },
+                                    "title": {
+                                      "type": "string",
+                                      "maxLength": 120
+                                    },
+                                    "durationMinutes": {
+                                      "type": "integer",
+                                      "minimum": 5,
+                                      "maximum": 90
+                                    },
+                                    "ageGroups": {
+                                      "minItems": 1,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": ["babies", "toddlers", "preschool"]
+                                      }
+                                    },
+                                    "eldas": {
+                                      "minItems": 1,
+                                      "maxItems": 3,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "enum": [
+                                          "wellbeing",
+                                          "identity",
+                                          "communicating",
+                                          "maths",
+                                          "creativity",
+                                          "world"
+                                        ]
+                                      }
+                                    },
+                                    "materials": {
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "maxLength": 80
+                                      }
+                                    },
+                                    "steps": {
+                                      "minItems": 1,
+                                      "maxItems": 8,
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "maxLength": 300
+                                      }
+                                    },
+                                    "printable": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string",
+                                          "enum": ["flashcards", "tracing", "counting"]
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "slot",
+                                    "title",
+                                    "durationMinutes",
+                                    "ageGroups",
+                                    "eldas",
+                                    "materials",
+                                    "steps",
+                                    "printable"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              }
+                            },
+                            "required": ["day", "activities"],
+                            "additionalProperties": false
+                          }
+                        },
+                        "themeWords": {
+                          "maxItems": 12,
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "maxLength": 14
+                          }
+                        }
+                      },
+                      "required": ["days", "themeWords"],
+                      "additionalProperties": false
+                    },
+                    "citations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "n": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "source": {
+                            "type": "string"
+                          },
+                          "where": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["n", "source", "where"],
+                        "additionalProperties": false
+                      }
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "theme",
+                    "weekStarting",
+                    "ageGroups",
+                    "status",
+                    "source",
+                    "body",
+                    "citations",
+                    "createdAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/activities/adapt": {
+      "post": {
+        "operationId": "adaptActivity",
+        "summary": "Adapt a planned activity: younger, older, outdoors or with fewer materials",
+        "tags": ["planner"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Centre-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "planId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "activityId": {
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "target": {
+                    "type": "string",
+                    "enum": ["younger", "older", "outdoor", "fewer_materials"]
+                  }
+                },
+                "required": ["planId", "activityId", "target"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Adapted activity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "steps": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "materials": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["title", "steps", "materials", "note"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/printables": {
+      "post": {
+        "operationId": "createPrintable",
+        "summary": "A low-ink A4 printable: flashcards, a tracing sheet or a counting sheet",
+        "tags": ["planner"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Centre-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["flashcards", "tracing", "counting"]
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 60
+                  },
+                  "words": {
+                    "default": [],
+                    "maxItems": 12,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 14,
+                      "pattern": "^[\\p{L} '-]+$"
+                    }
+                  },
+                  "upTo": {
+                    "default": 5,
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10
+                  }
+                },
+                "required": ["kind", "title"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "PDF (application/pdf)"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/admin/users": {
       "get": {
         "operationId": "listManagedUsers",

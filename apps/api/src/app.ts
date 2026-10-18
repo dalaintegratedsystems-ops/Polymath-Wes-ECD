@@ -19,6 +19,7 @@ import { complianceRoutes } from './modules/compliance/routes';
 import { dashboardRoutes } from './modules/dashboards/routes';
 import { peopleRoutes } from './modules/people/routes';
 import { phase2Routes } from './modules/phase2/routes';
+import { plannerRoutes } from './modules/planner/routes';
 import { profileRoutes } from './modules/profile/routes';
 import { systemRoutes } from './modules/system/routes';
 
@@ -93,6 +94,7 @@ export async function buildApp(options: BuildOptions): Promise<FastifyInstance> 
   await app.register(childrenRoutes, { deps, config });
   await app.register(assistantRoutes, { deps });
   await app.register(complianceRoutes, { deps });
+  await app.register(plannerRoutes, { deps });
   await app.register(peopleRoutes, { deps });
   await app.register(dashboardRoutes, { deps });
   await app.register(profileRoutes, { deps });

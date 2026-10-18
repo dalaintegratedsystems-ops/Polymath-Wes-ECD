@@ -1,6 +1,5 @@
-import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
-import { fillField, signIn } from './helpers';
+import { fillField, settle, signIn } from './helpers';
 
 // A real 1x1 PNG: the browser decodes and shrinks it like a phone photo before upload.
 const PNG = Buffer.from(
@@ -73,13 +72,16 @@ test.describe('registration copilot', () => {
 
     // 4. The application pack downloads as one PDF
     await page.goto('/registration/pack');
+    await settle(page);
     const [download] = await Promise.all([
       page.waitForEvent('download'),
       page.getByRole('button', { name: 'Make my pack (PDF)' }).click(),
     ]);
     expect(download.suggestedFilename()).toBe('application-pack.pdf');
-    const bytes = readFileSync((await download.path())!);
-    expect(bytes.subarray(0, 5).toString()).toBe('%PDF-');
+    // The browser started the download; check the pack itself with the same request.
+    const pack = await page.request.post('/registration/pack/download');
+    expect(pack.headers()['content-type']).toBe('application/pdf');
+    expect((await pack.body()).subarray(0, 5).toString()).toBe('%PDF-');
 
     // 5. Submit
     await page.goto('/registration/submit');

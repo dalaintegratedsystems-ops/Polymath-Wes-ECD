@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { fillField, signIn } from './helpers';
+import { fillField, settle, signIn } from './helpers';
 
 const NOMSA = { local: '060 000 0001', e164: '+27600000001' };
 const ADMIN = { local: '060 000 0007', e164: '+27600000007' };
@@ -21,7 +21,7 @@ function watchForErrors(page: Page) {
   const problems: string[] = [];
   page.on('pageerror', (e) =>
     problems.push(
-      `page error on ${new URL(page.url()).pathname}: ${e.message.slice(0, process.env.E2E_FULL_ERRORS ? 3000 : 60)}`,
+      `page error on ${new URL(page.url()).pathname}: ${e.message.slice(0, process.env.E2E_FULL_ERRORS ? 3000 : 120)}`,
     ),
   );
   page.on('console', (m) => {
@@ -37,14 +37,6 @@ function watchForErrors(page: Page) {
     }
   });
   return problems;
-}
-
-/**
- * Wait for a page to finish loading and hydrating. Leaving a page mid-hydration makes React
- * report a hydration error from the page being torn down, which is noise, not a bug.
- */
-async function settle(page: Page) {
-  await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => undefined);
 }
 
 /** Visit each start page and every internal link on it; all must answer without an error. */
@@ -171,11 +163,11 @@ test.describe('principal', () => {
     expect(visited).toEqual(
       expect.arrayContaining(['/children', '/plan', '/registration', '/wes']),
     );
-    // A principal cannot open the platform console.
-    await page.goto('/admin');
-    await expect(page).toHaveURL(/\/$/);
-    await settle(page);
     expect(problems).toEqual([]);
+    // A principal cannot open the platform console: the server sends them home.
+    const admin = await page.request.get('/admin', { maxRedirects: 0 });
+    expect(admin.status()).toBe(307);
+    expect(admin.headers().location).toBe('/');
   });
 });
 

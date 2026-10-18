@@ -13,6 +13,7 @@
   - The `wes_app` role cannot read `users.password_hash` or `users.phone_e164` (column grants); use the `app.*` definer functions.
   - No em or en dashes in user-facing copy (`packages/ui/test/copy.test.ts`); Wes replies are normalised in the post-check.
 - **Milestone 3 (registration copilot): complete.** Self-audit, journey progress, document capture (Azure Blob via managed identity; filesystem locally), policy drafts from guided questions with edit and approve, policy PDFs and the application pack (pdf-lib, ADR-0013). Checklist content is still the labelled placeholder until `<<NCF_AND_DBE_DOCUMENT_SET>>` arrives.
+- **Milestone 4 (planner and printables): complete.** Weekly plans (Claude structured output when live, built-in low-cost activity library offline or as fallback), adapt activities, approve, flashcards, tracing and counting PDFs. ELDA names are in `packages/shared/src/schemas/planner.ts`; their descriptions and NCF citations are TODO(content).
 - Repo: https://github.com/dalaintegratedsystems-ops/Polymath-Wes-ECD (branch `main`).
 - Decisions assumed in M0, pending confirmation:
   1. Withdrawing consent deletes the child, guardian links and per-day attendance, but keeps anonymous per-centre daily headcounts (`attendance_daily_counts`) for subsidy evidence.

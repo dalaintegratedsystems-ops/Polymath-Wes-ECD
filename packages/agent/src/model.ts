@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import type { z } from 'zod';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { MODEL_PRICES, type AgentConfig } from './config';
 import { ClassificationSchema, type Classification, type Usage } from './types';
@@ -40,6 +41,18 @@ export interface ModelClient {
     text: string;
   }): Promise<{ classification: Classification | null; usage: Usage }>;
   turn(req: TurnRequest): Promise<TurnResult>;
+  /**
+   * One structured answer validated against a Zod schema (planner, activity adaptation).
+   * Offline clients leave this out, so callers fall back to their deterministic path.
+   */
+  structured?<T>(req: {
+    model: string;
+    system: string;
+    prompt: string;
+    schema: z.ZodType<T>;
+    maxTokens: number;
+    effort: AgentConfig['mainEffort'];
+  }): Promise<{ value: T | null; usage: Usage }>;
 }
 
 /** Thrown when the model can't be reached or rejected the request; the pipeline answers kindly. */
@@ -124,6 +137,24 @@ export function createAnthropicModelClient(config: AgentConfig): ModelClient {
         });
         return {
           classification: res.stop_reason === 'refusal' ? null : (res.parsed_output ?? null),
+          usage: toUsage(model, res.usage),
+        };
+      } catch (err) {
+        wrapError(err);
+      }
+    },
+
+    async structured({ model, system, prompt, schema, maxTokens, effort }) {
+      try {
+        const res = await client.messages.parse({
+          model,
+          max_tokens: maxTokens,
+          system,
+          messages: [{ role: 'user', content: prompt }],
+          output_config: { format: zodOutputFormat(schema), effort },
+        });
+        return {
+          value: res.stop_reason === 'refusal' ? null : (res.parsed_output ?? null),
           usage: toUsage(model, res.usage),
         };
       } catch (err) {

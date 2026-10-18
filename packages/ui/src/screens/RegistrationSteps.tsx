@@ -11,6 +11,7 @@ import {
   ShieldIcon,
   SparkleIcon,
 } from '../icons';
+import { DownloadForm } from '../download';
 import { Celebration } from '../illustrations';
 import { defaultRenderLink, type RenderLink } from '../nav';
 import { Button, Card, Chip, buttonClass, cx } from '../primitives';
@@ -774,12 +775,15 @@ export function PackScreen({
         </p>
       )}
       {canBuild ? (
-        <form method="post" action={downloadAction}>
-          <button type="submit" className={buttonClass({ size: 'lg', block: true })}>
-            <PrinterIcon size={20} />
-            {builtAt ? 'Make a fresh pack (PDF)' : 'Make my pack (PDF)'}
-          </button>
-        </form>
+        <DownloadForm
+          action={downloadAction}
+          filename="application-pack.pdf"
+          label={builtAt ? 'Make a fresh pack (PDF)' : 'Make my pack (PDF)'}
+          busyLabel="Making your pack…"
+          icon={<PrinterIcon size={20} />}
+          size="lg"
+          block
+        />
       ) : (
         <Card>
           <p className="text-ink-muted">Your principal makes the application pack.</p>

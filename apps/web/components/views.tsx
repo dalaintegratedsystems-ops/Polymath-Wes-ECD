@@ -6,6 +6,8 @@
  */
 import {
   AddChildScreen,
+  PlannerScreen,
+  PrintablesScreen,
   PackScreen,
   PoliciesScreen,
   CentreDetailsScreen,
@@ -20,17 +22,18 @@ import {
   type PersonRow,
   ChildrenScreen,
   ConsentScreen,
-  PlanScreen,
   RegistrationScreen,
   SetupScreen,
   VerifyScreen,
   WelcomeScreen,
   type ChildRow,
   type JourneyStep,
-  type WeekPlan,
 } from '@wes/ui';
 import {
   addChild,
+  adaptPlanActivity,
+  approvePlan,
+  createPlan,
   approvePolicy,
   deleteDocument,
   generatePolicy,
@@ -118,10 +121,6 @@ export function ConsentView({ childId, childName }: { childId: string; childName
       renderLink={nextRenderLink}
     />
   );
-}
-
-export function PlanView(props: { plan: WeekPlan | null; todayKey?: string; demo?: boolean }) {
-  return <PlanScreen {...props} renderLink={nextRenderLink} />;
 }
 
 export function RegistrationView(props: {
@@ -260,4 +259,30 @@ export function PoliciesView(props: Omit<Parameters<typeof PoliciesScreen>[0], '
 
 export function PackView(props: Omit<Parameters<typeof PackScreen>[0], 'renderLink'>) {
   return <PackScreen {...props} renderLink={nextRenderLink} />;
+}
+
+export function PlannerView(
+  props: Omit<
+    Parameters<typeof PlannerScreen>[0],
+    'onCreate' | 'onApprove' | 'onAdapt' | 'renderLink'
+  >,
+) {
+  const id = props.plan?.id;
+  return (
+    <PlannerScreen
+      {...props}
+      onCreate={createPlan}
+      onApprove={() => (id ? approvePlan(id) : Promise.resolve('Make a plan first.'))}
+      onAdapt={(activityId, target) =>
+        id
+          ? adaptPlanActivity(id, activityId, target)
+          : Promise.resolve({ error: 'Make a plan first.' })
+      }
+      renderLink={nextRenderLink}
+    />
+  );
+}
+
+export function PrintablesView(props: Omit<Parameters<typeof PrintablesScreen>[0], 'renderLink'>) {
+  return <PrintablesScreen {...props} renderLink={nextRenderLink} />;
 }
