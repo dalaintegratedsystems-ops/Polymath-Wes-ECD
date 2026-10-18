@@ -61,9 +61,16 @@ Add keys with `ANTHROPIC_API_KEY=… VOYAGE_API_KEY=… ./infra/deploy.sh wes-st
 
 ## After the first deployment
 
-- **Sign in (staging):** WhatsApp and SMS delivery arrive in Milestone 6. Until then, staging
-  writes sign-in PINs to the API log. Find them in the portal: Container App _api_ → Log
-  stream, or Log Analytics. This is why staging must stay a private pilot.
+- **Sign in:** with the four WhatsApp settings (below), PINs arrive as a WhatsApp message.
+  Without them, staging writes PINs to the API log (Container App _api_ → Log stream), which is
+  why such a staging must stay a private pilot. Production refuses to start without WhatsApp.
+- **WhatsApp:** in Meta Business Manager create a WhatsApp app, a system user token, and two
+  templates: `wes_sign_in_code` (category Authentication, with a copy-code button) and
+  `wes_reminder` (category Utility, one body variable). Deploy with `WHATSAPP_PHONE_NUMBER_ID`,
+  `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_APP_SECRET` and your own random `WHATSAPP_VERIFY_TOKEN`.
+  Then in Meta set the webhook callback URL to `https://<web address>/api/whatsapp/webhook`
+  with the same verify token, and subscribe to `messages`. The web app passes webhooks to the
+  private API unchanged, and the API checks Meta's signature.
 - **Demo data:** staging loads the fictional demo centres on first start (turn off with
   `loadDemoData=false`). Demo principal: `060 000 0001`.
 - **Automatic updates:** set repository variables `AZURE_RESOURCE_GROUP`, `AZURE_CLIENT_ID`,

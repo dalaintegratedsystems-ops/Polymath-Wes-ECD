@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { and, desc, eq, ne } from 'drizzle-orm';
+import { and, desc, eq, isNull, ne } from 'drizzle-orm';
 import { z } from 'zod';
 import {
   AppError,
@@ -9,6 +9,8 @@ import {
   ComplianceDocumentListSchema,
   ComplianceDocumentSchema,
   DOCUMENT_MIME_TYPES,
+  DOCUMENT_TYPE_LABEL,
+  EXPIRY_WARNING_DAYS,
   DocumentUploadQuerySchema,
   MAX_DOCUMENT_BYTES,
   PolicyGenerateSchema,
@@ -243,6 +245,21 @@ export async function complianceRoutes(app: FastifyInstance, opts: { deps: AppDe
           expiresOn: query.expiresOn ?? null,
           uploadedByUserId: ctx.userId,
         });
+        if (query.expiresOn) {
+          // Remind the uploader 30 days before expiry (08:00 SAST), or soon if that has passed.
+          const warnAt = new Date(
+            Date.parse(`${query.expiresOn}T08:00:00+02:00`) - EXPIRY_WARNING_DAYS * 86_400_000,
+          );
+          const dueAt = warnAt > deps.now() ? warnAt : new Date(deps.now().getTime() + 3_600_000);
+          await tx.insert(schema.reminders).values({
+            centreId: ctx.centreId!,
+            userId: ctx.userId,
+            kind: 'document_expiry',
+            message: `Your ${DOCUMENT_TYPE_LABEL[query.type].toLowerCase()} expires on ${query.expiresOn}. Renew it, then add the new one in Wes.`,
+            dueAt,
+            relatedResourceId: id,
+          });
+        }
         await audit(tx, raw, ctx, {
           action: 'compliance.document.upload',
           resourceType: 'document',
@@ -341,6 +358,11 @@ export async function complianceRoutes(app: FastifyInstance, opts: { deps: AppDe
           )
           .returning({ key: schema.complianceDocuments.blobKey });
         if (!row) throw new AppError('not_found', 'Document not found.');
+        await tx
+          .delete(schema.reminders)
+          .where(
+            and(eq(schema.reminders.relatedResourceId, params.id), isNull(schema.reminders.sentAt)),
+          );
         await audit(tx, raw, ctx, {
           action: 'compliance.document.delete',
           resourceType: 'document',

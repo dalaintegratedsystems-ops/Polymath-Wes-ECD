@@ -15,6 +15,7 @@ import { registrationProgress, stepLabel } from '../compliance/service';
 export interface TurnContext {
   conversationId: string;
   isNew: boolean;
+  channel: 'web' | 'whatsapp';
   centreName: string;
   safeguardingName: string | null;
   knownNames: KnownNames;
@@ -28,6 +29,7 @@ export async function loadTurnContext(
   deps: AppDeps,
   ctx: RequestContext,
   conversationId: string | undefined,
+  channel: 'web' | 'whatsapp' = 'web',
 ): Promise<TurnContext> {
   const centreId = ctx.centreId!;
   return withRequestContext(deps.db, ctx, async (tx) => {
@@ -82,12 +84,36 @@ export async function loadTurnContext(
         );
       if (!c) throw new AppError('not_found', 'Conversation not found.');
     } else {
-      const [c] = await tx
-        .insert(schema.conversations)
-        .values({ centreId, userId: ctx.userId!, channel: 'web', lastInboundAt: deps.now() })
-        .returning({ id: schema.conversations.id });
-      convId = c!.id;
-      isNew = true;
+      // WhatsApp is one long chat: resume the person's WhatsApp conversation across sessions.
+      const [existing] =
+        channel === 'whatsapp'
+          ? await tx
+              .select({ id: schema.conversations.id })
+              .from(schema.conversations)
+              .where(
+                and(
+                  eq(schema.conversations.centreId, centreId),
+                  eq(schema.conversations.userId, ctx.userId!),
+                  eq(schema.conversations.channel, 'whatsapp'),
+                ),
+              )
+              .orderBy(desc(schema.conversations.createdAt))
+              .limit(1)
+          : [];
+      if (existing) {
+        convId = existing.id;
+        await tx
+          .update(schema.conversations)
+          .set({ lastInboundAt: deps.now() })
+          .where(eq(schema.conversations.id, convId));
+      } else {
+        const [c] = await tx
+          .insert(schema.conversations)
+          .values({ centreId, userId: ctx.userId!, channel, lastInboundAt: deps.now() })
+          .returning({ id: schema.conversations.id });
+        convId = c!.id;
+        isNew = true;
+      }
     }
 
     const history = isNew
@@ -118,6 +144,7 @@ export async function loadTurnContext(
     const budget = ledger?.budget ?? deps.agent.config.monthlyTokenBudgetPerCentre;
 
     return {
+      channel,
       conversationId: convId,
       isNew,
       centreName: centre.name,
@@ -313,7 +340,7 @@ export async function persistTurn(
         resourceType: 'conversation',
         resourceId: turn.conversationId,
         requestId,
-        channel: 'web',
+        channel: turn.channel,
       });
     }
     return { messageId: assistantMsg!.id };

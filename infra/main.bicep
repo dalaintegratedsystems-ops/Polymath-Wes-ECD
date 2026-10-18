@@ -44,6 +44,21 @@ param anthropicApiKey string = ''
 @secure()
 param voyageApiKey string = ''
 
+@description('WhatsApp Cloud API phone number id (Meta Business Manager). Required for production sign-in PINs.')
+param whatsappPhoneNumberId string = ''
+
+@description('WhatsApp Cloud API access token (a system user token).')
+@secure()
+param whatsappAccessToken string = ''
+
+@description('Meta app secret, used to verify webhook signatures.')
+@secure()
+param whatsappAppSecret string = ''
+
+@description('Your own random string (16+ characters) for Meta webhook verification.')
+@secure()
+param whatsappVerifyToken string = ''
+
 @description('Load fictional demo centres and children into an empty staging database.')
 param loadDemoData bool = true
 
@@ -125,6 +140,9 @@ module keyvault 'modules/keyvault.bicep' = {
       'blind-index-key': '${hex(seedB)}${hex(seedD)}'
       'anthropic-api-key': anthropicApiKey
       'voyage-api-key': voyageApiKey
+      'whatsapp-access-token': whatsappAccessToken
+      'whatsapp-app-secret': whatsappAppSecret
+      'whatsapp-verify-token': whatsappVerifyToken
     }
   }
 }
@@ -161,6 +179,8 @@ module apps 'modules/apps.bicep' = {
     registryPassword: registryPassword
     hasAnthropicKey: !empty(anthropicApiKey)
     hasVoyageKey: !empty(voyageApiKey)
+    whatsappPhoneNumberId: whatsappPhoneNumberId
+    hasWhatsApp: !empty(whatsappPhoneNumberId) && !empty(whatsappAccessToken) && !empty(whatsappAppSecret) && !empty(whatsappVerifyToken)
     loadDemoData: loadDemoData
   }
 }

@@ -19,6 +19,7 @@
     "@fastify/helmet": "^13.2.0",
     "@fastify/rate-limit": "^11.2.1",
     "@wes/agent": "workspace:^",
+    "@wes/channels": "workspace:^",
     "@wes/db": "workspace:^",
     "@wes/shared": "workspace:^",
     "drizzle-orm": "^0.45.2",

@@ -10,6 +10,10 @@ param(
   [string] $RegistryPassword = '',
   [string] $AnthropicApiKey = '',
   [string] $VoyageApiKey = '',
+  [string] $WhatsAppPhoneNumberId = '',
+  [string] $WhatsAppAccessToken = '',
+  [string] $WhatsAppAppSecret = '',
+  [string] $WhatsAppVerifyToken = '',
   [switch] $Redeploy
 )
 $ErrorActionPreference = 'Stop'
@@ -24,6 +28,10 @@ $params = @(
 if ($RegistryUsername) { $params += "registryUsername=$RegistryUsername", "registryPassword=$RegistryPassword" }
 if ($AnthropicApiKey) { $params += "anthropicApiKey=$AnthropicApiKey" }
 if ($VoyageApiKey) { $params += "voyageApiKey=$VoyageApiKey" }
+if ($WhatsAppPhoneNumberId) {
+  $params += "whatsappPhoneNumberId=$WhatsAppPhoneNumberId", "whatsappAccessToken=$WhatsAppAccessToken",
+    "whatsappAppSecret=$WhatsAppAppSecret", "whatsappVerifyToken=$WhatsAppVerifyToken"
+}
 
 $result = az deployment group create `
   --resource-group $ResourceGroup `

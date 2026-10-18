@@ -28,7 +28,11 @@ export interface Harness {
 
 /** A real app on a real (migrated, seeded) database, exactly as production wires it. */
 export async function createHarness(
-  options: { seed?: boolean; register?: BuildOptions['register'] } = {},
+  options: {
+    seed?: boolean;
+    register?: BuildOptions['register'];
+    config?: BuildOptions['config'];
+  } = {},
 ): Promise<Harness> {
   const db = await createTestDb();
   const crypto = createFieldCrypto();
@@ -45,7 +49,7 @@ export async function createHarness(
   };
   const app = await buildApp({
     logger: false,
-    config: TEST_CONFIG,
+    config: { ...TEST_CONFIG, ...options.config },
     deps,
     register: options.register,
   });

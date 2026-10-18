@@ -1,25 +1,8 @@
-import type { ChannelAdapter, NormalisedInbound, OutboundPart, SendResult } from './types';
+import type { ChannelAdapter, NormalisedInbound, SendResult } from './types';
 
 class NotBuiltYet extends Error {
   constructor(what: string, milestone: string) {
     super(`${what} is built in ${milestone}`);
-  }
-}
-
-/** Meta WhatsApp Cloud API. BSP-agnostic: a BSP adapter implements the same interface. Built in M6. */
-export class WhatsAppCloudAdapter implements ChannelAdapter {
-  readonly kind = 'whatsapp' as const;
-  constructor(
-    private readonly opts: { phoneNumberId: string; accessToken: string; appSecret: string },
-  ) {}
-  verifySignature(_rawBody: string, _headers: Record<string, string | undefined>): boolean {
-    throw new NotBuiltYet('WhatsApp signature verification', 'Milestone 6');
-  }
-  parseInbound(_payload: unknown): NormalisedInbound[] {
-    throw new NotBuiltYet('WhatsApp inbound parsing', 'Milestone 6');
-  }
-  async send(_to: string, _parts: OutboundPart[]): Promise<SendResult> {
-    throw new NotBuiltYet('WhatsApp sending', 'Milestone 6');
   }
 }
 

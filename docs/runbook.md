@@ -60,6 +60,15 @@ Regenerate design tokens after editing `packages/ui/src/tokens.ts`:
 pnpm --filter @wes/ui tokens
 ```
 
+## WhatsApp webhook
+
+- Callback URL in Meta: `https://<web address>/api/whatsapp/webhook`; verify token: the
+  `whatsappVerifyToken` deployment parameter. Subscribe the app to `messages`.
+- No replies? Check the API log for `whatsapp message failed` (usually an expired access
+  token or a template name that is not approved) and Meta’s webhook delivery log.
+- 401 from the webhook means the signature did not match: check `whatsappAppSecret`.
+- Locally, `pnpm --filter @wes/web e2e` runs a mock Meta server on port 4200.
+
 ## Troubleshooting
 
 - **`spawnSync ... esbuild.exe ENOENT` on Windows during install:** the path to `node_modules` is

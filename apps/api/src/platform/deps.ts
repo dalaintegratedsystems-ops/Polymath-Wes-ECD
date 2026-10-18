@@ -1,5 +1,6 @@
 import type { Database, FieldCrypto } from '@wes/db';
 import type { AgentServices } from './agent';
+import type { WhatsAppCloudAdapter } from '@wes/channels';
 import type { BlobStore } from './blob';
 
 /** Something that can deliver a one-time PIN to a phone (WhatsApp template, SMS, console). */
@@ -16,6 +17,8 @@ export interface AppDeps {
   agent: AgentServices;
   /** Private storage for registration documents. */
   blobs: BlobStore;
+  /** Set when the WhatsApp channel is configured. */
+  whatsapp?: WhatsAppCloudAdapter;
   now: () => Date;
 }
 
@@ -51,5 +54,26 @@ export function createMemoryOtpSender(): OtpSender & { last(phone: string): stri
       sent.set(phone, code);
     },
     last: (phone) => sent.get(phone),
+  };
+}
+
+/** Sign-in and consent PINs as an approved WhatsApp authentication template. */
+export function createWhatsAppOtpSender(
+  adapter: WhatsAppCloudAdapter,
+  opts: { template: string; language: string },
+): OtpSender {
+  return {
+    channel: 'whatsapp',
+    async send(phone, code) {
+      await adapter.send(phone, [
+        {
+          kind: 'template',
+          name: opts.template,
+          language: opts.language,
+          variables: [code],
+          buttonText: code,
+        },
+      ]);
+    },
   };
 }

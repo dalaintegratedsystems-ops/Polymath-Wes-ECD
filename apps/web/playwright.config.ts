@@ -33,6 +33,12 @@ export default defineConfig({
   projects: [{ name: 'android-chrome', use: { browserName: 'chromium' } }],
   webServer: [
     {
+      command: 'node e2e/mock-meta.mjs',
+      url: 'http://127.0.0.1:4200/healthz',
+      reuseExistingServer: false,
+      timeout: 30_000,
+    },
+    {
       command: 'node ../api/dist/server.js',
       url: 'http://localhost:4100/healthz',
       reuseExistingServer: false,
@@ -43,6 +49,12 @@ export default defineConfig({
         WEB_ORIGIN: 'http://localhost:3100',
         EMBEDDED_DB_DIR: join(runDir, 'pglite'),
         BLOB_DIR: join(runDir, 'blobs'),
+        // WhatsApp against the mock Meta server (labelled test-only values).
+        WHATSAPP_PHONE_NUMBER_ID: '555',
+        WHATSAPP_ACCESS_TOKEN: 'e2e-only-whatsapp-token',
+        WHATSAPP_APP_SECRET: 'e2e-only-whatsapp-secret',
+        WHATSAPP_VERIFY_TOKEN: 'e2e-only-verify-token',
+        WHATSAPP_GRAPH_URL: 'http://127.0.0.1:4200',
         OTP_OUTBOX_FILE: OTP_OUTBOX,
         RATE_LIMIT_PER_MINUTE: '1000',
         OTP_RATE_LIMIT_PER_MINUTE: '1000',

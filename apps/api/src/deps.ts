@@ -18,7 +18,31 @@ import {
   createMemoryBlobStore,
   type BlobStore,
 } from './platform/blob';
-import { createConsoleOtpSender, createFileOtpSender, type AppDeps } from './platform/deps';
+import { WhatsAppCloudAdapter } from '@wes/channels';
+import {
+  createConsoleOtpSender,
+  createFileOtpSender,
+  createWhatsAppOtpSender,
+  type AppDeps,
+  type OtpSender,
+} from './platform/deps';
+
+export function createWhatsApp(config: Config): WhatsAppCloudAdapter | undefined {
+  if (
+    !config.WHATSAPP_PHONE_NUMBER_ID ||
+    !config.WHATSAPP_ACCESS_TOKEN ||
+    !config.WHATSAPP_APP_SECRET
+  ) {
+    return undefined;
+  }
+  return new WhatsAppCloudAdapter({
+    phoneNumberId: config.WHATSAPP_PHONE_NUMBER_ID,
+    accessToken: config.WHATSAPP_ACCESS_TOKEN,
+    appSecret: config.WHATSAPP_APP_SECRET,
+    baseUrl: config.WHATSAPP_GRAPH_URL,
+    graphVersion: config.WHATSAPP_GRAPH_VERSION,
+  });
+}
 
 export function createBlobStore(config: Config): BlobStore {
   if (config.BLOB_DRIVER === 'azure') {
@@ -39,20 +63,30 @@ export function createBlobStore(config: Config): BlobStore {
  */
 export async function createDeps(config: Config, log: (msg: string) => void) {
   const crypto = createFieldCrypto();
-  if (config.OTP_DELIVERY !== 'console') {
+  if (config.OTP_DELIVERY === 'sms') {
     // Never fall back to logging PINs when real delivery was asked for.
     throw new Error(
-      `OTP_DELIVERY=${config.OTP_DELIVERY} is not available yet (WhatsApp and SMS arrive in Milestone 6).`,
+      'OTP_DELIVERY=sms needs an SMS provider (<<SMS_PROVIDER_CREDENTIALS>>); use whatsapp.',
     );
   }
-  const consoleSender = createConsoleOtpSender(log);
-  const otpSender = config.OTP_OUTBOX_FILE
-    ? createFileOtpSender(config.OTP_OUTBOX_FILE, consoleSender)
-    : consoleSender;
+  const whatsapp = createWhatsApp(config);
+  let otpSender: OtpSender;
+  if (config.OTP_DELIVERY === 'whatsapp') {
+    otpSender = createWhatsAppOtpSender(whatsapp!, {
+      template: config.WHATSAPP_OTP_TEMPLATE,
+      language: config.WHATSAPP_TEMPLATE_LANGUAGE,
+    });
+  } else {
+    const consoleSender = createConsoleOtpSender(log);
+    otpSender = config.OTP_OUTBOX_FILE
+      ? createFileOtpSender(config.OTP_OUTBOX_FILE, consoleSender)
+      : consoleSender;
+  }
   const now = () => new Date();
   const agent = createAgentServices(process.env, now);
   log(`Wes is running in ${agent.config.mode} mode (embeddings: ${agent.embedder.name}).`);
-  const base = { crypto, otpSender, agent, now, blobs: createBlobStore(config) };
+  if (whatsapp) log('WhatsApp channel is on.');
+  const base = { crypto, otpSender, agent, now, blobs: createBlobStore(config), whatsapp };
 
   if (config.DATABASE_URL) {
     const { db, close } = createDatabase(config.DATABASE_URL);

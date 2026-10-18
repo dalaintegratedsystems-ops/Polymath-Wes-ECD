@@ -31,6 +31,20 @@ const ConfigSchema = z.object({
     .default(30 * 24 * 3600),
 
   OTP_DELIVERY: z.enum(['console', 'whatsapp', 'sms']).default('console'),
+  /** WhatsApp Cloud API (Meta). All four are needed to switch the channel on. */
+  WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
+  WHATSAPP_ACCESS_TOKEN: z.string().optional(),
+  WHATSAPP_APP_SECRET: z.string().optional(),
+  WHATSAPP_VERIFY_TOKEN: z.string().min(16).optional(),
+  WHATSAPP_GRAPH_URL: z.url().default('https://graph.facebook.com'),
+  WHATSAPP_GRAPH_VERSION: z
+    .string()
+    .regex(/^v\d+\.\d+$/)
+    .default('v21.0'),
+  /** Approved message templates (created in Meta Business Manager). */
+  WHATSAPP_OTP_TEMPLATE: z.string().default('wes_sign_in_code'),
+  WHATSAPP_REMINDER_TEMPLATE: z.string().default('wes_reminder'),
+  WHATSAPP_TEMPLATE_LANGUAGE: z.string().default('en'),
   /** Development/e2e only: also append sent PINs as JSON lines to this file. */
   OTP_OUTBOX_FILE: z.string().optional(),
   OTP_PEPPER: z.string().min(16).default('dev-only-otp-pepper-change-me'),
@@ -77,6 +91,20 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
   }
   if (config.BLOB_DRIVER === 'azure' && !config.BLOB_ACCOUNT_URL) {
     throw new Error('BLOB_ACCOUNT_URL is required when BLOB_DRIVER=azure');
+  }
+  const whatsappParts = [
+    config.WHATSAPP_PHONE_NUMBER_ID,
+    config.WHATSAPP_ACCESS_TOKEN,
+    config.WHATSAPP_APP_SECRET,
+    config.WHATSAPP_VERIFY_TOKEN,
+  ].filter(Boolean).length;
+  if (whatsappParts > 0 && whatsappParts < 4) {
+    throw new Error(
+      'Set all four WHATSAPP_* values (phone number id, access token, app secret, verify token)',
+    );
+  }
+  if (config.OTP_DELIVERY === 'whatsapp' && whatsappParts !== 4) {
+    throw new Error('OTP_DELIVERY=whatsapp needs the WhatsApp settings');
   }
   if (config.APP_ENV === 'production' && config.OTP_DELIVERY === 'console') {
     throw new Error('OTP_DELIVERY=console is not allowed in production (PINs would be logged)');

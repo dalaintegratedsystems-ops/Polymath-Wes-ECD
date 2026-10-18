@@ -19,6 +19,9 @@ param registryUsername string
 @secure()
 param registryPassword string
 param hasAnthropicKey bool
+@description('WhatsApp channel configured (all four settings given).')
+param hasWhatsApp bool = false
+param whatsappPhoneNumberId string = ''
 param hasVoyageKey bool
 param loadDemoData bool
 
@@ -68,6 +71,13 @@ var apiSecrets = concat(
   baseSecrets,
   hasAnthropicKey ? [kvSecret('anthropic-api-key', keyVaultUri, identityId)] : [],
   hasVoyageKey ? [kvSecret('voyage-api-key', keyVaultUri, identityId)] : [],
+  hasWhatsApp
+    ? [
+        kvSecret('whatsapp-access-token', keyVaultUri, identityId)
+        kvSecret('whatsapp-app-secret', keyVaultUri, identityId)
+        kvSecret('whatsapp-verify-token', keyVaultUri, identityId)
+      ]
+    : [],
   registrySecret
 )
 var registries = useRegistryCredentials
@@ -130,15 +140,21 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'DATABASE_URL', secretRef: 'database-url' }
             { name: 'JWT_SIGNING_SECRET', secretRef: 'jwt-signing-secret' }
             { name: 'OTP_PEPPER', secretRef: 'otp-pepper' }
-            // Staging pilots print PINs to the (private) log until WhatsApp/SMS arrive in M6.
-            { name: 'OTP_DELIVERY', value: isProd ? 'sms' : 'console' }
+            // PINs go by WhatsApp when it is configured; a private staging pilot may log them.
+            // Production refuses to start without WhatsApp (config.ts).
+            { name: 'OTP_DELIVERY', value: (hasWhatsApp || isProd) ? 'whatsapp' : 'console' }
             { name: 'WES_MODEL_MODE', value: hasAnthropicKey ? 'live' : 'offline' }
             // Registration documents: private blob container, managed identity (no keys).
             { name: 'BLOB_DRIVER', value: 'azure' }
             { name: 'BLOB_ACCOUNT_URL', value: blobEndpoint }
             { name: 'BLOB_CONTAINER', value: blobContainer }
             { name: 'AZURE_CLIENT_ID', value: identityClientId }
-          ])
+          ], hasWhatsApp ? [
+            { name: 'WHATSAPP_PHONE_NUMBER_ID', value: whatsappPhoneNumberId }
+            { name: 'WHATSAPP_ACCESS_TOKEN', secretRef: 'whatsapp-access-token' }
+            { name: 'WHATSAPP_APP_SECRET', secretRef: 'whatsapp-app-secret' }
+            { name: 'WHATSAPP_VERIFY_TOKEN', secretRef: 'whatsapp-verify-token' }
+          ] : [])
           probes: [
             { type: 'Liveness', httpGet: { path: '/healthz', port: 4000 }, periodSeconds: 30 }
             { type: 'Readiness', httpGet: { path: '/healthz', port: 4000 }, periodSeconds: 10 }

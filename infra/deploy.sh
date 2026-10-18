@@ -4,7 +4,8 @@
 #   ANTHROPIC_API_KEY=... ./infra/deploy.sh wes-staging
 #   REDEPLOY=true ./infra/deploy.sh wes-staging      # keep existing secrets
 # Optional env: ENVIRONMENT (staging|production), LOCATION, REGISTRY_USERNAME, REGISTRY_PASSWORD,
-#               ANTHROPIC_API_KEY, VOYAGE_API_KEY
+#               ANTHROPIC_API_KEY, VOYAGE_API_KEY, WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_ACCESS_TOKEN,
+#               WHATSAPP_APP_SECRET, WHATSAPP_VERIFY_TOKEN
 set -euo pipefail
 
 rg="${1:?usage: deploy.sh <resource-group>}"
@@ -17,6 +18,12 @@ params=(
 [[ -n "${REGISTRY_USERNAME:-}" ]] && params+=("registryUsername=$REGISTRY_USERNAME" "registryPassword=${REGISTRY_PASSWORD:-}")
 [[ -n "${ANTHROPIC_API_KEY:-}" ]] && params+=("anthropicApiKey=$ANTHROPIC_API_KEY")
 [[ -n "${VOYAGE_API_KEY:-}" ]] && params+=("voyageApiKey=$VOYAGE_API_KEY")
+[[ -n "${WHATSAPP_PHONE_NUMBER_ID:-}" ]] && params+=(
+  "whatsappPhoneNumberId=$WHATSAPP_PHONE_NUMBER_ID"
+  "whatsappAccessToken=${WHATSAPP_ACCESS_TOKEN:?}"
+  "whatsappAppSecret=${WHATSAPP_APP_SECRET:?}"
+  "whatsappVerifyToken=${WHATSAPP_VERIFY_TOKEN:?}"
+)
 
 az group create --name "$rg" --location "$location" --output none
 url=$(az deployment group create \

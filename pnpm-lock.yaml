@@ -65,6 +65,9 @@ importers:
       '@wes/agent':
         specifier: workspace:^
         version: link:../../packages/agent
+      '@wes/channels':
+        specifier: workspace:^
+        version: link:../../packages/channels
       '@wes/db':
         specifier: workspace:^
         version: link:../../packages/db

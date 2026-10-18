@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.48.1.52935",
-      "templateHash": "17492479926675169402"
+      "templateHash": "13136540771720236992"
     }
   },
   "functions": [
@@ -103,6 +103,34 @@
       "defaultValue": "",
       "metadata": {
         "description": "Voyage AI key for embeddings (ADR-0006). Leave empty to use local embeddings (staging only)."
+      }
+    },
+    "whatsappPhoneNumberId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "WhatsApp Cloud API phone number id (Meta Business Manager). Required for production sign-in PINs."
+      }
+    },
+    "whatsappAccessToken": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "WhatsApp Cloud API access token (a system user token)."
+      }
+    },
+    "whatsappAppSecret": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Meta app secret, used to verify webhook signatures."
+      }
+    },
+    "whatsappVerifyToken": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Your own random string (16+ characters) for Meta webhook verification."
       }
     },
     "loadDemoData": {
@@ -555,7 +583,10 @@
               "field-encryption-key": "[format('{0}{1}', __bicep.hex(parameters('seedA')), __bicep.hex(parameters('seedE')))]",
               "blind-index-key": "[format('{0}{1}', __bicep.hex(parameters('seedB')), __bicep.hex(parameters('seedD')))]",
               "anthropic-api-key": "[parameters('anthropicApiKey')]",
-              "voyage-api-key": "[parameters('voyageApiKey')]"
+              "voyage-api-key": "[parameters('voyageApiKey')]",
+              "whatsapp-access-token": "[parameters('whatsappAccessToken')]",
+              "whatsapp-app-secret": "[parameters('whatsappAppSecret')]",
+              "whatsapp-verify-token": "[parameters('whatsappVerifyToken')]"
             }
           }
         },
@@ -854,6 +885,12 @@
           "hasVoyageKey": {
             "value": "[not(empty(parameters('voyageApiKey')))]"
           },
+          "whatsappPhoneNumberId": {
+            "value": "[parameters('whatsappPhoneNumberId')]"
+          },
+          "hasWhatsApp": {
+            "value": "[and(and(and(not(empty(parameters('whatsappPhoneNumberId'))), not(empty(parameters('whatsappAccessToken')))), not(empty(parameters('whatsappAppSecret')))), not(empty(parameters('whatsappVerifyToken'))))]"
+          },
           "loadDemoData": {
             "value": "[parameters('loadDemoData')]"
           }
@@ -866,7 +903,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.48.1.52935",
-              "templateHash": "15251643431560641381"
+              "templateHash": "12087598996946946992"
             }
           },
           "functions": [
@@ -958,6 +995,17 @@
             "hasAnthropicKey": {
               "type": "bool"
             },
+            "hasWhatsApp": {
+              "type": "bool",
+              "defaultValue": false,
+              "metadata": {
+                "description": "WhatsApp channel configured (all four settings given)."
+              }
+            },
+            "whatsappPhoneNumberId": {
+              "type": "string",
+              "defaultValue": ""
+            },
             "hasVoyageKey": {
               "type": "bool"
             },
@@ -981,7 +1029,7 @@
               "[__bicep.kvSecret('blind-index-key', parameters('keyVaultUri'), parameters('identityId'))]"
             ],
             "registrySecret": "[if(variables('useRegistryCredentials'), createArray(createObject('name', 'registry-password', 'value', parameters('registryPassword'))), createArray())]",
-            "apiSecrets": "[concat(variables('baseSecrets'), if(parameters('hasAnthropicKey'), createArray(__bicep.kvSecret('anthropic-api-key', parameters('keyVaultUri'), parameters('identityId'))), createArray()), if(parameters('hasVoyageKey'), createArray(__bicep.kvSecret('voyage-api-key', parameters('keyVaultUri'), parameters('identityId'))), createArray()), variables('registrySecret'))]",
+            "apiSecrets": "[concat(variables('baseSecrets'), if(parameters('hasAnthropicKey'), createArray(__bicep.kvSecret('anthropic-api-key', parameters('keyVaultUri'), parameters('identityId'))), createArray()), if(parameters('hasVoyageKey'), createArray(__bicep.kvSecret('voyage-api-key', parameters('keyVaultUri'), parameters('identityId'))), createArray()), if(parameters('hasWhatsApp'), createArray(__bicep.kvSecret('whatsapp-access-token', parameters('keyVaultUri'), parameters('identityId')), __bicep.kvSecret('whatsapp-app-secret', parameters('keyVaultUri'), parameters('identityId')), __bicep.kvSecret('whatsapp-verify-token', parameters('keyVaultUri'), parameters('identityId'))), createArray()), variables('registrySecret'))]",
             "registries": "[if(variables('useRegistryCredentials'), createArray(createObject('server', parameters('registryServer'), 'username', parameters('registryUsername'), 'passwordSecretRef', 'registry-password')), createArray())]",
             "sharedEnv": [
               {
@@ -1103,7 +1151,7 @@
                         "cpu": "[json('0.75')]",
                         "memory": "1.5Gi"
                       },
-                      "env": "[concat(variables('sharedEnv'), variables('keyEnv'), createArray(createObject('name', 'API_PORT', 'value', '4000'), createObject('name', 'WEB_ORIGIN', 'value', format('https://{0}.{1}', variables('webName'), reference('env').defaultDomain)), createObject('name', 'DATABASE_URL', 'secretRef', 'database-url'), createObject('name', 'JWT_SIGNING_SECRET', 'secretRef', 'jwt-signing-secret'), createObject('name', 'OTP_PEPPER', 'secretRef', 'otp-pepper'), createObject('name', 'OTP_DELIVERY', 'value', if(variables('isProd'), 'sms', 'console')), createObject('name', 'WES_MODEL_MODE', 'value', if(parameters('hasAnthropicKey'), 'live', 'offline')), createObject('name', 'BLOB_DRIVER', 'value', 'azure'), createObject('name', 'BLOB_ACCOUNT_URL', 'value', parameters('blobEndpoint')), createObject('name', 'BLOB_CONTAINER', 'value', parameters('blobContainer')), createObject('name', 'AZURE_CLIENT_ID', 'value', parameters('identityClientId'))))]",
+                      "env": "[concat(variables('sharedEnv'), variables('keyEnv'), createArray(createObject('name', 'API_PORT', 'value', '4000'), createObject('name', 'WEB_ORIGIN', 'value', format('https://{0}.{1}', variables('webName'), reference('env').defaultDomain)), createObject('name', 'DATABASE_URL', 'secretRef', 'database-url'), createObject('name', 'JWT_SIGNING_SECRET', 'secretRef', 'jwt-signing-secret'), createObject('name', 'OTP_PEPPER', 'secretRef', 'otp-pepper'), createObject('name', 'OTP_DELIVERY', 'value', if(or(parameters('hasWhatsApp'), variables('isProd')), 'whatsapp', 'console')), createObject('name', 'WES_MODEL_MODE', 'value', if(parameters('hasAnthropicKey'), 'live', 'offline')), createObject('name', 'BLOB_DRIVER', 'value', 'azure'), createObject('name', 'BLOB_ACCOUNT_URL', 'value', parameters('blobEndpoint')), createObject('name', 'BLOB_CONTAINER', 'value', parameters('blobContainer')), createObject('name', 'AZURE_CLIENT_ID', 'value', parameters('identityClientId'))), if(parameters('hasWhatsApp'), createArray(createObject('name', 'WHATSAPP_PHONE_NUMBER_ID', 'value', parameters('whatsappPhoneNumberId')), createObject('name', 'WHATSAPP_ACCESS_TOKEN', 'secretRef', 'whatsapp-access-token'), createObject('name', 'WHATSAPP_APP_SECRET', 'secretRef', 'whatsapp-app-secret'), createObject('name', 'WHATSAPP_VERIFY_TOKEN', 'secretRef', 'whatsapp-verify-token')), createArray()))]",
                       "probes": [
                         {
                           "type": "Liveness",

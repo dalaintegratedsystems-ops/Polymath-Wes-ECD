@@ -85,6 +85,20 @@
       "when": 1792305207540,
       "tag": "0011_registration_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792316227271,
+      "tag": "0012_channel_inbound",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792316231036,
+      "tag": "0013_channel_functions",
+      "breakpoints": true
     }
   ]
 }

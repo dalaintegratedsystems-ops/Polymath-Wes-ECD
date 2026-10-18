@@ -98,3 +98,13 @@ export const featureFlags = pgTable(
   },
   (t) => [index('feature_flags_flag_idx').on(t.flag, t.centreId)],
 );
+
+/**
+ * Inbound channel messages already handled. Meta retries webhooks, so a message id seen
+ * twice is ignored. Written only through app.channel_claim_inbound().
+ */
+export const channelInbound = pgTable('channel_inbound', {
+  providerMessageId: text('provider_message_id').primaryKey(),
+  channel: text('channel').notNull(),
+  receivedAt: timestamp('received_at', { withTimezone: true }).notNull().defaultNow(),
+});

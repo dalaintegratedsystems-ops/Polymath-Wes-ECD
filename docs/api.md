@@ -16,7 +16,7 @@
 | Rate limits | Per client per minute; `429 rate_limited`. The assistant allows 20 messages a minute.                                                                                                                                                                          |
 | Child data  | Every read and write is written to the audit log.                                                                                                                                                                                                              |
 
-## Available now (Milestones 0 to 5)
+## Available now (Milestones 0 to 6)
 
 | Endpoint                                                                 | Who                                                        | Notes                                                                                                                                                                                                          |
 | ------------------------------------------------------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -89,6 +89,15 @@ Centre in the `X-Centre-Id` header; principals and practitioners.
 
 The web app saves register taps on the phone first (IndexedDB outbox with a fixed idempotency key per tap) and replays them through `/api/sync` when there is signal.
 
+### WhatsApp (Milestone 6)
+
+| Endpoint                             | Notes                                                                                                                                                                        |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /v1/channels/whatsapp/webhook`  | Meta verification: echoes `hub.challenge` when `hub.verify_token` matches `WHATSAPP_VERIFY_TOKEN`.                                                                           |
+| `POST /v1/channels/whatsapp/webhook` | Signed by Meta (`X-Hub-Signature-256`, app secret). Answers 200 at once; each message id is handled once. Reached through the web app at `/api/whatsapp/webhook` (ADR-0014). |
+
+On WhatsApp: a numbered menu (Ask Wes, registration progress, this week’s plan, the application pack as a PDF for principals), free-text questions to the same Wes as the app, sign-in PINs as an Authentication template, and reminders (normal messages inside the 24-hour window, the reminder template outside it).
+
 Routes under `/v1/children/{id}` and `/v1/assistant` also take the centre in the `X-Centre-Id` header.
 
 ### Ask Wes: server-sent events
@@ -117,6 +126,5 @@ second centre, `060 000 0003`), Ayanda (parent, `060 000 0005`), Lerato (funder,
 
 ## Roadmap
 
-| Milestone | Endpoints                                                     |
-| --------- | ------------------------------------------------------------- |
-| 6         | `POST /v1/channels/whatsapp/webhook`, `/channels/sms/webhook` |
+| Milestone | Endpoints |
+| --------- | --------- |

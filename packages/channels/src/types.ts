@@ -17,8 +17,15 @@ export interface NormalisedInbound {
 export type OutboundPart =
   | { kind: 'text'; text: string }
   | { kind: 'menu'; text: string; options: { id: string; label: string }[] }
-  | { kind: 'document'; url: string; filename: string; caption?: string }
-  | { kind: 'template'; name: string; language: string; variables: string[] };
+  | { kind: 'document'; url?: string; mediaId?: string; filename: string; caption?: string }
+  | {
+      kind: 'template';
+      name: string;
+      language: string;
+      variables: string[];
+      /** Authentication templates repeat the code on their copy-code button. */
+      buttonText?: string;
+    };
 
 export interface SendResult {
   providerMessageIds: string[];

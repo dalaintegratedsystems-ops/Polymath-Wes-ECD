@@ -2590,6 +2590,86 @@
         }
       }
     },
+    "/v1/channels/whatsapp/webhook": {
+      "get": {
+        "operationId": "verifyWhatsAppWebhook",
+        "summary": "Meta webhook verification (echoes hub.challenge when the verify token matches)",
+        "tags": ["channels"],
+        "security": [],
+        "parameters": [
+          {
+            "name": "hub.mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hub.verify_token",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "hub.challenge",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The challenge, as plain text"
+          },
+          "403": {
+            "description": "Wrong token"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "receiveWhatsAppWebhook",
+        "summary": "Incoming WhatsApp messages (signed by Meta with X-Hub-Signature-256)",
+        "tags": ["channels"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Received"
+          },
+          "401": {
+            "description": "Signature missing or wrong"
+          },
+          "404": {
+            "description": "WhatsApp is not configured"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/compliance/checklist": {
       "get": {
         "operationId": "getComplianceChecklist",

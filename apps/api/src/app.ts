@@ -15,6 +15,7 @@ import { assistantRoutes } from './modules/assistant/routes';
 import { attendanceRoutes } from './modules/attendance/routes';
 import { authRoutes } from './modules/auth/routes';
 import { centreRoutes } from './modules/centres/routes';
+import { channelRoutes } from './modules/channels/routes';
 import { childrenRoutes } from './modules/children/routes';
 import { complianceRoutes } from './modules/compliance/routes';
 import { dashboardRoutes } from './modules/dashboards/routes';
@@ -95,6 +96,7 @@ export async function buildApp(options: BuildOptions): Promise<FastifyInstance> 
   await app.register(childrenRoutes, { deps, config });
   await app.register(assistantRoutes, { deps });
   await app.register(attendanceRoutes, { deps });
+  await app.register(channelRoutes, { deps, config });
   await app.register(complianceRoutes, { deps });
   await app.register(plannerRoutes, { deps });
   await app.register(peopleRoutes, { deps });

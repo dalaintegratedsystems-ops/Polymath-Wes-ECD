@@ -1,6 +1,6 @@
 # Wes evals
 
-43 golden cases, one JSONL file per category in `cases/`. How to run, score and extend them:
+46 golden cases, one JSONL file per category in `cases/`. How to run, score and extend them:
 see [docs/agent.md](../../../docs/agent.md#evals-packagesagentevals).
 
 ```bash

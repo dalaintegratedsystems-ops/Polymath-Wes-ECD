@@ -2,7 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { COOKIES, accessCookie, refreshCookie } from './lib/session-cookies';
 
 const API_URL = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
-const PUBLIC = ['/welcome', '/verify'];
+// Meta's webhook carries no session; it is verified by signature in the API instead.
+const PUBLIC = ['/welcome', '/verify', '/api/whatsapp'];
 
 /**
  * Keeps sessions alive without exposing tokens to the page: when the short-lived access
