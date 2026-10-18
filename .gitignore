@@ -28,3 +28,4 @@ test-results/
 
 # Eval run output
 packages/agent/evals/results/
+lighthouse-report/

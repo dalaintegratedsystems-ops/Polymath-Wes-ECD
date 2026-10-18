@@ -5,105 +5,23 @@ import {
   AdaptRequestSchema,
   AdaptedActivitySchema,
   AppError,
-  ELDAS,
-  PlanBodySchema,
   PlanRequestSchema,
   PrintableRequestSchema,
   WeeklyPlanSchema,
-  type AgeGroup,
-  type PlanBody,
-  type WeeklyPlan,
 } from '@wes/shared';
-import { schema, searchKnowledge, withRequestContext, type Transaction } from '@wes/db';
+import { schema, withRequestContext, type Transaction } from '@wes/db';
 import { audit, centreContext, centreHeader, centreIdFromHeader } from '../../platform/context';
 import type { AppDeps } from '../../platform/deps';
 import { defineRoute } from '../../platform/route';
-import { adaptActivity, libraryPlan } from './library';
+import { adaptActivity } from './library';
+import { PLANNER_SYSTEM, draftPlanBody, savePlan, toPlan, type StoredPlan } from './service';
 import { renderPrintable } from './printables';
 
 const IdParams = z.object({ id: z.uuid() });
 const WeekQuery = z.object({ week: z.iso.date() });
 
-interface StoredPlan {
-  ageGroups: AgeGroup[];
-  source: 'wes' | 'library';
-  body: PlanBody;
-}
-
-function toPlan(row: typeof schema.weeklyPlans.$inferSelect): WeeklyPlan {
-  const stored = row.plan as StoredPlan;
-  return {
-    id: row.id,
-    theme: row.theme,
-    weekStarting: row.weekStarting,
-    ageGroups: stored.ageGroups,
-    status: row.status,
-    source: stored.source,
-    body: stored.body,
-    citations: row.citations as WeeklyPlan['citations'],
-    createdAt: row.createdAt.toISOString(),
-  };
-}
-
-const PLANNER_SYSTEM = `You plan a week of early learning for a South African ECD centre in an under-resourced community.
-Rules:
-- Five days (mon to fri), three activities a day: a morning ring, a main activity and an afternoon activity.
-- Use only free, recycled or household materials (bottle tops, boxes, leaves, flour and water glue). Never anything that costs money.
-- Mixed ages: give each activity only the age groups it suits from the ones requested. For babies and toddlers never use objects small enough to swallow.
-- Tag each activity with one to three ELDA codes from this list only: ${ELDAS.map((e) => `${e.code} (${e.label})`).join(', ')}.
-- Do not quote, cite or describe the National Curriculum Framework; the centre links plans to official documents separately.
-- Plain, warm English with short steps a practitioner can follow. Use local, familiar examples.
-- Never diagnose or label children.
-- themeWords: up to 12 simple words (letters only, up to 14 characters) for flashcards and tracing.
-- printable: 'counting' for counting activities, 'flashcards' or 'tracing' for word activities, otherwise null.`;
-
-/** Keep only what fits the request; anything off falls back to the built-in ideas. */
-function validModelPlan(plan: PlanBody | null, groups: AgeGroup[]): PlanBody | null {
-  if (!plan) return null;
-  const parsed = PlanBodySchema.safeParse(plan);
-  if (!parsed.success) return null;
-  const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
-  if (parsed.data.days.map((d) => d.day).join() !== days.join()) return null;
-  for (const d of parsed.data.days) {
-    for (const a of d.activities) {
-      a.ageGroups = a.ageGroups.filter((g) => groups.includes(g));
-      if (a.ageGroups.length === 0) return null;
-    }
-  }
-  return parsed.data;
-}
-
 export async function plannerRoutes(app: FastifyInstance, opts: { deps: AppDeps }) {
   const { deps } = opts;
-
-  async function draftBody(theme: string, groups: AgeGroup[]) {
-    const model = deps.agent.model;
-    if (model.structured) {
-      try {
-        const res = await model.structured({
-          model: deps.agent.config.models.main,
-          system: PLANNER_SYSTEM,
-          prompt: `Theme: ${theme}\nAge groups: ${groups.join(', ')}`,
-          schema: PlanBodySchema,
-          maxTokens: 8000,
-          effort: deps.agent.config.mainEffort,
-        });
-        const plan = validModelPlan(res.value, groups);
-        if (plan) return { body: plan, source: 'wes' as const };
-      } catch {
-        // Model unavailable: the built-in ideas keep the planner working.
-      }
-    }
-    return { body: libraryPlan(theme, groups), source: 'library' as const };
-  }
-
-  async function citationsFor(theme: string) {
-    const [embedding] = await deps.agent.embedder.embed([`${theme} early learning`], 'query');
-    return (tx: Transaction) =>
-      searchKnowledge(tx, { query: theme, embedding, limit: 3 }).then((hits) =>
-        hits.map((h, i) => ({ n: i + 1, source: h.title, where: h.anchor })),
-      );
-  }
 
   defineRoute(
     app,
@@ -122,39 +40,15 @@ export async function plannerRoutes(app: FastifyInstance, opts: { deps: AppDeps 
     },
     async ({ body, raw }, reply) => {
       const ctx = await centreContext(deps, raw, centreIdFromHeader(raw), 'plan:write');
-      const { body: planBody, source } = await draftBody(body.theme, body.ageGroups);
-      const cite = await citationsFor(body.theme);
+      const draft = await draftPlanBody(deps, body.theme, body.ageGroups);
       const plan = await withRequestContext(deps.db, ctx, async (tx) => {
-        const citations = await cite(tx);
-        const [row] = await tx
-          .insert(schema.weeklyPlans)
-          .values({
-            centreId: ctx.centreId!,
-            weekStarting: body.weekStarting,
-            theme: body.theme,
-            plan: { ageGroups: body.ageGroups, source, body: planBody } satisfies StoredPlan,
-            citations,
-            createdByUserId: ctx.userId,
-          })
-          .returning();
-        // One working draft per week: older drafts for the same week are archived.
-        await tx
-          .update(schema.weeklyPlans)
-          .set({ status: 'archived', updatedAt: deps.now() })
-          .where(
-            and(
-              eq(schema.weeklyPlans.centreId, ctx.centreId!),
-              eq(schema.weeklyPlans.weekStarting, body.weekStarting),
-              eq(schema.weeklyPlans.status, 'draft'),
-              ne(schema.weeklyPlans.id, row!.id),
-            ),
-          );
+        const saved = await savePlan(deps, tx, ctx, { ...body, ...draft });
         await audit(tx, raw, ctx, {
           action: 'plan.create',
           resourceType: 'weekly_plan',
-          resourceId: row!.id,
+          resourceId: saved.id,
         });
-        return toPlan(row!);
+        return saved;
       });
       return reply.status(201).send(plan);
     },
@@ -332,6 +226,40 @@ export async function plannerRoutes(app: FastifyInstance, opts: { deps: AppDeps 
         .header('content-disposition', `attachment; filename="${body.kind}.pdf"`)
         .header('cache-control', 'private, no-store')
         .send(pdf);
+    },
+  );
+
+  defineRoute(
+    app,
+    {
+      method: 'GET',
+      url: '/v1/printables/:id/pdf',
+      operationId: 'getPrintablePdf',
+      summary: 'A printable made earlier (for example by Wes), as a PDF',
+      tags: ['planner'],
+      auth: 'user',
+      headers: centreHeader,
+      params: IdParams,
+      responses: { 200: { description: 'PDF (application/pdf)' } },
+    },
+    async ({ params, raw }, reply) => {
+      const ctx = await centreContext(deps, raw, centreIdFromHeader(raw), 'plan:write');
+      const row = await withRequestContext(deps.db, ctx, async (tx) => {
+        const [r] = await tx
+          .select({ key: schema.printables.pdfBlobKey, kind: schema.printables.kind })
+          .from(schema.printables)
+          .where(
+            and(eq(schema.printables.id, params.id), eq(schema.printables.centreId, ctx.centreId!)),
+          );
+        return r;
+      });
+      const file = row?.key ? await deps.blobs.get(row.key) : null;
+      if (!file) throw new AppError('not_found', 'Printable not found.');
+      return reply
+        .header('content-type', 'application/pdf')
+        .header('content-disposition', `attachment; filename="${row!.kind}.pdf"`)
+        .header('cache-control', 'private, no-store')
+        .send(file.bytes);
     },
   );
 }

@@ -1,9 +1,7 @@
 import type { FastifyInstance } from 'fastify';
-import { and, asc, eq, gte, inArray, lte, sql } from 'drizzle-orm';
+import { and, asc, eq, gte, lte } from 'drizzle-orm';
 import { z } from 'zod';
 import {
-  ATTENDANCE_BACKFILL_DAYS,
-  AppError,
   AttendanceBatchSchema,
   AttendanceDayQuerySchema,
   AttendanceDaySchema,
@@ -12,37 +10,15 @@ import {
   type AttendanceResult,
   type AttendanceStatus,
 } from '@wes/shared';
-import { schema, withRequestContext, type Transaction } from '@wes/db';
+import { schema, withRequestContext } from '@wes/db';
 import { audit, centreContext, centreHeader, centreIdFromHeader } from '../../platform/context';
 import type { AppDeps } from '../../platform/deps';
 import { defineRoute } from '../../platform/route';
-import { rowsOf } from '../../platform/sql';
-import { sastToday } from '../compliance/service';
+import { assertRegisterDay, recordMarks } from './service';
 
 const CentreParams = z.object({ id: z.uuid() });
 const DAY_MS = 86_400_000;
 const LETTER: Record<AttendanceStatus, string> = { present: 'P', absent: 'A', excused: 'E' };
-
-async function refreshDailyCount(tx: Transaction, centreId: string, day: string) {
-  const [row] = rowsOf<{ present: number; enrolled: number }>(
-    await tx.execute(sql`
-      select
-        (select count(*)::int from attendance_records
-          where centre_id = ${centreId}::uuid and day = ${day}::date and status = 'present') as present,
-        (select count(*)::int from children
-          where centre_id = ${centreId}::uuid and status = 'active') as enrolled`),
-  );
-  const present = Number(row?.present ?? 0);
-  const enrolled = Number(row?.enrolled ?? 0);
-  await tx
-    .insert(schema.attendanceDailyCounts)
-    .values({ centreId, day, presentCount: present, enrolledCount: enrolled })
-    .onConflictDoUpdate({
-      target: [schema.attendanceDailyCounts.centreId, schema.attendanceDailyCounts.day],
-      set: { presentCount: present, enrolledCount: enrolled },
-    });
-  return { present, enrolled };
-}
 
 const csvCell = (v: unknown) => {
   const s = v === null || v === undefined ? '' : String(v);
@@ -84,99 +60,25 @@ export async function attendanceRoutes(app: FastifyInstance, opts: { deps: AppDe
     },
     async ({ params, body, raw }): Promise<AttendanceResult> => {
       const ctx = await centreContext(deps, raw, params.id, 'attendance:write');
-      const today = sastToday(deps.now());
-      const ageDays = (Date.parse(today) - Date.parse(body.day)) / DAY_MS;
-      if (ageDays < 0) {
-        throw new AppError('validation_failed', 'You cannot take the register for a future day.', [
-          { path: 'body.day', message: 'Choose today or an earlier day' },
-        ]);
-      }
-      if (ageDays > ATTENDANCE_BACKFILL_DAYS) {
-        throw new AppError('validation_failed', 'That day is too long ago to change here.', [
-          {
-            path: 'body.day',
-            message: `Only the last ${ATTENDANCE_BACKFILL_DAYS} days can be changed`,
-          },
-        ]);
-      }
-      // The newest mark per child in this batch.
-      const latest = new Map<string, (typeof body.marks)[number]>();
-      for (const m of body.marks) {
-        const prev = latest.get(m.childId);
-        if (!prev || prev.clientUpdatedAt < m.clientUpdatedAt) latest.set(m.childId, m);
-      }
+      assertRegisterDay(body.day, deps.now());
       return withRequestContext(deps.db, ctx, async (tx) => {
-        const ids = [...latest.keys()];
-        const known = await tx
-          .select({ id: schema.children.id })
-          .from(schema.children)
-          .where(
-            and(
-              eq(schema.children.centreId, params.id),
-              eq(schema.children.status, 'active'),
-              inArray(schema.children.id, ids),
-            ),
-          );
-        if (known.length !== ids.length) {
-          throw new AppError('validation_failed', 'Some children are not in this register.');
-        }
-        let applied = 0;
-        const conflicts: AttendanceResult['conflicts'] = [];
-        for (const m of latest.values()) {
-          const rows = rowsOf<{ id: string }>(
-            await tx.execute(sql`
-              insert into attendance_records
-                (centre_id, child_id, day, status, recorded_by_user_id, client_updated_at)
-              values (${params.id}::uuid, ${m.childId}::uuid, ${body.day}::date, ${m.status},
-                      ${ctx.userId}::uuid, ${m.clientUpdatedAt}::timestamptz)
-              on conflict (child_id, day) do update set
-                status = excluded.status,
-                recorded_by_user_id = excluded.recorded_by_user_id,
-                client_updated_at = excluded.client_updated_at,
-                updated_at = now()
-              where attendance_records.client_updated_at < excluded.client_updated_at
-              returning id`),
-          );
-          if (rows.length) {
-            applied += 1;
-          } else {
-            const [kept] = await tx
-              .select({
-                status: schema.attendanceRecords.status,
-                at: schema.attendanceRecords.clientUpdatedAt,
-              })
-              .from(schema.attendanceRecords)
-              .where(
-                and(
-                  eq(schema.attendanceRecords.childId, m.childId),
-                  eq(schema.attendanceRecords.day, body.day),
-                ),
-              );
-            if (kept && kept.at.toISOString() !== new Date(m.clientUpdatedAt).toISOString()) {
-              conflicts.push({
-                childId: m.childId,
-                kept: kept.status,
-                keptAt: kept.at.toISOString(),
-              });
-            } else {
-              applied += 1; // the same mark sent twice
-            }
-          }
-        }
-        const counts = await refreshDailyCount(tx, params.id, body.day);
+        const result = await recordMarks(tx, {
+          centreId: params.id,
+          userId: ctx.userId!,
+          day: body.day,
+          marks: body.marks,
+        });
         await audit(tx, raw, ctx, {
           action: 'attendance.record',
           resourceType: 'attendance',
           resourceId: body.day,
-          metadata: { marks: latest.size, applied, conflicts: conflicts.length },
+          metadata: {
+            marks: body.marks.length,
+            applied: result.applied,
+            conflicts: result.conflicts.length,
+          },
         });
-        return {
-          day: body.day,
-          applied,
-          conflicts,
-          presentCount: counts.present,
-          enrolledCount: counts.enrolled,
-        };
+        return result;
       });
     },
   );

@@ -10,6 +10,7 @@ import { AppError, type AssistantTurn, type AuditGap } from '@wes/shared';
 import { schema, searchKnowledge, withRequestContext, type RequestContext } from '@wes/db';
 import type { AppDeps } from '../../platform/deps';
 import { registrationProgress, stepLabel } from '../compliance/service';
+import { extraToolServices } from './tool-services';
 
 /** Everything the pipeline needs about the caller's centre, loaded in one transaction. */
 export interface TurnContext {
@@ -162,6 +163,7 @@ export async function loadTurnContext(
 /** Domain services for the agent's tools, each running under the caller's RLS context. */
 export function toolServices(deps: AppDeps, ctx: RequestContext): ToolServices {
   return {
+    ...extraToolServices(deps, ctx),
     async searchKnowledge(query, limit) {
       const [embedding] = await deps.agent.embedder.embed([query], 'query');
       const hits = await withRequestContext(deps.db, ctx, (tx) =>

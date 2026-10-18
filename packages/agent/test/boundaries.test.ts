@@ -339,3 +339,44 @@ describe('tool loop', () => {
     expect(res.toolCalls).toEqual([]);
   });
 });
+
+describe('the full tool catalogue', () => {
+  it('implements every tool, keeps child-data tools from parents, and resolves name tokens', async () => {
+    const { TOOLS, TOOL_NAMES, toolsForRole } = await import('../src');
+    expect(TOOLS.map((t) => t.name).sort()).toEqual([...TOOL_NAMES].sort());
+    const parent = toolsForRole('parent').map((t) => t.name);
+    for (const name of [
+      'record_attendance',
+      'get_child_summary',
+      'create_weekly_plan',
+      'generate_policy_draft',
+    ]) {
+      expect(parent).not.toContain(name);
+    }
+    expect(toolsForRole('practitioner').map((t) => t.name)).not.toContain('generate_policy_draft');
+
+    const seen: unknown[] = [];
+    const tool = TOOLS.find((t) => t.name === 'record_attendance')!;
+    await tool.run(
+      { day: null, marks: [{ name: '⟦CHILD_ab12⟧', status: 'present' }] },
+      {
+        centreId: 'c',
+        userId: 'u',
+        role: 'practitioner',
+        hits: [],
+        escalationRequested: false,
+        resolveName: (n: string) => (n === '⟦CHILD_ab12⟧' ? 'Lwazi' : n),
+        services: {
+          searchKnowledge: async () => [],
+          complianceChecklist: async () => [],
+          createReminder: async () => ({ id: 'r' }),
+          recordAttendance: async (input) => {
+            seen.push(input);
+            return { saved: 1, notFound: 0, ambiguous: 0, conflicts: 0, day: '2026-10-15' };
+          },
+        },
+      },
+    );
+    expect(seen).toEqual([{ day: null, marks: [{ firstName: 'Lwazi', status: 'present' }] }]);
+  });
+});

@@ -17,6 +17,7 @@
 - **Milestone 5 (children and attendance): complete.** Daily register with offline-first taps (Dexie outbox, `/api/sync` proxy, newest mark wins with visible conflicts), anonymous daily headcounts, monthly CSV export for principals, today's attendance on Home. The subsidy claim format itself is TODO(content).
 - **Milestone 6 (WhatsApp channel): complete.** Meta Cloud API adapter (signatures, menus, documents via media upload, templates), webhook through the web app to the private API, dedupe, the same Wes pipeline, sign-in PINs and reminders by template (ADR-0014). Needs `<<WHATSAPP_*>>` and two approved templates; SMS still needs a provider.
 - **Milestone 7 (hardening): done except staging deployment.** 62 evals, axe checks on 16 screens, coverage gate at 80% (agent 90%, API domain 94%), security review (`docs/security.md`), operations runbook. Staging deploy needs your Azure subscription (Deploy to Azure button or `infra/deploy.ps1`).
+- **Agent tools:** all 12 from the brief plus `get_registration_progress` are wired to domain services (`apps/api/src/modules/assistant/tool-services.ts`); child-name tools resolve tokens server-side and return counts only. Lighthouse budgets run in CI on the public screens.
 - Repo: https://github.com/dalaintegratedsystems-ops/Polymath-Wes-ECD (branch `main`).
 - Decisions assumed in M0, pending confirmation:
   1. Withdrawing consent deletes the child, guardian links and per-day attendance, but keeps anonymous per-centre daily headcounts (`attendance_daily_counts`) for subsidy evidence.

@@ -76,6 +76,11 @@ jobs:
       - run: pnpm build
       - name: First-load JS under 170 KB gzip
         run: pnpm --filter @wes/web check:bundle
+      # Lighthouse mobile (simulated slow 4G, 4x CPU slowdown) on the public screens:
+      # performance 90+ and accessibility 95+ (CLAUDE.md §6).
+      - name: Lighthouse budgets
+        working-directory: apps/web
+        run: npx --yes @lhci/cli@0.15.1 autorun
 
   e2e:
     name: E2E (Playwright, 360px Android)

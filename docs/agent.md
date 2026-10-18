@@ -58,15 +58,25 @@ the rest of the app keeps working.
 
 ## Tools (`tools.ts`)
 
-| Tool                                                                | Status                                             | Roles                    |
-| ------------------------------------------------------------------- | -------------------------------------------------- | ------------------------ |
-| `search_knowledge`                                                  | M2                                                 | everyone who can use Wes |
-| `get_compliance_checklist`                                          | M2 (placeholder items until real norms are loaded) | staff                    |
-| `create_reminder`                                                   | M2                                                 | staff                    |
-| `escalate_child_protection`                                         | M2                                                 | everyone                 |
-| `run_self_audit`, `generate_policy_draft`, `build_application_pack` | M3                                                 | staff                    |
-| `create_weekly_plan`, `adapt_activity`, `generate_printable`        | M4                                                 | staff                    |
-| `record_attendance`, `get_child_summary`                            | M5                                                 | staff                    |
+| Tool                        | What it does                                                                           | Roles                    |
+| --------------------------- | -------------------------------------------------------------------------------------- | ------------------------ |
+| `search_knowledge`          | Hybrid search over the curated corpus; results cited as [n]                            | everyone who can use Wes |
+| `get_compliance_checklist`  | The registration checklist (placeholder items until real norms are loaded)             | staff                    |
+| `get_registration_progress` | The centre's journey steps, open audit items, expiring documents                       | staff                    |
+| `run_self_audit`            | Self-audit status, score, open items and its questions (answered in the app)           | staff                    |
+| `generate_policy_draft`     | Drafts a policy from the principal's answers, or lists missing answers; always a draft | principal                |
+| `build_application_pack`    | What is ready and missing for the application pack, and where to make it               | principal                |
+| `create_weekly_plan`        | Drafts this week's plan (same planner as the app)                                      | staff                    |
+| `adapt_activity`            | Adapts an activity from this week's plan                                               | staff                    |
+| `generate_printable`        | Makes a low-ink PDF and returns its download link                                      | staff                    |
+| `record_attendance`         | Saves register marks by first name; returns counts only                                | staff                    |
+| `get_child_summary`         | Group, age, 30-day attendance and consent for one child; no names returned             | staff                    |
+| `create_reminder`           | A reminder sent over WhatsApp when due                                                 | staff                    |
+| `escalate_child_protection` | Starts the fixed safety response                                                       | everyone                 |
+
+Children's names reach the model only as tokens (for example ⟦CHILD_ab12⟧). Tools that take a
+name turn the token back into the real first name inside our servers (`ctx.resolveName`), and
+their results contain counts, never names, so nothing identifying flows back to the model.
 
 Tools are sent with `strict: true` and every property required. Each runs a domain service
 from the API (`toolServices`) under the caller's row-level security context — never the

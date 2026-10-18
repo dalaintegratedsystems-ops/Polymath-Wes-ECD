@@ -151,6 +151,7 @@ export function createWes(deps: WesDeps) {
         services: input.services,
         hits: [],
         escalationRequested: false,
+        resolveName: (name) => restore(name, vault).trim(),
       };
       const restorer = createStreamingRestorer(vault);
       let gen;
