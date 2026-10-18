@@ -18,9 +18,7 @@
       "get": {
         "operationId": "getHealth",
         "summary": "Liveness probe",
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "security": [],
         "responses": {
           "200": {
@@ -38,10 +36,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "status",
-                    "version"
-                  ],
+                  "required": ["status", "version"],
                   "additionalProperties": false
                 }
               }
@@ -64,9 +59,7 @@
       "get": {
         "operationId": "getMeta",
         "summary": "Client bootstrap: API version, locales and feature flags",
-        "tags": [
-          "system"
-        ],
+        "tags": ["system"],
         "security": [],
         "responses": {
           "200": {
@@ -96,18 +89,10 @@
                     },
                     "assistantMode": {
                       "type": "string",
-                      "enum": [
-                        "live",
-                        "offline"
-                      ]
+                      "enum": ["live", "offline"]
                     }
                   },
-                  "required": [
-                    "version",
-                    "locales",
-                    "features",
-                    "assistantMode"
-                  ],
+                  "required": ["version", "locales", "features", "assistantMode"],
                   "additionalProperties": false
                 }
               }
@@ -130,9 +115,7 @@
       "post": {
         "operationId": "requestOtp",
         "summary": "Send a 6-digit sign-in PIN by WhatsApp (or SMS)",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [],
         "requestBody": {
           "required": true,
@@ -149,15 +132,10 @@
                   "channel": {
                     "default": "whatsapp",
                     "type": "string",
-                    "enum": [
-                      "whatsapp",
-                      "sms"
-                    ]
+                    "enum": ["whatsapp", "sms"]
                   }
                 },
-                "required": [
-                  "phone"
-                ]
+                "required": ["phone"]
               }
             }
           }
@@ -177,17 +155,10 @@
                     },
                     "channel": {
                       "type": "string",
-                      "enum": [
-                        "whatsapp",
-                        "sms",
-                        "console"
-                      ]
+                      "enum": ["whatsapp", "sms", "console"]
                     }
                   },
-                  "required": [
-                    "expiresInSeconds",
-                    "channel"
-                  ],
+                  "required": ["expiresInSeconds", "channel"],
                   "additionalProperties": false
                 }
               }
@@ -210,9 +181,7 @@
       "post": {
         "operationId": "exchangeOtp",
         "summary": "Exchange a PIN for an access token and a refresh token",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [],
         "requestBody": {
           "required": true,
@@ -236,10 +205,7 @@
                     "maxLength": 60
                   }
                 },
-                "required": [
-                  "phone",
-                  "code"
-                ]
+                "required": ["phone", "code"]
               }
             }
           }
@@ -279,24 +245,13 @@
                         },
                         "locale": {
                           "type": "string",
-                          "enum": [
-                            "en",
-                            "af",
-                            "xh",
-                            "zu"
-                          ]
+                          "enum": ["en", "af", "xh", "zu"]
                         },
                         "username": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
+                          "type": ["string", "null"]
                         },
                         "avatarUrl": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
+                          "type": ["string", "null"]
                         },
                         "mustChangePassword": {
                           "type": "boolean"
@@ -319,20 +274,10 @@
                               },
                               "role": {
                                 "type": "string",
-                                "enum": [
-                                  "principal",
-                                  "practitioner",
-                                  "parent",
-                                  "funder",
-                                  "admin"
-                                ]
+                                "enum": ["principal", "practitioner", "parent", "funder", "admin"]
                               }
                             },
-                            "required": [
-                              "centreId",
-                              "centreName",
-                              "role"
-                            ],
+                            "required": ["centreId", "centreName", "role"],
                             "additionalProperties": false
                           }
                         }
@@ -379,9 +324,7 @@
       "post": {
         "operationId": "passwordSignIn",
         "summary": "Sign in with a username and password (accounts made by an admin or principal)",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [],
         "requestBody": {
           "required": true,
@@ -401,10 +344,7 @@
                     "maxLength": 200
                   }
                 },
-                "required": [
-                  "username",
-                  "password"
-                ]
+                "required": ["username", "password"]
               }
             }
           }
@@ -444,24 +384,13 @@
                         },
                         "locale": {
                           "type": "string",
-                          "enum": [
-                            "en",
-                            "af",
-                            "xh",
-                            "zu"
-                          ]
+                          "enum": ["en", "af", "xh", "zu"]
                         },
                         "username": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
+                          "type": ["string", "null"]
                         },
                         "avatarUrl": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
+                          "type": ["string", "null"]
                         },
                         "mustChangePassword": {
                           "type": "boolean"
@@ -484,20 +413,10 @@
                               },
                               "role": {
                                 "type": "string",
-                                "enum": [
-                                  "principal",
-                                  "practitioner",
-                                  "parent",
-                                  "funder",
-                                  "admin"
-                                ]
+                                "enum": ["principal", "practitioner", "parent", "funder", "admin"]
                               }
                             },
-                            "required": [
-                              "centreId",
-                              "centreName",
-                              "role"
-                            ],
+                            "required": ["centreId", "centreName", "role"],
                             "additionalProperties": false
                           }
                         }
@@ -550,9 +469,7 @@
       "post": {
         "operationId": "changePassword",
         "summary": "Choose a new password (required after an admin sets a temporary one)",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [
           {
             "bearerAuth": []
@@ -576,10 +493,7 @@
                     "maxLength": 200
                   }
                 },
-                "required": [
-                  "currentPassword",
-                  "newPassword"
-                ]
+                "required": ["currentPassword", "newPassword"]
               }
             }
           }
@@ -602,24 +516,13 @@
                     },
                     "locale": {
                       "type": "string",
-                      "enum": [
-                        "en",
-                        "af",
-                        "xh",
-                        "zu"
-                      ]
+                      "enum": ["en", "af", "xh", "zu"]
                     },
                     "username": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "avatarUrl": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "mustChangePassword": {
                       "type": "boolean"
@@ -642,20 +545,10 @@
                           },
                           "role": {
                             "type": "string",
-                            "enum": [
-                              "principal",
-                              "practitioner",
-                              "parent",
-                              "funder",
-                              "admin"
-                            ]
+                            "enum": ["principal", "practitioner", "parent", "funder", "admin"]
                           }
                         },
-                        "required": [
-                          "centreId",
-                          "centreName",
-                          "role"
-                        ],
+                        "required": ["centreId", "centreName", "role"],
                         "additionalProperties": false
                       }
                     }
@@ -692,9 +585,7 @@
       "post": {
         "operationId": "refreshToken",
         "summary": "Rotate the refresh token and get a new access token",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [],
         "requestBody": {
           "required": true,
@@ -709,9 +600,7 @@
                     "maxLength": 200
                   }
                 },
-                "required": [
-                  "refreshToken"
-                ]
+                "required": ["refreshToken"]
               }
             }
           }
@@ -751,24 +640,13 @@
                         },
                         "locale": {
                           "type": "string",
-                          "enum": [
-                            "en",
-                            "af",
-                            "xh",
-                            "zu"
-                          ]
+                          "enum": ["en", "af", "xh", "zu"]
                         },
                         "username": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
+                          "type": ["string", "null"]
                         },
                         "avatarUrl": {
-                          "type": [
-                            "string",
-                            "null"
-                          ]
+                          "type": ["string", "null"]
                         },
                         "mustChangePassword": {
                           "type": "boolean"
@@ -791,20 +669,10 @@
                               },
                               "role": {
                                 "type": "string",
-                                "enum": [
-                                  "principal",
-                                  "practitioner",
-                                  "parent",
-                                  "funder",
-                                  "admin"
-                                ]
+                                "enum": ["principal", "practitioner", "parent", "funder", "admin"]
                               }
                             },
-                            "required": [
-                              "centreId",
-                              "centreName",
-                              "role"
-                            ],
+                            "required": ["centreId", "centreName", "role"],
                             "additionalProperties": false
                           }
                         }
@@ -851,9 +719,7 @@
       "post": {
         "operationId": "logout",
         "summary": "Revoke this session (the refresh token family)",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [],
         "requestBody": {
           "required": true,
@@ -868,9 +734,7 @@
                     "maxLength": 200
                   }
                 },
-                "required": [
-                  "refreshToken"
-                ]
+                "required": ["refreshToken"]
               }
             }
           }
@@ -896,9 +760,7 @@
       "get": {
         "operationId": "getMe",
         "summary": "The signed-in user and their centres",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [
           {
             "bearerAuth": []
@@ -922,24 +784,13 @@
                     },
                     "locale": {
                       "type": "string",
-                      "enum": [
-                        "en",
-                        "af",
-                        "xh",
-                        "zu"
-                      ]
+                      "enum": ["en", "af", "xh", "zu"]
                     },
                     "username": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "avatarUrl": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "mustChangePassword": {
                       "type": "boolean"
@@ -962,20 +813,10 @@
                           },
                           "role": {
                             "type": "string",
-                            "enum": [
-                              "principal",
-                              "practitioner",
-                              "parent",
-                              "funder",
-                              "admin"
-                            ]
+                            "enum": ["principal", "practitioner", "parent", "funder", "admin"]
                           }
                         },
-                        "required": [
-                          "centreId",
-                          "centreName",
-                          "role"
-                        ],
+                        "required": ["centreId", "centreName", "role"],
                         "additionalProperties": false
                       }
                     }
@@ -1010,9 +851,7 @@
       "patch": {
         "operationId": "updateMe",
         "summary": "Update your name or language",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [
           {
             "bearerAuth": []
@@ -1045,12 +884,7 @@
                   },
                   "locale": {
                     "type": "string",
-                    "enum": [
-                      "en",
-                      "af",
-                      "xh",
-                      "zu"
-                    ]
+                    "enum": ["en", "af", "xh", "zu"]
                   }
                 },
                 "additionalProperties": false
@@ -1076,24 +910,13 @@
                     },
                     "locale": {
                       "type": "string",
-                      "enum": [
-                        "en",
-                        "af",
-                        "xh",
-                        "zu"
-                      ]
+                      "enum": ["en", "af", "xh", "zu"]
                     },
                     "username": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "avatarUrl": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "mustChangePassword": {
                       "type": "boolean"
@@ -1116,20 +939,10 @@
                           },
                           "role": {
                             "type": "string",
-                            "enum": [
-                              "principal",
-                              "practitioner",
-                              "parent",
-                              "funder",
-                              "admin"
-                            ]
+                            "enum": ["principal", "practitioner", "parent", "funder", "admin"]
                           }
                         },
-                        "required": [
-                          "centreId",
-                          "centreName",
-                          "role"
-                        ],
+                        "required": ["centreId", "centreName", "role"],
                         "additionalProperties": false
                       }
                     }
@@ -1166,9 +979,7 @@
       "post": {
         "operationId": "createCentre",
         "summary": "Create your centre during onboarding; you become its principal",
-        "tags": [
-          "centres"
-        ],
+        "tags": ["centres"],
         "security": [
           {
             "bearerAuth": []
@@ -1214,17 +1025,7 @@
                   },
                   "province": {
                     "type": "string",
-                    "enum": [
-                      "EC",
-                      "FS",
-                      "GP",
-                      "KZN",
-                      "LP",
-                      "MP",
-                      "NC",
-                      "NW",
-                      "WC"
-                    ]
+                    "enum": ["EC", "FS", "GP", "KZN", "LP", "MP", "NC", "NW", "WC"]
                   },
                   "agesServedMinMonths": {
                     "type": "integer",
@@ -1287,17 +1088,7 @@
                     },
                     "province": {
                       "type": "string",
-                      "enum": [
-                        "EC",
-                        "FS",
-                        "GP",
-                        "KZN",
-                        "LP",
-                        "MP",
-                        "NC",
-                        "NW",
-                        "WC"
-                      ]
+                      "enum": ["EC", "FS", "GP", "KZN", "LP", "MP", "NC", "NW", "WC"]
                     },
                     "agesServedMinMonths": {
                       "type": "integer",
@@ -1326,18 +1117,10 @@
                     },
                     "defaultLocale": {
                       "type": "string",
-                      "enum": [
-                        "en",
-                        "af",
-                        "xh",
-                        "zu"
-                      ]
+                      "enum": ["en", "af", "xh", "zu"]
                     },
                     "logoUrl": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     }
                   },
                   "required": [
@@ -1376,9 +1159,7 @@
       "get": {
         "operationId": "getCentre",
         "summary": "Centre profile",
-        "tags": [
-          "centres"
-        ],
+        "tags": ["centres"],
         "security": [
           {
             "bearerAuth": []
@@ -1428,17 +1209,7 @@
                     },
                     "province": {
                       "type": "string",
-                      "enum": [
-                        "EC",
-                        "FS",
-                        "GP",
-                        "KZN",
-                        "LP",
-                        "MP",
-                        "NC",
-                        "NW",
-                        "WC"
-                      ]
+                      "enum": ["EC", "FS", "GP", "KZN", "LP", "MP", "NC", "NW", "WC"]
                     },
                     "agesServedMinMonths": {
                       "type": "integer",
@@ -1467,18 +1238,10 @@
                     },
                     "defaultLocale": {
                       "type": "string",
-                      "enum": [
-                        "en",
-                        "af",
-                        "xh",
-                        "zu"
-                      ]
+                      "enum": ["en", "af", "xh", "zu"]
                     },
                     "logoUrl": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     }
                   },
                   "required": [
@@ -1515,9 +1278,7 @@
       "patch": {
         "operationId": "updateCentre",
         "summary": "Update the centre profile (principal)",
-        "tags": [
-          "centres"
-        ],
+        "tags": ["centres"],
         "security": [
           {
             "bearerAuth": []
@@ -1572,17 +1333,7 @@
                   },
                   "province": {
                     "type": "string",
-                    "enum": [
-                      "EC",
-                      "FS",
-                      "GP",
-                      "KZN",
-                      "LP",
-                      "MP",
-                      "NC",
-                      "NW",
-                      "WC"
-                    ]
+                    "enum": ["EC", "FS", "GP", "KZN", "LP", "MP", "NC", "NW", "WC"]
                   },
                   "agesServedMinMonths": {
                     "type": "integer",
@@ -1611,12 +1362,7 @@
                   },
                   "defaultLocale": {
                     "type": "string",
-                    "enum": [
-                      "en",
-                      "af",
-                      "xh",
-                      "zu"
-                    ]
+                    "enum": ["en", "af", "xh", "zu"]
                   }
                 }
               }
@@ -1655,17 +1401,7 @@
                     },
                     "province": {
                       "type": "string",
-                      "enum": [
-                        "EC",
-                        "FS",
-                        "GP",
-                        "KZN",
-                        "LP",
-                        "MP",
-                        "NC",
-                        "NW",
-                        "WC"
-                      ]
+                      "enum": ["EC", "FS", "GP", "KZN", "LP", "MP", "NC", "NW", "WC"]
                     },
                     "agesServedMinMonths": {
                       "type": "integer",
@@ -1694,18 +1430,10 @@
                     },
                     "defaultLocale": {
                       "type": "string",
-                      "enum": [
-                        "en",
-                        "af",
-                        "xh",
-                        "zu"
-                      ]
+                      "enum": ["en", "af", "xh", "zu"]
                     },
                     "logoUrl": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     }
                   },
                   "required": [
@@ -1744,9 +1472,7 @@
       "get": {
         "operationId": "listStaff",
         "summary": "Principals and practitioners at the centre",
-        "tags": [
-          "centres"
-        ],
+        "tags": ["centres"],
         "security": [
           {
             "bearerAuth": []
@@ -1787,24 +1513,15 @@
                           },
                           "role": {
                             "type": "string",
-                            "enum": [
-                              "principal",
-                              "practitioner"
-                            ]
+                            "enum": ["principal", "practitioner"]
                           }
                         },
-                        "required": [
-                          "userId",
-                          "displayName",
-                          "role"
-                        ],
+                        "required": ["userId", "displayName", "role"],
                         "additionalProperties": false
                       }
                     }
                   },
-                  "required": [
-                    "staff"
-                  ],
+                  "required": ["staff"],
                   "additionalProperties": false
                 }
               }
@@ -1827,9 +1544,7 @@
       "get": {
         "operationId": "listChildren",
         "summary": "Child register: active children and intakes awaiting consent (parents see their own)",
-        "tags": [
-          "children"
-        ],
+        "tags": ["children"],
         "security": [
           {
             "bearerAuth": []
@@ -1885,17 +1600,11 @@
                             ]
                           },
                           "groupName": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
+                            "type": ["string", "null"]
                           },
                           "status": {
                             "type": "string",
-                            "enum": [
-                              "active",
-                              "awaiting_consent"
-                            ]
+                            "enum": ["active", "awaiting_consent"]
                           }
                         },
                         "required": [
@@ -1910,9 +1619,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "children"
-                  ],
+                  "required": ["children"],
                   "additionalProperties": false
                 }
               }
@@ -1933,9 +1640,7 @@
       "post": {
         "operationId": "startChildIntake",
         "summary": "Add a child: creates an intake that becomes a child record once a guardian consents",
-        "tags": [
-          "children"
-        ],
+        "tags": ["children"],
         "security": [
           {
             "bearerAuth": []
@@ -2008,18 +1713,10 @@
                         ]
                       }
                     },
-                    "required": [
-                      "displayName",
-                      "phone",
-                      "relationship"
-                    ]
+                    "required": ["displayName", "phone", "relationship"]
                   }
                 },
-                "required": [
-                  "firstName",
-                  "birthMonth",
-                  "guardian"
-                ]
+                "required": ["firstName", "birthMonth", "guardian"]
               }
             }
           }
@@ -2057,27 +1754,14 @@
                       ]
                     },
                     "groupName": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "active",
-                        "awaiting_consent"
-                      ]
+                      "enum": ["active", "awaiting_consent"]
                     }
                   },
-                  "required": [
-                    "id",
-                    "firstName",
-                    "birthMonth",
-                    "groupId",
-                    "groupName",
-                    "status"
-                  ],
+                  "required": ["id", "firstName", "birthMonth", "groupId", "groupName", "status"],
                   "additionalProperties": false
                 }
               }
@@ -2100,9 +1784,7 @@
       "post": {
         "operationId": "sendConsentPin",
         "summary": "Send the parent or caregiver a PIN to confirm consent for this child",
-        "tags": [
-          "consent"
-        ],
+        "tags": ["consent"],
         "security": [
           {
             "bearerAuth": []
@@ -2146,10 +1828,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "expiresInSeconds",
-                    "sentTo"
-                  ],
+                  "required": ["expiresInSeconds", "sentTo"],
                   "additionalProperties": false
                 }
               }
@@ -2172,9 +1851,7 @@
       "post": {
         "operationId": "grantConsent",
         "summary": "Record consent. For a child awaiting consent this creates the child record.",
-        "tags": [
-          "consent"
-        ],
+        "tags": ["consent"],
         "security": [
           {
             "bearerAuth": []
@@ -2224,20 +1901,12 @@
                     "type": "array",
                     "items": {
                       "type": "string",
-                      "enum": [
-                        "child_record",
-                        "progress_tracking",
-                        "photos",
-                        "parent_messages"
-                      ]
+                      "enum": ["child_record", "progress_tracking", "photos", "parent_messages"]
                     }
                   },
                   "method": {
                     "type": "string",
-                    "enum": [
-                      "guardian_otp",
-                      "paper_photo"
-                    ]
+                    "enum": ["guardian_otp", "paper_photo"]
                   },
                   "code": {
                     "type": "string",
@@ -2249,10 +1918,7 @@
                     "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                   }
                 },
-                "required": [
-                  "purposes",
-                  "method"
-                ]
+                "required": ["purposes", "method"]
               }
             }
           }
@@ -2279,20 +1945,12 @@
                       "type": "array",
                       "items": {
                         "type": "string",
-                        "enum": [
-                          "child_record",
-                          "progress_tracking",
-                          "photos",
-                          "parent_messages"
-                        ]
+                        "enum": ["child_record", "progress_tracking", "photos", "parent_messages"]
                       }
                     },
                     "method": {
                       "type": "string",
-                      "enum": [
-                        "guardian_otp",
-                        "paper_photo"
-                      ]
+                      "enum": ["guardian_otp", "paper_photo"]
                     },
                     "grantedAt": {
                       "type": "string",
@@ -2312,14 +1970,7 @@
                       ]
                     }
                   },
-                  "required": [
-                    "id",
-                    "childId",
-                    "purposes",
-                    "method",
-                    "grantedAt",
-                    "revokedAt"
-                  ],
+                  "required": ["id", "childId", "purposes", "method", "grantedAt", "revokedAt"],
                   "additionalProperties": false
                 }
               }
@@ -2342,9 +1993,7 @@
       "post": {
         "operationId": "revokeConsent",
         "summary": "Withdraw consent: deletes the child’s records (anonymous daily headcounts are kept)",
-        "tags": [
-          "consent"
-        ],
+        "tags": ["consent"],
         "security": [
           {
             "bearerAuth": []
@@ -2403,9 +2052,7 @@
       "post": {
         "operationId": "askWes",
         "summary": "Send a message to Wes. Responds with server-sent events: start, delta (text), replace (corrected full text), done (citations), error.",
-        "tags": [
-          "assistant"
-        ],
+        "tags": ["assistant"],
         "security": [
           {
             "bearerAuth": []
@@ -2440,9 +2087,7 @@
                     "maxLength": 2000
                   }
                 },
-                "required": [
-                  "text"
-                ]
+                "required": ["text"]
               }
             }
           }
@@ -2468,9 +2113,7 @@
       "get": {
         "operationId": "latestConversation",
         "summary": "Your most recent conversation with Wes, to pick up where you left off",
-        "tags": [
-          "assistant"
-        ],
+        "tags": ["assistant"],
         "security": [
           {
             "bearerAuth": []
@@ -2519,10 +2162,7 @@
                           },
                           "role": {
                             "type": "string",
-                            "enum": [
-                              "user",
-                              "assistant"
-                            ]
+                            "enum": ["user", "assistant"]
                           },
                           "text": {
                             "type": "string"
@@ -2550,13 +2190,7 @@
                                   "type": "string"
                                 }
                               },
-                              "required": [
-                                "n",
-                                "sourceSlug",
-                                "title",
-                                "anchor",
-                                "corpusVersion"
-                              ],
+                              "required": ["n", "sourceSlug", "title", "anchor", "corpusVersion"],
                               "additionalProperties": false
                             }
                           },
@@ -2569,22 +2203,12 @@
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
                           }
                         },
-                        "required": [
-                          "id",
-                          "role",
-                          "text",
-                          "citations",
-                          "safety",
-                          "createdAt"
-                        ],
+                        "required": ["id", "role", "text", "citations", "safety", "createdAt"],
                         "additionalProperties": false
                       }
                     }
                   },
-                  "required": [
-                    "conversationId",
-                    "messages"
-                  ],
+                  "required": ["conversationId", "messages"],
                   "additionalProperties": false
                 }
               }
@@ -2607,9 +2231,7 @@
       "post": {
         "operationId": "sendFeedback",
         "summary": "Thumbs up or down on a Wes answer, with an optional reason (feeds the evals)",
-        "tags": [
-          "assistant"
-        ],
+        "tags": ["assistant"],
         "security": [
           {
             "bearerAuth": []
@@ -2651,10 +2273,7 @@
                   },
                   "rating": {
                     "type": "string",
-                    "enum": [
-                      "up",
-                      "down"
-                    ]
+                    "enum": ["up", "down"]
                   },
                   "reason": {
                     "type": "string",
@@ -2672,10 +2291,7 @@
                     "maxLength": 500
                   }
                 },
-                "required": [
-                  "messageId",
-                  "rating"
-                ]
+                "required": ["messageId", "rating"]
               }
             }
           }
@@ -2701,9 +2317,7 @@
       "post": {
         "operationId": "recordAttendance",
         "summary": "Save the register for a day (works after being offline: the newest mark wins)",
-        "tags": [
-          "attendance"
-        ],
+        "tags": ["attendance"],
         "security": [
           {
             "bearerAuth": []
@@ -2758,11 +2372,7 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "present",
-                            "absent",
-                            "excused"
-                          ]
+                          "enum": ["present", "absent", "excused"]
                         },
                         "clientUpdatedAt": {
                           "type": "string",
@@ -2770,18 +2380,11 @@
                           "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                         }
                       },
-                      "required": [
-                        "childId",
-                        "status",
-                        "clientUpdatedAt"
-                      ]
+                      "required": ["childId", "status", "clientUpdatedAt"]
                     }
                   }
                 },
-                "required": [
-                  "day",
-                  "marks"
-                ]
+                "required": ["day", "marks"]
               }
             }
           }
@@ -2816,11 +2419,7 @@
                           },
                           "kept": {
                             "type": "string",
-                            "enum": [
-                              "present",
-                              "absent",
-                              "excused"
-                            ]
+                            "enum": ["present", "absent", "excused"]
                           },
                           "keptAt": {
                             "type": "string",
@@ -2828,11 +2427,7 @@
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                           }
                         },
-                        "required": [
-                          "childId",
-                          "kept",
-                          "keptAt"
-                        ],
+                        "required": ["childId", "kept", "keptAt"],
                         "additionalProperties": false
                       }
                     },
@@ -2847,13 +2442,7 @@
                       "maximum": 9007199254740991
                     }
                   },
-                  "required": [
-                    "day",
-                    "applied",
-                    "conflicts",
-                    "presentCount",
-                    "enrolledCount"
-                  ],
+                  "required": ["day", "applied", "conflicts", "presentCount", "enrolledCount"],
                   "additionalProperties": false
                 }
               }
@@ -2874,9 +2463,7 @@
       "get": {
         "operationId": "getAttendanceDay",
         "summary": "The register for a day",
-        "tags": [
-          "attendance"
-        ],
+        "tags": ["attendance"],
         "security": [
           {
             "bearerAuth": []
@@ -2929,25 +2516,15 @@
                           },
                           "status": {
                             "type": "string",
-                            "enum": [
-                              "present",
-                              "absent",
-                              "excused"
-                            ]
+                            "enum": ["present", "absent", "excused"]
                           }
                         },
-                        "required": [
-                          "childId",
-                          "status"
-                        ],
+                        "required": ["childId", "status"],
                         "additionalProperties": false
                       }
                     }
                   },
-                  "required": [
-                    "day",
-                    "marks"
-                  ],
+                  "required": ["day", "marks"],
                   "additionalProperties": false
                 }
               }
@@ -2970,9 +2547,7 @@
       "get": {
         "operationId": "exportAttendance",
         "summary": "Monthly register as CSV (one row per child, P, A or E per weekday, daily totals)",
-        "tags": [
-          "attendance"
-        ],
+        "tags": ["attendance"],
         "security": [
           {
             "bearerAuth": []
@@ -3019,9 +2594,7 @@
       "get": {
         "operationId": "verifyWhatsAppWebhook",
         "summary": "Meta webhook verification (echoes hub.challenge when the verify token matches)",
-        "tags": [
-          "channels"
-        ],
+        "tags": ["channels"],
         "security": [],
         "parameters": [
           {
@@ -3072,9 +2645,7 @@
       "post": {
         "operationId": "receiveWhatsAppWebhook",
         "summary": "Incoming WhatsApp messages (signed by Meta with X-Hub-Signature-256)",
-        "tags": [
-          "channels"
-        ],
+        "tags": ["channels"],
         "security": [],
         "responses": {
           "200": {
@@ -3103,9 +2674,7 @@
       "get": {
         "operationId": "getComplianceChecklist",
         "summary": "Registration checklist (placeholder until the official documents are loaded)",
-        "tags": [
-          "compliance"
-        ],
+        "tags": ["compliance"],
         "security": [
           {
             "bearerAuth": []
@@ -3161,10 +2730,7 @@
                             "type": "string"
                           },
                           "requiresDocument": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
+                            "type": ["string", "null"]
                           },
                           "placeholder": {
                             "type": "boolean"
@@ -3186,10 +2752,7 @@
                       "type": "boolean"
                     }
                   },
-                  "required": [
-                    "items",
-                    "isPlaceholder"
-                  ],
+                  "required": ["items", "isPlaceholder"],
                   "additionalProperties": false
                 }
               }
@@ -3212,9 +2775,7 @@
       "post": {
         "operationId": "runSelfAudit",
         "summary": "Answer the checklist and get a prioritised list of what to work on",
-        "tags": [
-          "compliance"
-        ],
+        "tags": ["compliance"],
         "security": [
           {
             "bearerAuth": []
@@ -3257,17 +2818,11 @@
                     },
                     "additionalProperties": {
                       "type": "string",
-                      "enum": [
-                        "yes",
-                        "no",
-                        "unsure"
-                      ]
+                      "enum": ["yes", "no", "unsure"]
                     }
                   }
                 },
-                "required": [
-                  "answers"
-                ]
+                "required": ["answers"]
               }
             }
           }
@@ -3314,10 +2869,7 @@
                           },
                           "answer": {
                             "type": "string",
-                            "enum": [
-                              "no",
-                              "unsure"
-                            ]
+                            "enum": ["no", "unsure"]
                           },
                           "priority": {
                             "type": "integer",
@@ -3328,14 +2880,7 @@
                             "type": "string"
                           }
                         },
-                        "required": [
-                          "code",
-                          "title",
-                          "category",
-                          "answer",
-                          "priority",
-                          "action"
-                        ],
+                        "required": ["code", "title", "category", "answer", "priority", "action"],
                         "additionalProperties": false
                       }
                     },
@@ -3348,13 +2893,7 @@
                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                     }
                   },
-                  "required": [
-                    "id",
-                    "scorePercent",
-                    "gaps",
-                    "isPlaceholder",
-                    "createdAt"
-                  ],
+                  "required": ["id", "scorePercent", "gaps", "isPlaceholder", "createdAt"],
                   "additionalProperties": false
                 }
               }
@@ -3377,9 +2916,7 @@
       "get": {
         "operationId": "getLatestSelfAudit",
         "summary": "The most recent self-audit",
-        "tags": [
-          "compliance"
-        ],
+        "tags": ["compliance"],
         "security": [
           {
             "bearerAuth": []
@@ -3438,10 +2975,7 @@
                           },
                           "answer": {
                             "type": "string",
-                            "enum": [
-                              "no",
-                              "unsure"
-                            ]
+                            "enum": ["no", "unsure"]
                           },
                           "priority": {
                             "type": "integer",
@@ -3452,14 +2986,7 @@
                             "type": "string"
                           }
                         },
-                        "required": [
-                          "code",
-                          "title",
-                          "category",
-                          "answer",
-                          "priority",
-                          "action"
-                        ],
+                        "required": ["code", "title", "category", "answer", "priority", "action"],
                         "additionalProperties": false
                       }
                     },
@@ -3472,13 +2999,7 @@
                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                     }
                   },
-                  "required": [
-                    "id",
-                    "scorePercent",
-                    "gaps",
-                    "isPlaceholder",
-                    "createdAt"
-                  ],
+                  "required": ["id", "scorePercent", "gaps", "isPlaceholder", "createdAt"],
                   "additionalProperties": false
                 }
               }
@@ -3504,9 +3025,7 @@
       "get": {
         "operationId": "getRegistrationProgress",
         "summary": "Where the centre is on its registration journey",
-        "tags": [
-          "compliance"
-        ],
+        "tags": ["compliance"],
         "security": [
           {
             "bearerAuth": []
@@ -3543,32 +3062,17 @@
                         "properties": {
                           "id": {
                             "type": "string",
-                            "enum": [
-                              "audit",
-                              "centre",
-                              "policies",
-                              "documents",
-                              "pack",
-                              "submit"
-                            ]
+                            "enum": ["audit", "centre", "policies", "documents", "pack", "submit"]
                           },
                           "status": {
                             "type": "string",
-                            "enum": [
-                              "done",
-                              "current",
-                              "todo"
-                            ]
+                            "enum": ["done", "current", "todo"]
                           },
                           "detail": {
                             "type": "string"
                           }
                         },
-                        "required": [
-                          "id",
-                          "status",
-                          "detail"
-                        ],
+                        "required": ["id", "status", "detail"],
                         "additionalProperties": false
                       }
                     },
@@ -3578,11 +3082,7 @@
                       "maximum": 9007199254740991
                     }
                   },
-                  "required": [
-                    "percent",
-                    "steps",
-                    "expiringDocuments"
-                  ],
+                  "required": ["percent", "steps", "expiringDocuments"],
                   "additionalProperties": false
                 }
               }
@@ -3605,9 +3105,7 @@
       "post": {
         "operationId": "uploadComplianceDocument",
         "summary": "Save a photo or PDF of a document (max 5 MB; photo metadata removed)",
-        "tags": [
-          "compliance"
-        ],
+        "tags": ["compliance"],
         "security": [
           {
             "bearerAuth": []
@@ -3678,12 +3176,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "image/jpeg",
-                "image/png",
-                "image/webp",
-                "application/pdf"
-              ]
+              "enum": ["image/jpeg", "image/png", "image/webp", "application/pdf"]
             }
           }
         ],
@@ -3716,10 +3209,7 @@
                       ]
                     },
                     "itemCode": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "mimeType": {
                       "type": "string"
@@ -3755,12 +3245,7 @@
                     },
                     "expiry": {
                       "type": "string",
-                      "enum": [
-                        "none",
-                        "ok",
-                        "soon",
-                        "expired"
-                      ]
+                      "enum": ["none", "ok", "soon", "expired"]
                     },
                     "createdAt": {
                       "type": "string",
@@ -3799,9 +3284,7 @@
       "get": {
         "operationId": "listComplianceDocuments",
         "summary": "Saved documents, with expiry warnings",
-        "tags": [
-          "compliance"
-        ],
+        "tags": ["compliance"],
         "security": [
           {
             "bearerAuth": []
@@ -3852,10 +3335,7 @@
                             ]
                           },
                           "itemCode": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
+                            "type": ["string", "null"]
                           },
                           "mimeType": {
                             "type": "string"
@@ -3891,12 +3371,7 @@
                           },
                           "expiry": {
                             "type": "string",
-                            "enum": [
-                              "none",
-                              "ok",
-                              "soon",
-                              "expired"
-                            ]
+                            "enum": ["none", "ok", "soon", "expired"]
                           },
                           "createdAt": {
                             "type": "string",
@@ -3919,9 +3394,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "items"
-                  ],
+                  "required": ["items"],
                   "additionalProperties": false
                 }
               }
@@ -3944,9 +3417,7 @@
       "get": {
         "operationId": "getComplianceDocumentFile",
         "summary": "Download a saved document",
-        "tags": [
-          "compliance"
-        ],
+        "tags": ["compliance"],
         "security": [
           {
             "bearerAuth": []
@@ -3994,9 +3465,7 @@
       "delete": {
         "operationId": "deleteComplianceDocument",
         "summary": "Remove a saved document",
-        "tags": [
-          "compliance"
-        ],
+        "tags": ["compliance"],
         "security": [
           {
             "bearerAuth": []
@@ -4044,9 +3513,7 @@
       "post": {
         "operationId": "generatePolicy",
         "summary": "Draft a policy from your answers (a draft until the principal approves it)",
-        "tags": [
-          "policies"
-        ],
+        "tags": ["policies"],
         "security": [
           {
             "bearerAuth": []
@@ -4083,12 +3550,7 @@
                 "properties": {
                   "kind": {
                     "type": "string",
-                    "enum": [
-                      "admissions",
-                      "health",
-                      "safety",
-                      "child_protection"
-                    ]
+                    "enum": ["admissions", "health", "safety", "child_protection"]
                   },
                   "answers": {
                     "type": "object",
@@ -4102,10 +3564,7 @@
                     }
                   }
                 },
-                "required": [
-                  "kind",
-                  "answers"
-                ]
+                "required": ["kind", "answers"]
               }
             }
           }
@@ -4125,23 +3584,14 @@
                     },
                     "kind": {
                       "type": "string",
-                      "enum": [
-                        "admissions",
-                        "health",
-                        "safety",
-                        "child_protection"
-                      ]
+                      "enum": ["admissions", "health", "safety", "child_protection"]
                     },
                     "title": {
                       "type": "string"
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "draft",
-                        "approved",
-                        "archived"
-                      ]
+                      "enum": ["draft", "approved", "archived"]
                     },
                     "bodyMarkdown": {
                       "type": "string"
@@ -4205,9 +3655,7 @@
       "get": {
         "operationId": "listPolicies",
         "summary": "Current policy drafts and approved policies",
-        "tags": [
-          "policies"
-        ],
+        "tags": ["policies"],
         "security": [
           {
             "bearerAuth": []
@@ -4244,23 +3692,14 @@
                           },
                           "kind": {
                             "type": "string",
-                            "enum": [
-                              "admissions",
-                              "health",
-                              "safety",
-                              "child_protection"
-                            ]
+                            "enum": ["admissions", "health", "safety", "child_protection"]
                           },
                           "title": {
                             "type": "string"
                           },
                           "status": {
                             "type": "string",
-                            "enum": [
-                              "draft",
-                              "approved",
-                              "archived"
-                            ]
+                            "enum": ["draft", "approved", "archived"]
                           },
                           "approvedAt": {
                             "anyOf": [
@@ -4280,21 +3719,12 @@
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                           }
                         },
-                        "required": [
-                          "id",
-                          "kind",
-                          "title",
-                          "status",
-                          "approvedAt",
-                          "updatedAt"
-                        ],
+                        "required": ["id", "kind", "title", "status", "approvedAt", "updatedAt"],
                         "additionalProperties": false
                       }
                     }
                   },
-                  "required": [
-                    "items"
-                  ],
+                  "required": ["items"],
                   "additionalProperties": false
                 }
               }
@@ -4317,9 +3747,7 @@
       "get": {
         "operationId": "getPolicy",
         "summary": "One policy, with its text",
-        "tags": [
-          "policies"
-        ],
+        "tags": ["policies"],
         "security": [
           {
             "bearerAuth": []
@@ -4361,23 +3789,14 @@
                     },
                     "kind": {
                       "type": "string",
-                      "enum": [
-                        "admissions",
-                        "health",
-                        "safety",
-                        "child_protection"
-                      ]
+                      "enum": ["admissions", "health", "safety", "child_protection"]
                     },
                     "title": {
                       "type": "string"
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "draft",
-                        "approved",
-                        "archived"
-                      ]
+                      "enum": ["draft", "approved", "archived"]
                     },
                     "bodyMarkdown": {
                       "type": "string"
@@ -4439,9 +3858,7 @@
       "patch": {
         "operationId": "updatePolicy",
         "summary": "Edit a policy (editing an approved policy makes it a draft again)",
-        "tags": [
-          "policies"
-        ],
+        "tags": ["policies"],
         "security": [
           {
             "bearerAuth": []
@@ -4517,23 +3934,14 @@
                     },
                     "kind": {
                       "type": "string",
-                      "enum": [
-                        "admissions",
-                        "health",
-                        "safety",
-                        "child_protection"
-                      ]
+                      "enum": ["admissions", "health", "safety", "child_protection"]
                     },
                     "title": {
                       "type": "string"
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "draft",
-                        "approved",
-                        "archived"
-                      ]
+                      "enum": ["draft", "approved", "archived"]
                     },
                     "bodyMarkdown": {
                       "type": "string"
@@ -4597,9 +4005,7 @@
       "post": {
         "operationId": "approvePolicy",
         "summary": "Approve a policy (principal): it goes into the application pack",
-        "tags": [
-          "policies"
-        ],
+        "tags": ["policies"],
         "security": [
           {
             "bearerAuth": []
@@ -4652,23 +4058,14 @@
                     },
                     "kind": {
                       "type": "string",
-                      "enum": [
-                        "admissions",
-                        "health",
-                        "safety",
-                        "child_protection"
-                      ]
+                      "enum": ["admissions", "health", "safety", "child_protection"]
                     },
                     "title": {
                       "type": "string"
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "draft",
-                        "approved",
-                        "archived"
-                      ]
+                      "enum": ["draft", "approved", "archived"]
                     },
                     "bodyMarkdown": {
                       "type": "string"
@@ -4732,9 +4129,7 @@
       "get": {
         "operationId": "getPolicyPdf",
         "summary": "A policy as a low-ink A4 PDF",
-        "tags": [
-          "policies"
-        ],
+        "tags": ["policies"],
         "security": [
           {
             "bearerAuth": []
@@ -4782,9 +4177,7 @@
       "post": {
         "operationId": "buildApplicationPack",
         "summary": "One PDF with centre details, self-audit, approved policies and documents",
-        "tags": [
-          "compliance"
-        ],
+        "tags": ["compliance"],
         "security": [
           {
             "bearerAuth": []
@@ -4822,9 +4215,7 @@
       "post": {
         "operationId": "createWeeklyPlan",
         "summary": "Draft a theme plan for the week, tagged to ELDAs (a draft until a practitioner approves)",
-        "tags": [
-          "planner"
-        ],
+        "tags": ["planner"],
         "security": [
           {
             "bearerAuth": []
@@ -4871,11 +4262,7 @@
                     "type": "array",
                     "items": {
                       "type": "string",
-                      "enum": [
-                        "babies",
-                        "toddlers",
-                        "preschool"
-                      ]
+                      "enum": ["babies", "toddlers", "preschool"]
                     }
                   },
                   "weekStarting": {
@@ -4884,11 +4271,7 @@
                     "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$"
                   }
                 },
-                "required": [
-                  "theme",
-                  "ageGroups",
-                  "weekStarting"
-                ]
+                "required": ["theme", "ageGroups", "weekStarting"]
               }
             }
           }
@@ -4918,27 +4301,16 @@
                       "type": "array",
                       "items": {
                         "type": "string",
-                        "enum": [
-                          "babies",
-                          "toddlers",
-                          "preschool"
-                        ]
+                        "enum": ["babies", "toddlers", "preschool"]
                       }
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "draft",
-                        "approved",
-                        "archived"
-                      ]
+                      "enum": ["draft", "approved", "archived"]
                     },
                     "source": {
                       "type": "string",
-                      "enum": [
-                        "wes",
-                        "library"
-                      ]
+                      "enum": ["wes", "library"]
                     },
                     "body": {
                       "type": "object",
@@ -4952,13 +4324,7 @@
                             "properties": {
                               "day": {
                                 "type": "string",
-                                "enum": [
-                                  "mon",
-                                  "tue",
-                                  "wed",
-                                  "thu",
-                                  "fri"
-                                ]
+                                "enum": ["mon", "tue", "wed", "thu", "fri"]
                               },
                               "activities": {
                                 "minItems": 1,
@@ -4989,11 +4355,7 @@
                                       "type": "array",
                                       "items": {
                                         "type": "string",
-                                        "enum": [
-                                          "babies",
-                                          "toddlers",
-                                          "preschool"
-                                        ]
+                                        "enum": ["babies", "toddlers", "preschool"]
                                       }
                                     },
                                     "eldas": {
@@ -5033,11 +4395,7 @@
                                       "anyOf": [
                                         {
                                           "type": "string",
-                                          "enum": [
-                                            "flashcards",
-                                            "tracing",
-                                            "counting"
-                                          ]
+                                          "enum": ["flashcards", "tracing", "counting"]
                                         },
                                         {
                                           "type": "null"
@@ -5060,10 +4418,7 @@
                                 }
                               }
                             },
-                            "required": [
-                              "day",
-                              "activities"
-                            ],
+                            "required": ["day", "activities"],
                             "additionalProperties": false
                           }
                         },
@@ -5076,10 +4431,7 @@
                           }
                         }
                       },
-                      "required": [
-                        "days",
-                        "themeWords"
-                      ],
+                      "required": ["days", "themeWords"],
                       "additionalProperties": false
                     },
                     "citations": {
@@ -5099,11 +4451,7 @@
                             "type": "string"
                           }
                         },
-                        "required": [
-                          "n",
-                          "source",
-                          "where"
-                        ],
+                        "required": ["n", "source", "where"],
                         "additionalProperties": false
                       }
                     },
@@ -5146,9 +4494,7 @@
       "get": {
         "operationId": "getWeeklyPlan",
         "summary": "The plan for a week (the approved one if there is one, otherwise the draft)",
-        "tags": [
-          "planner"
-        ],
+        "tags": ["planner"],
         "security": [
           {
             "bearerAuth": []
@@ -5200,27 +4546,16 @@
                       "type": "array",
                       "items": {
                         "type": "string",
-                        "enum": [
-                          "babies",
-                          "toddlers",
-                          "preschool"
-                        ]
+                        "enum": ["babies", "toddlers", "preschool"]
                       }
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "draft",
-                        "approved",
-                        "archived"
-                      ]
+                      "enum": ["draft", "approved", "archived"]
                     },
                     "source": {
                       "type": "string",
-                      "enum": [
-                        "wes",
-                        "library"
-                      ]
+                      "enum": ["wes", "library"]
                     },
                     "body": {
                       "type": "object",
@@ -5234,13 +4569,7 @@
                             "properties": {
                               "day": {
                                 "type": "string",
-                                "enum": [
-                                  "mon",
-                                  "tue",
-                                  "wed",
-                                  "thu",
-                                  "fri"
-                                ]
+                                "enum": ["mon", "tue", "wed", "thu", "fri"]
                               },
                               "activities": {
                                 "minItems": 1,
@@ -5271,11 +4600,7 @@
                                       "type": "array",
                                       "items": {
                                         "type": "string",
-                                        "enum": [
-                                          "babies",
-                                          "toddlers",
-                                          "preschool"
-                                        ]
+                                        "enum": ["babies", "toddlers", "preschool"]
                                       }
                                     },
                                     "eldas": {
@@ -5315,11 +4640,7 @@
                                       "anyOf": [
                                         {
                                           "type": "string",
-                                          "enum": [
-                                            "flashcards",
-                                            "tracing",
-                                            "counting"
-                                          ]
+                                          "enum": ["flashcards", "tracing", "counting"]
                                         },
                                         {
                                           "type": "null"
@@ -5342,10 +4663,7 @@
                                 }
                               }
                             },
-                            "required": [
-                              "day",
-                              "activities"
-                            ],
+                            "required": ["day", "activities"],
                             "additionalProperties": false
                           }
                         },
@@ -5358,10 +4676,7 @@
                           }
                         }
                       },
-                      "required": [
-                        "days",
-                        "themeWords"
-                      ],
+                      "required": ["days", "themeWords"],
                       "additionalProperties": false
                     },
                     "citations": {
@@ -5381,11 +4696,7 @@
                             "type": "string"
                           }
                         },
-                        "required": [
-                          "n",
-                          "source",
-                          "where"
-                        ],
+                        "required": ["n", "source", "where"],
                         "additionalProperties": false
                       }
                     },
@@ -5431,9 +4742,7 @@
       "post": {
         "operationId": "approveWeeklyPlan",
         "summary": "Approve a plan for use (the practitioner decides)",
-        "tags": [
-          "planner"
-        ],
+        "tags": ["planner"],
         "security": [
           {
             "bearerAuth": []
@@ -5496,27 +4805,16 @@
                       "type": "array",
                       "items": {
                         "type": "string",
-                        "enum": [
-                          "babies",
-                          "toddlers",
-                          "preschool"
-                        ]
+                        "enum": ["babies", "toddlers", "preschool"]
                       }
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "draft",
-                        "approved",
-                        "archived"
-                      ]
+                      "enum": ["draft", "approved", "archived"]
                     },
                     "source": {
                       "type": "string",
-                      "enum": [
-                        "wes",
-                        "library"
-                      ]
+                      "enum": ["wes", "library"]
                     },
                     "body": {
                       "type": "object",
@@ -5530,13 +4828,7 @@
                             "properties": {
                               "day": {
                                 "type": "string",
-                                "enum": [
-                                  "mon",
-                                  "tue",
-                                  "wed",
-                                  "thu",
-                                  "fri"
-                                ]
+                                "enum": ["mon", "tue", "wed", "thu", "fri"]
                               },
                               "activities": {
                                 "minItems": 1,
@@ -5567,11 +4859,7 @@
                                       "type": "array",
                                       "items": {
                                         "type": "string",
-                                        "enum": [
-                                          "babies",
-                                          "toddlers",
-                                          "preschool"
-                                        ]
+                                        "enum": ["babies", "toddlers", "preschool"]
                                       }
                                     },
                                     "eldas": {
@@ -5611,11 +4899,7 @@
                                       "anyOf": [
                                         {
                                           "type": "string",
-                                          "enum": [
-                                            "flashcards",
-                                            "tracing",
-                                            "counting"
-                                          ]
+                                          "enum": ["flashcards", "tracing", "counting"]
                                         },
                                         {
                                           "type": "null"
@@ -5638,10 +4922,7 @@
                                 }
                               }
                             },
-                            "required": [
-                              "day",
-                              "activities"
-                            ],
+                            "required": ["day", "activities"],
                             "additionalProperties": false
                           }
                         },
@@ -5654,10 +4935,7 @@
                           }
                         }
                       },
-                      "required": [
-                        "days",
-                        "themeWords"
-                      ],
+                      "required": ["days", "themeWords"],
                       "additionalProperties": false
                     },
                     "citations": {
@@ -5677,11 +4955,7 @@
                             "type": "string"
                           }
                         },
-                        "required": [
-                          "n",
-                          "source",
-                          "where"
-                        ],
+                        "required": ["n", "source", "where"],
                         "additionalProperties": false
                       }
                     },
@@ -5724,9 +4998,7 @@
       "post": {
         "operationId": "adaptActivity",
         "summary": "Adapt a planned activity: younger, older, outdoors or with fewer materials",
-        "tags": [
-          "planner"
-        ],
+        "tags": ["planner"],
         "security": [
           {
             "bearerAuth": []
@@ -5761,19 +5033,10 @@
                   },
                   "target": {
                     "type": "string",
-                    "enum": [
-                      "younger",
-                      "older",
-                      "outdoor",
-                      "fewer_materials"
-                    ]
+                    "enum": ["younger", "older", "outdoor", "fewer_materials"]
                   }
                 },
-                "required": [
-                  "planId",
-                  "activityId",
-                  "target"
-                ]
+                "required": ["planId", "activityId", "target"]
               }
             }
           }
@@ -5805,12 +5068,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "title",
-                    "steps",
-                    "materials",
-                    "note"
-                  ],
+                  "required": ["title", "steps", "materials", "note"],
                   "additionalProperties": false
                 }
               }
@@ -5833,9 +5091,7 @@
       "post": {
         "operationId": "createPrintable",
         "summary": "A low-ink A4 printable: flashcards, a tracing sheet or a counting sheet",
-        "tags": [
-          "planner"
-        ],
+        "tags": ["planner"],
         "security": [
           {
             "bearerAuth": []
@@ -5861,11 +5117,7 @@
                 "properties": {
                   "kind": {
                     "type": "string",
-                    "enum": [
-                      "flashcards",
-                      "tracing",
-                      "counting"
-                    ]
+                    "enum": ["flashcards", "tracing", "counting"]
                   },
                   "title": {
                     "type": "string",
@@ -5890,10 +5142,7 @@
                     "maximum": 10
                   }
                 },
-                "required": [
-                  "kind",
-                  "title"
-                ]
+                "required": ["kind", "title"]
               }
             }
           }
@@ -5919,9 +5168,7 @@
       "get": {
         "operationId": "getPrintablePdf",
         "summary": "A printable made earlier (for example by Wes), as a PDF",
-        "tags": [
-          "planner"
-        ],
+        "tags": ["planner"],
         "security": [
           {
             "bearerAuth": []
@@ -5969,9 +5216,7 @@
       "get": {
         "operationId": "listManagedUsers",
         "summary": "People you can manage (masked phone numbers only)",
-        "tags": [
-          "people"
-        ],
+        "tags": ["people"],
         "security": [
           {
             "bearerAuth": []
@@ -6011,26 +5256,14 @@
                             "type": "string"
                           },
                           "username": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
+                            "type": ["string", "null"]
                           },
                           "phoneMasked": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
+                            "type": ["string", "null"]
                           },
                           "role": {
                             "type": "string",
-                            "enum": [
-                              "principal",
-                              "practitioner",
-                              "parent",
-                              "funder",
-                              "admin"
-                            ]
+                            "enum": ["principal", "practitioner", "parent", "funder", "admin"]
                           },
                           "centreId": {
                             "type": "string",
@@ -6042,10 +5275,7 @@
                           },
                           "status": {
                             "type": "string",
-                            "enum": [
-                              "active",
-                              "deactivated"
-                            ]
+                            "enum": ["active", "deactivated"]
                           },
                           "lastSeenAt": {
                             "anyOf": [
@@ -6079,9 +5309,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "items"
-                  ],
+                  "required": ["items"],
                   "additionalProperties": false
                 }
               }
@@ -6102,9 +5330,7 @@
       "post": {
         "operationId": "createManagedUser",
         "summary": "Add a person to a centre; a username gets a one-time temporary password",
-        "tags": [
-          "people"
-        ],
+        "tags": ["people"],
         "security": [
           {
             "bearerAuth": []
@@ -6142,13 +5368,7 @@
                   },
                   "role": {
                     "type": "string",
-                    "enum": [
-                      "principal",
-                      "practitioner",
-                      "parent",
-                      "funder",
-                      "admin"
-                    ]
+                    "enum": ["principal", "practitioner", "parent", "funder", "admin"]
                   },
                   "username": {
                     "type": "string",
@@ -6160,11 +5380,7 @@
                     "maxLength": 20
                   }
                 },
-                "required": [
-                  "displayName",
-                  "centreId",
-                  "role"
-                ]
+                "required": ["displayName", "centreId", "role"]
               }
             }
           }
@@ -6183,16 +5399,10 @@
                       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
                     },
                     "temporaryPassword": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     }
                   },
-                  "required": [
-                    "userId",
-                    "temporaryPassword"
-                  ],
+                  "required": ["userId", "temporaryPassword"],
                   "additionalProperties": false
                 }
               }
@@ -6215,9 +5425,7 @@
       "post": {
         "operationId": "resetManagedUserPassword",
         "summary": "Give someone a new temporary password and sign them out everywhere",
-        "tags": [
-          "people"
-        ],
+        "tags": ["people"],
         "security": [
           {
             "bearerAuth": []
@@ -6258,9 +5466,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "temporaryPassword"
-                  ],
+                  "required": ["temporaryPassword"],
                   "additionalProperties": false
                 }
               }
@@ -6283,9 +5489,7 @@
       "patch": {
         "operationId": "setManagedUserStatus",
         "summary": "Switch an account off (signs them out everywhere) or back on",
-        "tags": [
-          "people"
-        ],
+        "tags": ["people"],
         "security": [
           {
             "bearerAuth": []
@@ -6323,15 +5527,10 @@
                 "properties": {
                   "status": {
                     "type": "string",
-                    "enum": [
-                      "active",
-                      "deactivated"
-                    ]
+                    "enum": ["active", "deactivated"]
                   }
                 },
-                "required": [
-                  "status"
-                ]
+                "required": ["status"]
               }
             }
           }
@@ -6357,9 +5556,7 @@
       "get": {
         "operationId": "getCentreDashboard",
         "summary": "Your centre at a glance: children, consent, Wes use, attendance and weekly trends",
-        "tags": [
-          "dashboards"
-        ],
+        "tags": ["dashboards"],
         "security": [
           {
             "bearerAuth": []
@@ -6443,10 +5640,7 @@
                       "type": "number"
                     },
                     "attendanceRate": {
-                      "type": [
-                        "number",
-                        "null"
-                      ]
+                      "type": ["number", "null"]
                     },
                     "weekly": {
                       "type": "array",
@@ -6465,10 +5659,7 @@
                             "type": "number"
                           },
                           "attendanceRate": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
+                            "type": ["number", "null"]
                           }
                         },
                         "required": [
@@ -6518,9 +5709,7 @@
       "get": {
         "operationId": "getPlatformMetrics",
         "summary": "Platform metrics for Dala admins (aggregates only, never child records)",
-        "tags": [
-          "dashboards"
-        ],
+        "tags": ["dashboards"],
         "security": [
           {
             "bearerAuth": []
@@ -6553,17 +5742,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "EC",
-                "FS",
-                "GP",
-                "KZN",
-                "LP",
-                "MP",
-                "NC",
-                "NW",
-                "WC"
-              ]
+              "enum": ["EC", "FS", "GP", "KZN", "LP", "MP", "NC", "NW", "WC"]
             }
           },
           {
@@ -6582,11 +5761,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "small",
-                "medium",
-                "large"
-              ]
+              "enum": ["small", "medium", "large"]
             }
           },
           {
@@ -6610,13 +5785,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "principal",
-                "practitioner",
-                "parent",
-                "funder",
-                "admin"
-              ]
+              "enum": ["principal", "practitioner", "parent", "funder", "admin"]
             }
           }
         ],
@@ -6653,19 +5822,13 @@
                             "type": "object",
                             "properties": {
                               "label": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
+                                "type": ["string", "null"]
                               },
                               "count": {
                                 "type": "number"
                               }
                             },
-                            "required": [
-                              "label",
-                              "count"
-                            ],
+                            "required": ["label", "count"],
                             "additionalProperties": false
                           }
                         },
@@ -6675,19 +5838,13 @@
                             "type": "object",
                             "properties": {
                               "label": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
+                                "type": ["string", "null"]
                               },
                               "count": {
                                 "type": "number"
                               }
                             },
-                            "required": [
-                              "label",
-                              "count"
-                            ],
+                            "required": ["label", "count"],
                             "additionalProperties": false
                           }
                         },
@@ -6695,13 +5852,7 @@
                           "type": "number"
                         }
                       },
-                      "required": [
-                        "total",
-                        "new",
-                        "byProvince",
-                        "funnel",
-                        "childrenActive"
-                      ],
+                      "required": ["total", "new", "byProvince", "funnel", "childrenActive"],
                       "additionalProperties": false
                     },
                     "users": {
@@ -6736,10 +5887,7 @@
                                 "type": "number"
                               }
                             },
-                            "required": [
-                              "day",
-                              "active"
-                            ],
+                            "required": ["day", "active"],
                             "additionalProperties": false
                           }
                         },
@@ -6761,25 +5909,12 @@
                                 "type": "number"
                               }
                             },
-                            "required": [
-                              "cohort",
-                              "size",
-                              "month1",
-                              "month2"
-                            ],
+                            "required": ["cohort", "size", "month1", "month2"],
                             "additionalProperties": false
                           }
                         }
                       },
-                      "required": [
-                        "total",
-                        "new",
-                        "dau",
-                        "wau",
-                        "mau",
-                        "daily",
-                        "retention"
-                      ],
+                      "required": ["total", "new", "dau", "wau", "mau", "daily", "retention"],
                       "additionalProperties": false
                     },
                     "wes": {
@@ -6795,10 +5930,7 @@
                           "type": "number"
                         },
                         "avgLatencyMs": {
-                          "type": [
-                            "number",
-                            "null"
-                          ]
+                          "type": ["number", "null"]
                         },
                         "errors": {
                           "type": "number"
@@ -6812,19 +5944,13 @@
                             "type": "object",
                             "properties": {
                               "label": {
-                                "type": [
-                                  "string",
-                                  "null"
-                                ]
+                                "type": ["string", "null"]
                               },
                               "count": {
                                 "type": "number"
                               }
                             },
-                            "required": [
-                              "label",
-                              "count"
-                            ],
+                            "required": ["label", "count"],
                             "additionalProperties": false
                           }
                         },
@@ -6843,28 +5969,18 @@
                                 "type": "object",
                                 "properties": {
                                   "label": {
-                                    "type": [
-                                      "string",
-                                      "null"
-                                    ]
+                                    "type": ["string", "null"]
                                   },
                                   "count": {
                                     "type": "number"
                                   }
                                 },
-                                "required": [
-                                  "label",
-                                  "count"
-                                ],
+                                "required": ["label", "count"],
                                 "additionalProperties": false
                               }
                             }
                           },
-                          "required": [
-                            "up",
-                            "down",
-                            "reasons"
-                          ],
+                          "required": ["up", "down", "reasons"],
                           "additionalProperties": false
                         }
                       },
@@ -6881,13 +5997,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "from",
-                    "to",
-                    "centres",
-                    "users",
-                    "wes"
-                  ],
+                  "required": ["from", "to", "centres", "users", "wes"],
                   "additionalProperties": false
                 }
               }
@@ -6910,9 +6020,7 @@
       "get": {
         "operationId": "listPlatformCentres",
         "summary": "Centres with usage and cost (no child data; small counts hidden)",
-        "tags": [
-          "dashboards"
-        ],
+        "tags": ["dashboards"],
         "security": [
           {
             "bearerAuth": []
@@ -6945,17 +6053,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "EC",
-                "FS",
-                "GP",
-                "KZN",
-                "LP",
-                "MP",
-                "NC",
-                "NW",
-                "WC"
-              ]
+              "enum": ["EC", "FS", "GP", "KZN", "LP", "MP", "NC", "NW", "WC"]
             }
           },
           {
@@ -6974,11 +6072,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "small",
-                "medium",
-                "large"
-              ]
+              "enum": ["small", "medium", "large"]
             }
           },
           {
@@ -7002,13 +6096,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "principal",
-                "practitioner",
-                "parent",
-                "funder",
-                "admin"
-              ]
+              "enum": ["principal", "practitioner", "parent", "funder", "admin"]
             }
           }
         ],
@@ -7043,10 +6131,7 @@
                             "type": "string"
                           },
                           "children": {
-                            "type": [
-                              "number",
-                              "null"
-                            ]
+                            "type": ["number", "null"]
                           },
                           "staff": {
                             "type": "number"
@@ -7092,9 +6177,7 @@
                       }
                     }
                   },
-                  "required": [
-                    "items"
-                  ],
+                  "required": ["items"],
                   "additionalProperties": false
                 }
               }
@@ -7117,9 +6200,7 @@
       "get": {
         "operationId": "exportPlatformCentres",
         "summary": "Download the filtered centre table as CSV",
-        "tags": [
-          "dashboards"
-        ],
+        "tags": ["dashboards"],
         "security": [
           {
             "bearerAuth": []
@@ -7152,17 +6233,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "EC",
-                "FS",
-                "GP",
-                "KZN",
-                "LP",
-                "MP",
-                "NC",
-                "NW",
-                "WC"
-              ]
+              "enum": ["EC", "FS", "GP", "KZN", "LP", "MP", "NC", "NW", "WC"]
             }
           },
           {
@@ -7181,11 +6252,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "small",
-                "medium",
-                "large"
-              ]
+              "enum": ["small", "medium", "large"]
             }
           },
           {
@@ -7209,13 +6276,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "principal",
-                "practitioner",
-                "parent",
-                "funder",
-                "admin"
-              ]
+              "enum": ["principal", "practitioner", "parent", "funder", "admin"]
             }
           }
         ],
@@ -7240,9 +6301,7 @@
       "put": {
         "operationId": "putMyAvatar",
         "summary": "Set your profile photo (send the image bytes; max 512 KB; metadata removed)",
-        "tags": [
-          "profile"
-        ],
+        "tags": ["profile"],
         "security": [
           {
             "bearerAuth": []
@@ -7255,11 +6314,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "image/jpeg",
-                "image/png",
-                "image/webp"
-              ]
+              "enum": ["image/jpeg", "image/png", "image/webp"]
             }
           }
         ],
@@ -7281,24 +6336,13 @@
                     },
                     "locale": {
                       "type": "string",
-                      "enum": [
-                        "en",
-                        "af",
-                        "xh",
-                        "zu"
-                      ]
+                      "enum": ["en", "af", "xh", "zu"]
                     },
                     "username": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "avatarUrl": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "mustChangePassword": {
                       "type": "boolean"
@@ -7321,20 +6365,10 @@
                           },
                           "role": {
                             "type": "string",
-                            "enum": [
-                              "principal",
-                              "practitioner",
-                              "parent",
-                              "funder",
-                              "admin"
-                            ]
+                            "enum": ["principal", "practitioner", "parent", "funder", "admin"]
                           }
                         },
-                        "required": [
-                          "centreId",
-                          "centreName",
-                          "role"
-                        ],
+                        "required": ["centreId", "centreName", "role"],
                         "additionalProperties": false
                       }
                     }
@@ -7369,9 +6403,7 @@
       "delete": {
         "operationId": "deleteMyAvatar",
         "summary": "Remove your profile photo",
-        "tags": [
-          "profile"
-        ],
+        "tags": ["profile"],
         "security": [
           {
             "bearerAuth": []
@@ -7395,24 +6427,13 @@
                     },
                     "locale": {
                       "type": "string",
-                      "enum": [
-                        "en",
-                        "af",
-                        "xh",
-                        "zu"
-                      ]
+                      "enum": ["en", "af", "xh", "zu"]
                     },
                     "username": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "avatarUrl": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     },
                     "mustChangePassword": {
                       "type": "boolean"
@@ -7435,20 +6456,10 @@
                           },
                           "role": {
                             "type": "string",
-                            "enum": [
-                              "principal",
-                              "practitioner",
-                              "parent",
-                              "funder",
-                              "admin"
-                            ]
+                            "enum": ["principal", "practitioner", "parent", "funder", "admin"]
                           }
                         },
-                        "required": [
-                          "centreId",
-                          "centreName",
-                          "role"
-                        ],
+                        "required": ["centreId", "centreName", "role"],
                         "additionalProperties": false
                       }
                     }
@@ -7485,9 +6496,7 @@
       "get": {
         "operationId": "getUserAvatar",
         "summary": "A profile photo (only of yourself or people at your centres)",
-        "tags": [
-          "profile"
-        ],
+        "tags": ["profile"],
         "security": [
           {
             "bearerAuth": []
@@ -7526,9 +6535,7 @@
       "put": {
         "operationId": "putCentreLogo",
         "summary": "Set the centre logo (principal; send the image bytes; max 512 KB)",
-        "tags": [
-          "profile"
-        ],
+        "tags": ["profile"],
         "security": [
           {
             "bearerAuth": []
@@ -7551,11 +6558,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "image/jpeg",
-                "image/png",
-                "image/webp"
-              ]
+              "enum": ["image/jpeg", "image/png", "image/webp"]
             }
           }
         ],
@@ -7568,15 +6571,10 @@
                   "type": "object",
                   "properties": {
                     "logoUrl": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
+                      "type": ["string", "null"]
                     }
                   },
-                  "required": [
-                    "logoUrl"
-                  ],
+                  "required": ["logoUrl"],
                   "additionalProperties": false
                 }
               }
@@ -7597,9 +6595,7 @@
       "get": {
         "operationId": "getCentreLogo",
         "summary": "The centre logo",
-        "tags": [
-          "profile"
-        ],
+        "tags": ["profile"],
         "security": [
           {
             "bearerAuth": []
@@ -7638,9 +6634,7 @@
       "get": {
         "operationId": "phase2_voiceNotes",
         "summary": "Reserved for voiceNotes (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -7667,9 +6661,7 @@
       "get": {
         "operationId": "phase2_behaviourCoach",
         "summary": "Reserved for behaviourCoach (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -7696,9 +6688,7 @@
       "get": {
         "operationId": "phase2_parentConnect",
         "summary": "Reserved for parentConnect (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -7725,9 +6715,7 @@
       "get": {
         "operationId": "phase2_academy",
         "summary": "Reserved for academy (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -7754,9 +6742,7 @@
       "get": {
         "operationId": "phase2_billing",
         "summary": "Reserved for billing (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -7783,9 +6769,7 @@
       "get": {
         "operationId": "phase2_funderDashboard",
         "summary": "Reserved for funderDashboard (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -7812,9 +6796,7 @@
       "get": {
         "operationId": "phase2_partnerApi",
         "summary": "Reserved for partnerApi (phase 2, not built yet)",
-        "tags": [
-          "phase-2"
-        ],
+        "tags": ["phase-2"],
         "security": [
           {
             "bearerAuth": []
@@ -7887,25 +6869,16 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "path",
-                    "message"
-                  ],
+                  "required": ["path", "message"],
                   "additionalProperties": false
                 }
               }
             },
-            "required": [
-              "code",
-              "message",
-              "requestId"
-            ],
+            "required": ["code", "message", "requestId"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "additionalProperties": false
       }
     }
