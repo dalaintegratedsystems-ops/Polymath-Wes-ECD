@@ -18,7 +18,7 @@
     "@wes/shared": "workspace:^",
     "@wes/ui": "workspace:^",
     "dexie": "^4",
-    "next": "^15",
+    "next": "^16",
     "react": "^19",
     "react-dom": "^19",
     "server-only": "^0.0.1"
