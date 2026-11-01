@@ -96,7 +96,7 @@ jobs:
       - run: pnpm build
       - run: pnpm --filter @wes/web exec playwright install --with-deps chromium
       - run: pnpm --filter @wes/web e2e
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
@@ -125,7 +125,7 @@ jobs:
       - name: Evals (live Claude)
         if: env.ANTHROPIC_API_KEY != ''
         run: pnpm --filter @wes/agent evals --live
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: eval-results
