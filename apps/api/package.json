@@ -14,11 +14,11 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@electric-sql/pglite": "^0.5.10",
-    "@electric-sql/pglite-pgvector": "^0.0.11",
-    "@fastify/cors": "^11.3.1",
+    "@electric-sql/pglite": "^0.5.15",
+    "@electric-sql/pglite-pgvector": "^0.0.16",
+    "@fastify/cors": "^11.4.0",
     "@fastify/helmet": "^13.2.0",
-    "@fastify/rate-limit": "^11.2.1",
+    "@fastify/rate-limit": "^11.2.2",
     "@wes/agent": "workspace:^",
     "@wes/channels": "workspace:^",
     "@wes/db": "workspace:^",
